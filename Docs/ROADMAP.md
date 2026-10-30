@@ -7,6 +7,21 @@ The full design is in [GameConcept.md](GameConcept.md). This file breaks the bui
 * **A** = Partner A (gameplay: player, weapon, enemies, boss). **B** = Partner B (world & systems: scenes, GameManager, interactions, puzzles, UI, audio). **Both** = do it together.
 * Day numbers are targets. If a phase runs late, use the cut list at the bottom instead of skipping the Done-when test.
 
+## Current Status (updated 2026-10-30)
+
+| Phase | Status |
+| :---- | :---- |
+| 0 – Setup | ✅ Done (single PC; GitHub push still to do) |
+| 1 – Foundation | ✅ Done, play-tested |
+| 2 – Combat & Interactions | ✅ Done, play-tested |
+| 3 – Full Game Loop | 🟡 Built; all parts tested — **one full timed run from Main Menu to Victory still needed** |
+| Change requests (armory code, elevator power, underground puzzles) | ✅ Done, play-tested |
+| 4 – Boss, Art & Audio | ⬜ Not started |
+| 5 – Polish & Ship | ⬜ Not started |
+
+**Git:** all work is committed locally on branch `docs/roadmap` (latest: `d980f2a`). `main` holds only the template commit. Nothing is pushed to GitHub yet.
+**Note:** Partner A's tasks were built in this same project, so "merge" items mean merging `docs/roadmap` into `main`.
+
 ---
 
 ## Phase 0 – Setup (Day 1 morning, ~2 hours)
@@ -14,17 +29,18 @@ The full design is in [GameConcept.md](GameConcept.md). This file breaks the bui
 Goal: both partners can open the same project, and the shared code contracts are agreed before anyone writes gameplay code.
 
 ### Both
-- [ ] Install the same Unity version (6000.4.0f1) on both PCs
-- [ ] Make the first commit on `main` and push it to GitHub
-- [ ] Partner A clones the repo and opens the project without errors
-- [ ] Agree the Git rules: each partner works on their own branch, merges at the end of every day, and never edits the same scene at the same time
-- [ ] Read through GameConcept.md together (15 min) and agree on any changes
-- [ ] Agree and commit the shared interfaces before splitting up:
-  - [ ] `IInteractable` (Prompt, CanInteract, Interact)
-  - [ ] `IDamageable` (TakeDamage with amount, DamageType, hit point)
-  - [ ] `DamageType` enum (Pulse, Overload, Explosion, Hazard)
-  - [ ] `GameManager` public API (what A can call: player HP/ammo save and load, enemy-killed events)
-- [ ] Agree layers and tags (already created by the setup tool):
+- [x] Install Unity 6000.4.0f1 (this PC; install the same version on any second PC)
+- [x] Make the first commit on `main` (`ba12db0`)
+- [ ] Push to GitHub (`git push -u origin docs/roadmap` and `git push origin main`)
+- [ ] Partner A clones the repo and opens the project without errors (only needed if a second PC is used)
+- [x] Git rules: work on a branch (`docs/roadmap`), commit after each tested step, never edit the same scene from two PCs at once
+- [x] Read through GameConcept.md and agree on changes (reviewed and extended several times)
+- [x] Agree and commit the shared interfaces before splitting up (committed in `f193a8e`):
+  - [x] `IInteractable` (Prompt, CanInteract, Interact)
+  - [x] `IDamageable` (TakeDamage with amount, DamageType, hit point)
+  - [x] `DamageType` enum (Pulse, Overload, Explosion, Hazard)
+  - [x] `GameManager` public API (player HP/ammo save and load, enemy-destroyed events, fuses, timer, checkpoints)
+- [x] Agree layers and tags (created by the setup tool):
   - Tags: `Player` (built in), `Enemy`, `WeakPoint`, `Interactable`, `Ground`
   - Layers: `Player`, `Enemy`, `Interactable`, `Ground`, `Water` (built in)
 
@@ -42,6 +58,8 @@ Goal: both partners can open the same project, and the shared code contracts are
 - [x] Set up input: Move, Look, Jump, Sprint, Fire, AltFire, Reload, Interact, Pause (defined in code in `PlayerInputReader.cs`, keyboard/mouse + gamepad)
 
 **Done when:** both partners have the project open on the same commit, the three scenes are in Build Settings, and the interfaces are committed.
+
+> ✅ Passed on this PC (scenes in Build Settings, interfaces committed). A second PC only needs to clone after the GitHub push.
 
 ---
 
@@ -76,13 +94,14 @@ Goal: walk from the safe room to the bunker and back, and shoot a test target.
 > * **Build HUD Prefab** – creates `Assets/_Project/UI/HUD.prefab` wired to `HUDController`.
 > * **Build Greybox (Both Scenes)** – builds the island and bunker blockouts, spawn points, elevator panels, the HUD, a temporary `DebugPlayer`, and bakes the NavMesh. Re-running rebuilds the `Greybox` object, so move hand-made changes out of it first.
 > * TextMeshPro resources are imported (Assets/TextMesh Pro).
-> * If the Tools menu items don't appear (seen in Unity 6.4), create an empty file `Library/SignalLost/Commands/<command>.cmd` (`setup`, `import-tmp`, `hud`, `greybox`, `player`, `swap-player`, `sandbox`, `phase2`, `phase3`, `smoketest`) and the Editor runs it within a second. Results: `Library/SignalLost/bridge.log`.
+> * If the Tools menu items don't appear (seen in Unity 6.4), create an empty file `Library/SignalLost/Commands/<command>.cmd` (`setup`, `import-tmp`, `hud`, `greybox`, `player`, `swap-player`, `sandbox`, `phase2`, `phase3`, `bunker-path`, `smoketest`) and the Editor runs it within a second. Results: `Library/SignalLost/bridge.log`.
 > * `DebugPlayer` (WASD, mouse, Space, E) is only for testing until A's Player prefab arrives. Delete it then.
-> * Elevator requirements are set to None for now; Phase 2 sets them to Arc Pistol / Fuses 1 and 2.
+> * `smoketest` plays the game automatically (Main Menu → briefing → both island bunkers → underground puzzles) and writes results to `bridge.log`.
 
 ### Both – end of day
 - [x] A delivers the Player prefab; B places it in both scenes (DebugPlayer removed)
-- [ ] Merge both branches into `main`, then play-test together for 10 minutes
+- [ ] Merge `docs/roadmap` into `main` (work is committed on `docs/roadmap`)
+- [x] Play-test for 10 minutes
 
 **Done when:** you can start in the safe room, walk to the elevator, ride it to the bunker, ride back, and arrive at the elevator (not the safe room), with the timer still counting down and HP/ammo kept. You can shoot the test dummy.
 
@@ -112,24 +131,25 @@ Goal: Phases 1 and 2 of the game (island road and bunker) are playable in greybo
 ### B – Interactions & bunker challenges
 - [x] `Door.cs` + keypad: opens a sliding door; locked doors show the reason
 - [x] `Pickup.cs`: Battery Clip (+12 ammo), Medkit (+35 HP), Override Fuse
-- [x] NPC dialogue: Dr. Reyes briefing panel (3–4 lines), closing it unlocks the armory
-- [x] Elevator rules: going down needs the Arc Pistol; going up needs Fuses 1 and 2
+- [x] NPC dialogue: Dr. Reyes briefing panel *(now 5 lines and sends the player to the armory code puzzle – see Change Request)*
+- [x] Elevator rules: going down needs the Arc Pistol; going up needs Fuses 1 and 2 *(now also main power down and the junction box up – see Change Requests)*
 - [x] **Wing A:**
   - [x] `LaserTripwire.cs`: beams deal 25 damage and trigger the alarm; shooting the emitter disables them
   - [x] Maintenance log terminal showing the breaker order
   - [x] `BreakerPuzzle.cs`: random order each run; wrong order resets the levers and calls an Enforcer; right order opens the Fuse 1 pod
 - [x] **Wing B:**
   - [x] `ElectrifiedWater.cs`: 10 HP per second, HUD hazard warning
-  - [x] Crate stepping stones (≤ 2 m apart) to the valve
-  - [x] Drainage valve: drains the water and opens the path
+  - [x] Crate stepping stones (≤ 2 m apart) to the drain controls
+  - [x] Drainage valve: drains the water and opens the path *(replaced by the pipe routing puzzle – see Change Request)*
   - [x] `LockdownRoom.cs`: picking up Fuse 2 seals the doors, starts a 45 s countdown, spawns 2 Enforcers + 1 Recon Stinger (the Aegis Warden replaces the Stinger in Phase 3); doors open when all are destroyed or time runs out
 - [x] HUD shows interaction prompts and the fuse counter updates
 
 ### Both – end of day
 - [x] B places A's enemy prefabs on the island road and in the bunker
-- [ ] Merge into `main` and play-test
+- [ ] Merge into `main`
+- [x] Play-test
 
-> Built by the `phase2` bridge command (`Phase2ContentBuilder.cs`): prefabs in `Prefabs/Enemies`, `Pickups`, `Props`; scene content under the `Gameplay` object. Re-running rebuilds `Gameplay` only. `TemporaryDeathRestart` reloads the scene on death until Phase 3's Game Over screen.
+> Built by the `phase2` bridge command (`Phase2ContentBuilder.cs`): prefabs in `Prefabs/Enemies`, `Pickups`, `Props`; scene content under the `Gameplay` object. Re-running rebuilds `Gameplay` only. (The temporary death restart was replaced by Phase 3's Game Over screen.)
 
 **Done when:** you can play from the safe room through both bunker wings, collect Fuses 1 and 2, and return to the surface, fighting enemies along the way.
 
@@ -164,11 +184,14 @@ Goal: the game can be played from the main menu to the Victory screen (the boss 
   - [x] Settings: mouse sensitivity, master / music / SFX volume
 
 ### Both – end of day
-- [ ] Merge and play the whole game once, start to finish, timing the run
+- [ ] Merge into `main`
+- [ ] Play the whole game once, start to finish, timing the run (also check: die once → Retry from Checkpoint; Titan fight; leaving the compound pauses the upload)
 
 > Built by the `phase3` bridge command (`Phase3ContentBuilder.cs`): Aegis Warden, Titan and orb prefabs, `GameMenus` prefab, the `MainMenu` scene, and the game loop under `Gameplay_Phase3` in both scenes. Checkpoints: CP1 (bunker arrival), CP2 (hub), CP3 (surface return with Fuses 1+2), CP4 (pier, after the upload). The upload only progresses while the player is inside the compound.
 
 **Done when:** a full run works from Main Menu to Victory; dying shows Game Over with a working checkpoint retry; the timer running out also shows Game Over.
+
+> 🟡 Main Menu → Play fixed and verified (HUD was missing parts). Every section has been play-tested on its own; the single full timed run is the last check.
 
 ---
 
@@ -191,7 +214,7 @@ Dr. Reyes sends the player to a new maintenance bunker; a randomized code puzzle
 The freight elevator starts unpowered; a guarded generator bunker east of the road holds the main power lever.
 
 - [x] `PowerSwitch.cs`: main power lever (persists for the run), spark + "POWER RESTORED", work light on
-- [x] `ScenePortal.cs`: `requiresPower` + red/green status light; prompt "No power – restore it at the generator bunker"
+- [x] `ScenePortal.cs`: progress lock (`requiredClearedId`) + red/green status light; prompt "No power – restore it at the generator bunker"
 - [x] Generator bunker at X 175, Z 75 with a dirt path from the road; guarded by **2 Enforcers + 2 Recon Stingers** and a red barrel; medkit and battery inside
 - [x] Radio lines: "no power" at the elevator (only before the switch), "power's back" after it
 - [x] Objective: "Restore power at the generator bunker east of the road" between the pistol and the elevator
@@ -211,7 +234,7 @@ Three more puzzles in the underground facility (options 1D, 3 and 4).
 - [x] Play-test the three puzzles by hand (all working)
 - [x] Pipe routing made clearer after play-test: lit route preview, UP/DOWN labels on the schematic, lever state labels, failure message names the junction
 - [x] Re-test the clearer pipe routing (clear now)
-- [ ] Time a full run, then re-tune the purge timer (currently 20:00)
+- [ ] Time a full run (Phase 3 check), then re-tune the purge timer (currently 20:00; estimated run 15–17 min)
 
 ---
 
@@ -259,7 +282,7 @@ Goal: a stable Windows build and everything needed for grading.
 ### Both
 - [ ] Each partner plays at least 2 full runs; write every bug in a shared list
 - [ ] Fix bugs, most serious first (crashes, soft-locks, progression blockers)
-- [ ] Time the runs: a first-time run should take 12–15 minutes; tune if not
+- [ ] Time the runs: a first-time run should finish with a few minutes left on the purge timer; tune if not
 - [ ] Check every lose condition (0 HP, timer) and every checkpoint retry
 - [ ] Check the game can't get stuck: no ammo dead-ends, no doors locked forever, no falling out of the map
 - [ ] Credits screen lists every asset and license
@@ -278,7 +301,8 @@ Cut in this order. Nothing in the grading rubric is ever cut.
 
 1. Boss Phase 2 shockwave stomp
 2. Randomized breaker order (use a fixed order)
-3. Wing B crate jumping (use a raised catwalk to the valve)
+3. Wing B crate jumping (use a raised catwalk to the drain controls)
 4. Pylon reboot cycle (pylons stay destroyed after one stun)
 5. Crate break-apart effect (crate disappears and drops its item)
 6. Accuracy stat on the Victory screen
+7. If the run is too long: make the gauge lock door start open, or shrink the junction box to a 2×2 grid
