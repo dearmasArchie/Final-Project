@@ -28,10 +28,24 @@ namespace SignalLost
         [SerializeField] TMP_Text dialogueSpeaker;
         [SerializeField] TMP_Text dialogueBody;
         [SerializeField] TMP_Text dialogueHint;
+        [SerializeField] GameObject eventBar;
+        [SerializeField] RectTransform eventBarFill;
+        [SerializeField] TMP_Text eventBarLabel;
+        [SerializeField] GameObject radioPanel;
+        [SerializeField] TMP_Text radioSpeaker;
+        [SerializeField] TMP_Text radioText;
+        [SerializeField] TMP_Text toastText;
+        [SerializeField] GameObject codePanel;
+        [SerializeField] TMP_Text codeTitle;
+        [SerializeField] TMP_Text codeDisplay;
+        [SerializeField] TMP_Text codeStatus;
         [SerializeField] Color timerNormal = Color.white;
         [SerializeField] Color timerWarning = new Color(1f, 0.25f, 0.2f);
 
         const float TimerWarningSeconds = 120f;
+
+        float radioHideTime;
+        float toastHideTime;
 
         void Awake() => Instance = this;
 
@@ -54,6 +68,10 @@ namespace SignalLost
             SetEventText(null);
             HideDialogue();
             SetOverload(0f, false);
+            HideEventBar();
+            radioPanel.SetActive(false);
+            toastText.gameObject.SetActive(false);
+            HideCodePanel();
         }
 
         void Update()
@@ -62,6 +80,9 @@ namespace SignalLost
             int minutes = Mathf.FloorToInt(seconds / 60f);
             timerText.text = $"{minutes:00}:{Mathf.FloorToInt(seconds % 60f):00}";
             timerText.color = seconds <= TimerWarningSeconds ? timerWarning : timerNormal;
+
+            if (radioPanel.activeSelf && Time.unscaledTime >= radioHideTime) radioPanel.SetActive(false);
+            if (toastText.gameObject.activeSelf && Time.unscaledTime >= toastHideTime) toastText.gameObject.SetActive(false);
         }
 
         public void SetHealth(float current, float max)
@@ -111,6 +132,45 @@ namespace SignalLost
         }
 
         public void HideDialogue() => dialoguePanel.SetActive(false);
+
+        /// <summary>Progress bar under the timer: signal upload or boss health.</summary>
+        public void SetEventBar(string label, float value01)
+        {
+            eventBar.SetActive(true);
+            eventBarLabel.text = label;
+            SetFill(eventBarFill, value01);
+        }
+
+        public void HideEventBar() => eventBar.SetActive(false);
+
+        /// <summary>Radio subtitle (bottom-left) for a few seconds.</summary>
+        public void ShowRadio(string speaker, string text, float seconds)
+        {
+            radioPanel.SetActive(true);
+            radioSpeaker.text = speaker;
+            radioText.text = text;
+            radioHideTime = Time.unscaledTime + seconds;
+        }
+
+        /// <summary>Keypad code entry panel: title, digits so far (e.g. "4 7 _ _") and a status line.</summary>
+        public void ShowCodePanel(string title, string display, string status, Color statusColor)
+        {
+            codePanel.SetActive(true);
+            codeTitle.text = title;
+            codeDisplay.text = display;
+            codeStatus.text = status;
+            codeStatus.color = statusColor;
+        }
+
+        public void HideCodePanel() => codePanel.SetActive(false);
+
+        /// <summary>Short message in the middle of the screen, e.g. "CHECKPOINT REACHED".</summary>
+        public void ShowToast(string text, float seconds = 2.5f)
+        {
+            toastText.gameObject.SetActive(true);
+            toastText.text = text;
+            toastHideTime = Time.unscaledTime + seconds;
+        }
 
         static void SetOptional(TMP_Text label, string text)
         {

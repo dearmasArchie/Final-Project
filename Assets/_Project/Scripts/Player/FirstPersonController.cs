@@ -47,7 +47,7 @@ namespace SignalLost
 
         void Update()
         {
-            if (input.Pause.WasPressedThisFrame()) SetCursorLocked(Cursor.lockState != CursorLockMode.Locked);
+            // Esc is handled by MenuController (pause menu).
             if (Time.timeScale == 0f) return;
 
             if (Cursor.lockState == CursorLockMode.Locked) UpdateLook();

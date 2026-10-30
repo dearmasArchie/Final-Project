@@ -342,7 +342,6 @@ GameObject:
   - component: {fileID: 2260678097733213585}
   - component: {fileID: 1634377862690930363}
   - component: {fileID: 6710058052972096600}
-  - component: {fileID: 2068128533242566372}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -497,18 +496,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a455a67a99479654b833cee301995740, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SignalLost.PlayerPersistence
---- !u!114 &2068128533242566372
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7055366527394981552}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cfb86888edfcfdf4da5024af6252a834, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SignalLost.DebugTools.TemporaryDeathRestart
 --- !u!1 &8973033540217886275
 GameObject:
   m_ObjectHideFlags: 0

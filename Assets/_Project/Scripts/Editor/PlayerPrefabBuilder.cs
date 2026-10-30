@@ -75,7 +75,6 @@ namespace SignalLost.EditorTools
             var interaction = root.AddComponent<PlayerInteraction>();
             var pistol = root.AddComponent<ArcPistol>();
             root.AddComponent<PlayerPersistence>();
-            root.AddComponent<TemporaryDeathRestart>();
 
             Set(fpc, "cameraPivot", cam);
             Set(interaction, "cameraPivot", cam);

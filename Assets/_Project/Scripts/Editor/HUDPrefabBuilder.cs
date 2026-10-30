@@ -72,6 +72,43 @@ namespace SignalLost.EditorTools
             var promptText = Text(root.transform, "PromptText", new Vector2(0, -60), new Vector2(800, 40), 26,
                 TextAlignmentOptions.Center, Anchor.Center, "[E] Interact");
 
+            // Under the timer: progress bar for the signal upload and the boss's health
+            var eventBarFill = Bar(root.transform, "EventBar", Anchor.TopCenter, new Vector2(0, -150), new Vector2(560, 16), new Color(0.3f, 0.9f, 1f));
+            var eventBar = eventBarFill.parent.gameObject;
+            var eventBarLabel = Text(eventBar.transform, "Label", new Vector2(0, 30), new Vector2(700, 30), 22,
+                TextAlignmentOptions.Bottom, Anchor.TopCenter, "SIGNAL UPLOAD 0%");
+
+            // Bottom-left: radio subtitles
+            var radio = new GameObject("RadioPanel", typeof(RectTransform), typeof(Image));
+            radio.transform.SetParent(root.transform, false);
+            radio.GetComponent<Image>().color = new Color(0f, 0.05f, 0.08f, 0.75f);
+            SetRect(radio.GetComponent<RectTransform>(), Anchor.BottomLeft, new Vector2(40, 40), new Vector2(620, 120));
+            var radioSpeaker = Text(radio.transform, "Speaker", new Vector2(18, -10), new Vector2(580, 28), 20,
+                TextAlignmentOptions.TopLeft, Anchor.TopLeft, "DR. REYES");
+            radioSpeaker.color = new Color(0.4f, 0.9f, 1f);
+            var radioText = Text(radio.transform, "Text", new Vector2(18, -40), new Vector2(584, 76), 20,
+                TextAlignmentOptions.TopLeft, Anchor.TopLeft, "...");
+
+            // Center: short messages such as "CHECKPOINT REACHED"
+            var toastText = Text(root.transform, "ToastText", new Vector2(0, 160), new Vector2(900, 50), 36,
+                TextAlignmentOptions.Center, Anchor.Center, "CHECKPOINT REACHED");
+            toastText.color = new Color(0.5f, 1f, 0.6f);
+
+            // Center: keypad code entry
+            var code = new GameObject("CodePanel", typeof(RectTransform), typeof(Image));
+            code.transform.SetParent(root.transform, false);
+            code.GetComponent<Image>().color = new Color(0.02f, 0.04f, 0.05f, 0.92f);
+            SetRect(code.GetComponent<RectTransform>(), Anchor.Center, new Vector2(0, 40), new Vector2(520, 300));
+            var codeTitle = Text(code.transform, "Title", new Vector2(0, -20), new Vector2(480, 40), 26,
+                TextAlignmentOptions.Top, Anchor.TopCenter, "ARMORY ACCESS");
+            codeTitle.color = new Color(0.4f, 0.9f, 1f);
+            var codeDisplay = Text(code.transform, "Display", new Vector2(0, 10), new Vector2(480, 90), 72,
+                TextAlignmentOptions.Center, Anchor.Center, "_ _ _ _");
+            var codeStatus = Text(code.transform, "Status", new Vector2(0, -70), new Vector2(480, 40), 28,
+                TextAlignmentOptions.Center, Anchor.Center, "");
+            Text(code.transform, "Hint", new Vector2(0, 16), new Vector2(480, 30), 18,
+                TextAlignmentOptions.Bottom, Anchor.BottomCenter, "Type the code   [Backspace] Delete   [Esc] Cancel");
+
             var hazardText = Text(root.transform, "HazardText", new Vector2(0, -110), new Vector2(800, 40), 30,
                 TextAlignmentOptions.Center, Anchor.Center, "!! HAZARD !!");
             hazardText.color = new Color(1f, 0.25f, 0.2f);
@@ -106,6 +143,17 @@ namespace SignalLost.EditorTools
             so.FindProperty("dialogueSpeaker").objectReferenceValue = speaker;
             so.FindProperty("dialogueBody").objectReferenceValue = body;
             so.FindProperty("dialogueHint").objectReferenceValue = hint;
+            so.FindProperty("eventBar").objectReferenceValue = eventBar;
+            so.FindProperty("eventBarFill").objectReferenceValue = eventBarFill;
+            so.FindProperty("eventBarLabel").objectReferenceValue = eventBarLabel;
+            so.FindProperty("radioPanel").objectReferenceValue = radio;
+            so.FindProperty("radioSpeaker").objectReferenceValue = radioSpeaker;
+            so.FindProperty("radioText").objectReferenceValue = radioText;
+            so.FindProperty("toastText").objectReferenceValue = toastText;
+            so.FindProperty("codePanel").objectReferenceValue = code;
+            so.FindProperty("codeTitle").objectReferenceValue = codeTitle;
+            so.FindProperty("codeDisplay").objectReferenceValue = codeDisplay;
+            so.FindProperty("codeStatus").objectReferenceValue = codeStatus;
             so.ApplyModifiedPropertiesWithoutUndo();
 
             var prefab = PrefabUtility.SaveAsPrefabAsset(root, PrefabPath);
@@ -114,7 +162,7 @@ namespace SignalLost.EditorTools
             return prefab;
         }
 
-        enum Anchor { TopLeft, TopCenter, TopRight, BottomRight, BottomCenter, Center, Stretch }
+        enum Anchor { TopLeft, TopCenter, TopRight, BottomLeft, BottomRight, BottomCenter, Center, Stretch }
 
         /// <summary>Background bar with a fill child; returns the fill (its anchorMax.x is the value).</summary>
         static RectTransform Bar(Transform parent, string name, Anchor anchor, Vector2 position, Vector2 size, Color fillColor)
@@ -154,6 +202,7 @@ namespace SignalLost.EditorTools
                 case Anchor.TopLeft: a = new Vector2(0, 1); break;
                 case Anchor.TopCenter: a = new Vector2(0.5f, 1); break;
                 case Anchor.TopRight: a = new Vector2(1, 1); break;
+                case Anchor.BottomLeft: a = new Vector2(0, 0); break;
                 case Anchor.BottomRight: a = new Vector2(1, 0); break;
                 case Anchor.BottomCenter: a = new Vector2(0.5f, 0); break;
                 case Anchor.Center: a = new Vector2(0.5f, 0.5f); break;

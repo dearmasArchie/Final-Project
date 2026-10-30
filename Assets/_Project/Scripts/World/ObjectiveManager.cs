@@ -47,14 +47,26 @@ namespace SignalLost
             bool fuse1 = gm.HasFuse(1), fuse2 = gm.HasFuse(2);
 
             if (!gm.IsCleared("Briefing")) return "Talk to Dr. Reyes in the safe room";
+            if (!gm.IsCleared(CodeKeypad.UnlockedId))
+                return gm.IsCleared("CodeBunkerVisited")
+                    ? "Enter the armory code at the keypad in the safe room"
+                    : "Find the armory code in the maintenance bunker northwest of the safe room";
             if (!gm.HasArcPistol) return "Take the Arc Pistol from the armory";
             if (!fuse1 || !fuse2)
             {
-                if (onIsland) return "Ride the freight elevator down";
+                if (onIsland)
+                    return gm.IsCleared(PowerSwitch.PoweredId)
+                        ? "Ride the freight elevator down"
+                        : "Restore power at the generator bunker east of the road";
                 if (!fuse1 && !fuse2) return "Recover Override Fuses 1 (Wing A) and 2 (Wing B)";
                 return fuse1 ? "Recover Override Fuse 2 in Wing B" : "Recover Override Fuse 1 in Wing A";
             }
-            if (!onIsland) return "Return to the freight elevator";
+            if (!onIsland)
+                return gm.IsCleared(WiringPuzzle.SolvedId)
+                    ? "Return to the freight elevator"
+                    : "Rewire the elevator junction box in the hub";
+            if (gm.IsCleared(BossController.DefeatedId)) return "Board the extraction boat";
+            if (gm.IsCleared(WaveSpawner.CompletedId)) return "Take the service road to the pier and destroy Unit 00-Titan";
             if (!gm.HasFuse(3)) return "Climb to the radio tower and take Override Fuse 3";
             return "Insert the fuses at the radio tower console";
         }

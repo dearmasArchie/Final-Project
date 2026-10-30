@@ -15,7 +15,7 @@
 | **Working Title** | Project Outpost: Signal Lost |
 | **Genre** | First-Person Action Shooter with light puzzle and survival elements |
 | **Perspective** | First-Person (FPP) |
-| **Target Playtime** | 12–15 minutes on a first playthrough |
+| **Target Playtime** | 12–15 minutes on a first playthrough (to be re-timed after the puzzle additions; see section 3) |
 | **Engine** | Unity 3D (Universal Render Pipeline) |
 | **Scenes** | `MainMenu` + two gameplay scenes (`IslandExterior`, `UndergroundFacility`) |
 | **Platform** | PC (Windows), mouse and keyboard |
@@ -30,6 +30,19 @@ A lightning strike corrupts OVERSEER, the security AI of island research station
 1. **Readable combat.** Every bot shows its state through a colored sensor light (a drone's eye or a robot's visor: blue, yellow, red), and every weak point glows. The player should never die without understanding why.
 2. **Two modes, one gun.** The rapid Pulse is for speed and precision; the charged Overload Beam is for shields, barrels, and the boss. Every major encounter gives a reason to switch.
 3. **Always one clear goal.** One objective at a time, shown on the HUD and spoken over the radio, with the purge timer adding constant pressure.
+
+### Puzzle Overview
+
+Simple puzzles break up the combat, each a different kind of thinking. All randomized ones change every run.
+
+| Puzzle | Where | Type | Randomized | Unlocks |
+| :---- | :---- | :---- | :---- | :---- |
+| Armory code (color lockers + lights-off digit) | Maintenance bunker (island) | Observation | Yes | Armory → Arc Pistol |
+| Main power lever (guarded) | Generator bunker (island) | Combat objective | – | Freight elevator down |
+| Gauge lock (3 pressure gauges) | Wing A laser corridor | Observation | Yes | Breaker room door |
+| Breaker sequence (order from the log) | Wing A breaker room | Read and follow | Yes | Fuse 1 pod |
+| Pipe routing (schematic + junction levers) | Wing B flooded generator | Spatial logic | No | Drains the water → quarantine door |
+| Junction box wiring (3×3 wire tiles) | Underground hub | Spatial logic | Yes | Elevator back up |
 
 ### Core Gameplay Loop
 
@@ -49,15 +62,18 @@ When the signal goes out, OVERSEER deploys its final defense, **Unit 00-Titan**,
 
 ### Objective Chain
 
-1. Talk to Dr. Reyes in the safe room. She unlocks the armory, where you pick up the Arc Pistol.
-2. Fight along the island road to the freight elevator and descend to the Underground Facility.
-3. **Wing A:** Disable the laser tripwires and solve the breaker sequence puzzle to collect **Fuse 1**.
-4. **Wing B:** Drain the electrified floodway and survive the 45-second quarantine lockdown to collect **Fuse 2**.
-   *(Wings A and B can be done in either order. The elevator back up unlocks once both fuses are held.)*
-5. Return to the surface, fight up the hill trail, and defeat the Aegis Warden guarding the tower compound to collect **Fuse 3**.
-6. Insert all three fuses into the radio tower console and defend the compound for 90 seconds while the dish aligns and uploads the distress signal.
-7. Take the service road down to the pier and destroy Unit 00-Titan.
-8. Board the extraction boat.
+1. Talk to Dr. Reyes in the safe room. The armory is keypad-locked; the code is hidden in the old maintenance bunker ~100 m northwest of the safe room.
+   Solve the bunker's code puzzle (see section 4), enter the code at the armory keypad, and take the Arc Pistol.
+2. The freight elevator has no power. Fight to the **generator bunker** east of the road (guarded by 2 Enforcers and 2 Recon Stingers) and turn the main power lever on.
+3. Ride the now-powered freight elevator down to the Underground Facility.
+4. **Wing A:** Read the three pressure gauges along the laser corridor, disable the laser tripwires, enter the gauge code to open the breaker room, and solve the breaker sequence puzzle to collect **Fuse 1**.
+5. **Wing B:** Cross the electrified floodway on crates, route the water to the drain with the junction levers and pump, and survive the 45-second quarantine lockdown to collect **Fuse 2**.
+6. **Hub:** Rewire the elevator junction box so the freight elevator can go back up.
+   *(Wings A and B and the junction box can be done in any order. The elevator back up needs both fuses and the rewired junction box.)*
+7. Return to the surface, fight up the hill trail, and defeat the Aegis Warden guarding the tower compound to collect **Fuse 3**.
+8. Insert all three fuses into the radio tower console and defend the compound for 90 seconds while the dish aligns and uploads the distress signal.
+9. Take the service road down to the pier and destroy Unit 00-Titan.
+10. Board the extraction boat.
 
 ### Win Condition
 
@@ -89,12 +105,12 @@ The build contains three scenes (`0: MainMenu`, `1: IslandExterior`, `2: Undergr
 
 | Phase | Scene | Time | Content | Ends when |
 | :---- | :---- | :---- | :---- | :---- |
-| **1. Safe Room & Island Road** | IslandExterior | 0:00–3:00 | Briefing, armory, Arc Pistol. Fight Recon Stingers and Enforcer Units along the road. Learn weak-point crits and explosive barrels. | Player uses the freight elevator |
-| **2. Underground Facility** | UndergroundFacility | 3:00–9:00 | Wing A laser corridor and breaker puzzle (Fuse 1). Wing B electrified floodway, valve, and quarantine ambush with the first Aegis Warden (Fuse 2). | Player rides the elevator up with 2 fuses |
-| **3. Radio Tower** | IslandExterior | 9:00–12:30 | Reinforcement patrol on the hill trail. Aegis Warden guards Fuse 3. Insert fuses, survive the 90-second, three-wave defense. | Upload reaches 100% |
-| **4. Pier Boss & Extraction** | IslandExterior | 12:30–15:00 | A gate opens onto the downhill service road to the pier. Two-phase Unit 00-Titan fight. Board the boat. | Player boards the boat |
+| **1. Safe Room & Island Road** | IslandExterior | 0:00–4:30 | Briefing, maintenance bunker code puzzle, armory, Arc Pistol. Fight the guards at the generator bunker and restore power. Fight Recon Stingers and Enforcer Units along the road. Learn weak-point crits and explosive barrels. | Player uses the freight elevator |
+| **2. Underground Facility** | UndergroundFacility | 4:30–11:00 | Wing A gauge lock, laser corridor, and breaker puzzle (Fuse 1). Wing B electrified floodway, pipe routing, and quarantine ambush with the first Aegis Warden (Fuse 2). Hub junction box wiring. | Player rides the elevator up with 2 fuses |
+| **3. Radio Tower** | IslandExterior | 11:00–14:30 | Reinforcement patrol on the hill trail. Aegis Warden guards Fuse 3. Insert fuses, survive the 90-second, three-wave defense. | Upload reaches 100% |
+| **4. Pier Boss & Extraction** | IslandExterior | 14:30–17:00 | A gate opens onto the downhill service road to the pier. Two-phase Unit 00-Titan fight. Board the boat. | Player boards the boat |
 
-The 20:00 purge timer leaves a 5-minute buffer over the target playtime for first-time players.
+With the puzzle additions, a first run is estimated at **15–17 minutes**. The purge timer stays at 20:00 for now; it will be re-tuned (e.g. to 22:00) after a full timed playthrough so first-time players keep a buffer of a few minutes.
 
 **Returning to `IslandExterior`:** Phase 1 enemies stay destroyed (the `GameManager` remembers cleared encounters by ID). A new reinforcement patrol spawns on the hill trail instead, and the player spawns at the elevator house rather than the safe room.
 
@@ -114,28 +130,50 @@ Each mechanic is introduced safely before it is tested under pressure.
 
 ## 4. Player Interaction Mechanics & Bunker Challenges
 
-The player interacts through a 3-meter camera raycast. Any object implementing `IInteractable` shows a context prompt (`[E] Turn Drainage Valve`).
+The player interacts through a 3-meter camera raycast. Any object implementing `IInteractable` shows a context prompt (`[E] Pull PUMP (test routing)`).
 
 | # | Interaction | Description |
 | :---- | :---- | :---- |
-| 1 | **NPC dialogue** | Dr. Reyes opens a briefing panel (3–4 lines, click to advance). Closing it unlocks the armory door. She speaks by radio afterwards. |
+| 1 | **NPC dialogue** | Dr. Reyes opens a briefing panel (5 lines, E to advance) and sends the player to the maintenance bunker. She speaks by radio afterwards. |
 | 2 | **Doors and keypads** | Wall keypads open sliding airlocks. Locked doors show a red light and the reason (`Requires: Arc Pistol`). |
-| 3 | **Freight elevator** | Scene transition with a fade. Going down needs the Arc Pistol; going up needs Fuses 1 and 2. |
+| 3 | **Freight elevator** | Scene transition with a fade. Going down needs the Arc Pistol and main power; going up needs Fuses 1 and 2 and the rewired junction box. A light above each panel shows red (locked) or green (ready). |
 | 4 | **Pickups and fuse console** | Override Fuses, Battery Clips (+12 ammo), Medkits (+35 HP, max 100). Fuses are placed into the radio console one at a time. |
 | 5 | **Breaker sequence puzzle** (Wing A) | See below. |
-| 6 | **Drainage valve** (Wing B) | See below. |
+| 6 | **Junction levers + pump** (Wing B) | Set three levers up/down per the pipe schematic, then pull PUMP to test. See below. |
+| 7 | **Code keypads** | Armory (4 digits) and Wing A breaker room (3 digits). Opens a code panel; type the digits (Backspace to correct, Esc to cancel). ACCESS DENIED on a wrong code. |
+| 8 | **Light switch** (maintenance bunker) | Turns the bunker lights on and off; needed to see the hidden digit. |
+| 9 | **Main power lever** (generator bunker) | Powers the freight elevator. The elevator panel shows a red light and "No power" until then, green after. |
+| 10 | **Wire tiles** (hub junction box) | Each tile rotates 90° with E; connect IN to OUT to restore the elevator circuit. See below. |
 
-### Wing A: Laser Corridor & Breaker Puzzle
+### Maintenance Bunker: Armory Code Puzzle
 
+A small concrete bunker ~100 m northwest of the safe room, reached unarmed along a winding dirt path that stays away from the robot patrols. Everything is randomized each run, so the code can't be memorized:
+
+* **Wall message** (west wall): the color order, e.g. *"ARMORY CODE – YELLOW - BLUE - GREEN - RED"*, and the hint *"some things only show in the dark"*.
+* **Four colored lockers** (blue, red, green, yellow), each stenciled with one digit.
+* **One locker's digit is scratched off** (shown as #). It is also painted in glow paint, visible only when the **light switch** turns the lights off.
+* **Decoy numbers** (BAY 7, SHELF 3, UNIT 21) are painted around the room to mislead.
+* The code is the four locker digits read in the wall's color order. A radio line plays on entry: *"don't trust the first number you see."*
+
+### Wing A: Gauge Lock, Laser Corridor & Breaker Puzzle
+
+* **Gauge lock:** The breaker room is sealed by a door with a **3-digit keypad**. Three **pressure gauges** (PRESSURE 1, 2, 3) are mounted along the corridor wall, spread between the laser sets; each needle points at a number from 0 to 9, random each run. A plate by the keypad reads *"CODE = PRESSURE READINGS, FIRST TO LAST."* The player reads the needles (not painted digits) and has to get past the lasers to reach the keypad.
 * **Laser corridor:** Red laser beams cross a narrow hallway. Touching a beam deals 25 damage and sounds an alarm that spawns one Recon Stinger. Shooting the wall-mounted emitter boxes switches the beams off.
-* **Breaker puzzle:** Fuse 1 is locked in a glass pod wired to three wall breakers labeled **COOLANT**, **MAIN**, and **AUX**. The correct order is picked at random each run (one of six orders) and written in a maintenance log on a terminal back in the laser corridor. The player has to find and read it.
+* **Breaker puzzle:** Fuse 1 is locked in a glass pod wired to three wall breakers labeled **COOLANT**, **MAIN**, and **AUX**. The correct order is picked at random each run (one of six orders) and written in a maintenance log on a terminal at the start of the laser corridor. The player has to find and read it.
 * **Wrong order:** An alarm sounds, the levers reset, and one Enforcer Unit marches in through a side door (at most two alarm Enforcers alive at once).
 * **Correct order:** The pod opens and Fuse 1 can be collected.
 
 ### Wing B: Flooded Generator & Quarantine Room
 
-* **Electrified floodway:** The lower generator floor is covered in sparking, ankle-deep water dealing 10 HP per second. The HUD flashes a hazard warning. Metal crates spaced no more than 2 meters apart lead to the drainage valve. Turning the valve drains the water and opens the walkway to the quarantine room.
+* **Electrified floodway:** The lower generator floor is covered in sparking, ankle-deep water dealing 10 HP per second. The HUD flashes a hazard warning. Metal crates spaced no more than 2 meters apart lead to the drain controls on the north wall.
+* **Pipe routing:** A **pipe schematic** is painted on the wall above three **junction levers (A, B, C)**, each set UP or DOWN. At each junction the schematic shows one branch going to RETURN (back into the room, red) and one continuing toward the **DRAIN** (blue). Each junction is marked UP and DOWN on the schematic, and the lever labels show their state (e.g. "A: DOWN"). **The pipes along the current route light up** as levers are flipped, so the player sees where the water will go before testing. The solution is A = DOWN, B = UP, C = DOWN. Pulling the **PUMP** handle sends the water: reaching the drain empties the floodway and unlocks the quarantine door; otherwise a sparking surge comes back with *"WATER RETURNED AT JUNCTION B"* (naming the junction) and the player adjusts.
 * **Quarantine lockdown:** Picking up Fuse 2 seals the blast doors, sounds a siren, and starts a 45-second HUD countdown. Two Enforcer Units and one Aegis Warden step out of wall charging alcoves. Two red barrels in the room give a backup way to break the Aegis shield. The doors unlock when all enemies are destroyed or the countdown ends.
+
+### Hub: Elevator Junction Box
+
+* OVERSEER scrambled the elevator's control circuit. A **junction box** on the hub wall, next to the elevator corridor, holds a **3×3 grid of wire tiles** (straight and corner pieces).
+* Looking at a tile and pressing **E** rotates it 90°. The wire glows where power flows; connecting the **IN** side to the **OUT** side restores the circuit (*"ELEVATOR CIRCUIT RESTORED"*), and Dr. Reyes confirms over the radio.
+* The route, the IN/OUT rows, and the scramble are random each time, and the grid is always solvable. The elevator back up needs both fuses **and** the restored circuit.
 
 ---
 
@@ -228,11 +266,11 @@ A 250×250 m Unity Terrain bounded by water and cliffs. The playable route is a 
 A modular interior built from a sci-fi kit.
 
 ```
-             [Wing A: Laser Corridor] --> [Breaker Room / Fuse 1]
+             [Wing A: Gauges + Laser Corridor] --(3-digit door)--> [Breaker Room / Fuse 1]
                     |
- [Elevator] -- [Central Hub: ammo lockers, CP1/CP2]
+ [Elevator] -- [Central Hub: ammo locker, junction box, CP1/CP2]
                     |
-             [Wing B: Flooded Generator] --> [Quarantine Room / Fuse 2]
+             [Wing B: Flooded Generator + drain controls] --> [Quarantine Room / Fuse 2]
 ```
 
 ### Art Direction
@@ -320,6 +358,10 @@ public interface IDamageable
 | | `BossController.cs` | Titan phases, shield, orbs, tethers, stomp, stun windows. |
 | | `WaveSpawner.cs` | 90-second upload and three timed waves. |
 | **World** | `LaserTripwire.cs`, `ElectrifiedWater.cs`, `BreakerPuzzle.cs`, `LockdownRoom.cs` | One script per bunker challenge, so each can be built and tested alone. |
+| | `ArmoryCodePuzzle.cs`, `LightSwitch.cs`, `CodeKeypad.cs` | Maintenance bunker clues, the lights-off digit, and the code keypads (armory and breaker room). |
+| | `PowerSwitch.cs`, `Gauge.cs` | Generator bunker main power lever; Wing A pressure gauges. |
+| | `PipeRouting.cs`, `PipeLever.cs`, `PumpHandle.cs` | Wing B drain controls (schematic levers and pump). |
+| | `WiringPuzzle.cs`, `WireTile.cs` | Hub junction box: random solvable 3×3 wire grid. |
 | | `Destructible.cs`, `ExplosiveBarrel.cs`, `Pickup.cs`, `Door.cs` | Crates and drop tables, barrel blasts, pickups, keypad doors. |
 | | `LightningLine.cs` | Jittering LineRenderer for the Overload Beam, Titan tethers, and electric sparks. |
 | **UI / Audio** | `HUDController.cs`, `MenuController.cs`, `MusicManager.cs` | HUD updates, menu screens, music states. |
@@ -333,7 +375,7 @@ public interface IDamageable
 | Criteria | Points | Signal Lost Implementation |
 | :---- | :---- | :---- |
 | **1. 3D Game & Core Gameplay** | 15 | 12–15 minute first-person action loop across 2 gameplay scenes: shooting, puzzles, hazards, wave defense, and a two-phase boss, with checkpoints. |
-| **2. Player Interaction** | 10 | 6 interaction types through `IInteractable`: NPC briefing, keypad doors, elevator scene transition, pickups and fuse console, breaker puzzle, drainage valve. |
+| **2. Player Interaction** | 10 | 11 interaction types through `IInteractable`: NPC briefing, code keypads (armory, breaker room), light switch, main power lever, keypad doors, elevator scene transition, pickups and fuse console, breaker puzzle, junction levers + pump, wire tiles. Six puzzles in total (see the Puzzle Overview). |
 | **3. Offensive/Attack Mechanic** | 10 | Dual-mode Arc Pistol (Pulse + charged Overload Beam), reloads, weak-point crits (drone eyes, robot visors) with stun, shield breaking, destructible crates, explosive barrels, laser emitters. |
 | **4. 3D Environment & GameObjects** | 10 | Sculpted island terrain with water, roads, and landmarks, plus a modular two-wing bunker with hazards. |
 | **5. AI Implementation** | 15 | 3 enemy types (a flying drone and two animated humanoid robots) on `NavMeshAgent` with Patrol/Chase/Attack/Stunned states, vision cones with line of sight, gunfire hearing, squad alerts, attack telegraphs, and a two-phase boss. |
@@ -377,10 +419,11 @@ If the Day 3 milestone slips, cut in this order. Nothing listed in the rubric ta
 
 1. Boss Phase 2 shockwave stomp
 2. Randomized breaker order (use a fixed order)
-3. Wing B crate jumping (use a raised catwalk to the valve)
+3. Wing B crate jumping (use a raised catwalk to the drain controls)
 4. Pylon reboot cycle (pylons stay destroyed after one stun)
 5. Crate break-apart meshes (crate disappears and drops its item)
 6. Accuracy stat on the Victory screen
+7. If the run is too long: make the gauge lock door start open, or shrink the junction box to a 2×2 grid
 
 ---
 

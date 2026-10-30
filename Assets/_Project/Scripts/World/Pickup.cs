@@ -74,6 +74,8 @@ namespace SignalLost
             if (!string.IsNullOrEmpty(persistentId)) gm.MarkCleared(persistentId);
             if (!string.IsNullOrEmpty(objectiveOnPickup) && HUDController.Instance != null)
                 HUDController.Instance.SetObjective(objectiveOnPickup);
+            else if (kind == Kind.ArcPistol)
+                ObjectiveManager.RefreshNow();
 
             onPickedUp.Invoke();
             Destroy(gameObject);

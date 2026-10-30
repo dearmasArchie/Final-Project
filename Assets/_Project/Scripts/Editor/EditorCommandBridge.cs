@@ -9,7 +9,7 @@ namespace SignalLost.EditorTools
     /// Runs Signal Lost editor tools from command files, so they work even when custom menus don't show.
     /// Drop an empty file named &lt;command&gt;.cmd into Library/SignalLost/Commands and the Editor runs it
     /// within about a second (not during Play mode). Results go to Library/SignalLost/bridge.log.
-    /// Commands: setup, import-tmp, hud, greybox, player, swap-player, sandbox, phase2.
+    /// Commands: setup, import-tmp, hud, greybox, player, swap-player, sandbox, phase2, phase3, smoketest.
     /// </summary>
     [InitializeOnLoad]
     public static class EditorCommandBridge
@@ -59,6 +59,12 @@ namespace SignalLost.EditorTools
                     case "swap-player": PlayerPrefabBuilder.SwapIntoGameplayScenes(); break;
                     case "sandbox": PlayerPrefabBuilder.BuildSandbox(); break;
                     case "phase2": Phase2ContentBuilder.Build(); break;
+                    case "phase3": Phase3ContentBuilder.Build(); break;
+                    case "bunker-path":
+                        UnityEditor.SceneManagement.EditorSceneManager.OpenScene("Assets/_Project/Scenes/IslandExterior.unity");
+                        Phase2ContentBuilder.RepaintBunkerPathToCurrentBunker();
+                        break;
+                    case "smoketest": PlaySmokeTest.Run(); return; // reports when finished
                     default: Log($"unknown command {command}"); return;
                 }
                 Log($"done {command}");

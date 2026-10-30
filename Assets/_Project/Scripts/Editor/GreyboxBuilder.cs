@@ -190,7 +190,7 @@ namespace SignalLost.EditorTools
             new[] { new Vector2(144, 190), new Vector2(175, 150), new Vector2(165, 90), new Vector2(145, 45), new Vector2(140, 38) }
         };
 
-        static void PaintRoads(TerrainData data)
+        internal static void PaintRoads(TerrainData data)
         {
             int res = data.alphamapResolution;
             var maps = new float[res, res, 2];

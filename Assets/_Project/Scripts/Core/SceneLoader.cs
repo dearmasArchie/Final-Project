@@ -45,18 +45,19 @@ namespace SignalLost
             CreateFadeOverlay();
         }
 
-        public void Load(string sceneName)
+        /// <param name="savePlayer">False when the player's state was already set (checkpoint restore, new run).</param>
+        public void Load(string sceneName, bool savePlayer = true)
         {
             if (IsLoading) return;
-            StartCoroutine(LoadRoutine(sceneName));
+            StartCoroutine(LoadRoutine(sceneName, savePlayer));
         }
 
-        IEnumerator LoadRoutine(string sceneName)
+        IEnumerator LoadRoutine(string sceneName, bool savePlayer)
         {
             IsLoading = true;
             yield return Fade(0f, 1f);
 
-            BeforeSceneUnload?.Invoke();
+            if (savePlayer) BeforeSceneUnload?.Invoke();
             var op = SceneManager.LoadSceneAsync(sceneName);
             while (!op.isDone) yield return null;
 

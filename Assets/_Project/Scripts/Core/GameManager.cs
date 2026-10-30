@@ -39,6 +39,61 @@ namespace SignalLost
         /// <summary>ID of the SpawnPoint the player should appear at after the next scene load.</summary>
         public string NextSpawnPointId { get; set; }
 
+        // ---- Armory code puzzle (random per run) ----
+
+        /// <summary>
+        /// The maintenance bunker puzzle: four colored lockers each show one digit, the wall gives the color order,
+        /// and one locker's digit is only visible in the dark.
+        /// </summary>
+        public class ArmoryPuzzleData
+        {
+            public static readonly string[] ColorNames = { "BLUE", "RED", "GREEN", "YELLOW" };
+            public int[] digitByColor;   // digit stenciled on each colored locker
+            public int[] colorOrder;     // color indices in the order the code is read
+            public int hiddenColor;      // locker whose digit is glow paint (lights off only)
+            public int[] decoys;         // misleading numbers painted around the bunker
+            public string Code
+            {
+                get
+                {
+                    var code = "";
+                    foreach (int color in colorOrder) code += digitByColor[color];
+                    return code;
+                }
+            }
+        }
+
+        ArmoryPuzzleData armoryPuzzle;
+
+        public ArmoryPuzzleData ArmoryPuzzle
+        {
+            get
+            {
+                if (armoryPuzzle != null) return armoryPuzzle;
+                var order = new[] { 0, 1, 2, 3 };
+                for (int i = order.Length - 1; i > 0; i--)
+                {
+                    int j = UnityEngine.Random.Range(0, i + 1);
+                    (order[i], order[j]) = (order[j], order[i]);
+                }
+                armoryPuzzle = new ArmoryPuzzleData
+                {
+                    digitByColor = new[] { Digit(), Digit(), Digit(), Digit() },
+                    colorOrder = order,
+                    hiddenColor = UnityEngine.Random.Range(0, 4),
+                    decoys = new[] { UnityEngine.Random.Range(2, 10), UnityEngine.Random.Range(1, 10), UnityEngine.Random.Range(10, 40) }
+                };
+                return armoryPuzzle;
+            }
+        }
+
+        static int Digit() => UnityEngine.Random.Range(0, 10);
+
+        int[] gaugeReadings;
+
+        /// <summary>Wing A gauge lock: the three gauge needles' readings (0–9), random per run. The code is them in order.</summary>
+        public int[] GaugeReadings => gaugeReadings ??= new[] { Digit(), Digit(), Digit() };
+
         // ---- World flags: cleared encounters, opened doors, collected pickups ----
         readonly HashSet<string> clearedIds = new HashSet<string>();
 
@@ -47,6 +102,26 @@ namespace SignalLost
         public int ShotsFired { get; private set; }
         public int ShotsHit { get; private set; }
         public float Accuracy => ShotsFired == 0 ? 0f : (float)ShotsHit / ShotsFired;
+        public float ElapsedTime => PurgeDuration - TimeRemaining;
+
+        /// <summary>True after victory; the timer stops and can't end the run any more.</summary>
+        public bool RunOver { get; private set; }
+
+        // ---- Checkpoint snapshot ----
+        class Snapshot
+        {
+            public bool[] fuses;
+            public HashSet<string> cleared;
+            public float timeRemaining, health;
+            public int magazine, reserve, enemiesDestroyed, shotsFired, shotsHit;
+            public bool hasPistol;
+            public string scene, spawnId;
+        }
+
+        Snapshot checkpoint;
+        public bool HasCheckpoint => checkpoint != null;
+        /// <summary>Identifies the last save (checkpoint + progress), so a checkpoint doesn't save twice for the same progress.</summary>
+        public string LastCheckpointKey { get; private set; }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         static void Bootstrap()
@@ -76,7 +151,7 @@ namespace SignalLost
         // The purge countdown starts the first time a gameplay scene loads (build index 0 is the main menu).
         void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            if (scene.buildIndex > 0 && !TimerRunning && TimeRemaining >= PurgeDuration)
+            if (scene.buildIndex > 0 && !TimerRunning && !RunOver && TimeRemaining >= PurgeDuration)
                 StartTimer();
         }
 
@@ -141,6 +216,58 @@ namespace SignalLost
             if (hit) ShotsHit++;
         }
 
+        // ---- Checkpoints ----
+
+        public void SaveCheckpoint(string key, string scene, string spawnId, float health, int magazine, int reserve)
+        {
+            LastCheckpointKey = key;
+            checkpoint = new Snapshot
+            {
+                fuses = (bool[])fuses.Clone(),
+                cleared = new HashSet<string>(clearedIds),
+                timeRemaining = TimeRemaining,
+                health = health,
+                magazine = magazine,
+                reserve = reserve,
+                enemiesDestroyed = EnemiesDestroyed,
+                shotsFired = ShotsFired,
+                shotsHit = ShotsHit,
+                hasPistol = HasArcPistol,
+                scene = scene,
+                spawnId = spawnId
+            };
+        }
+
+        /// <summary>Puts the run back exactly as it was at the last checkpoint and reloads that scene.</summary>
+        public void RestoreCheckpoint()
+        {
+            var c = checkpoint;
+            Array.Copy(c.fuses, fuses, fuses.Length);
+            FusesCollected = 0;
+            foreach (var f in fuses) if (f) FusesCollected++;
+            clearedIds.Clear();
+            clearedIds.UnionWith(c.cleared);
+            TimeRemaining = c.timeRemaining;
+            SavePlayerState(c.health, c.magazine, c.reserve);
+            HasArcPistol = c.hasPistol;
+            EnemiesDestroyed = c.enemiesDestroyed;
+            ShotsFired = c.shotsFired;
+            ShotsHit = c.shotsHit;
+            NextSpawnPointId = c.spawnId;
+            RunOver = false;
+            TimerRunning = TimeRemaining > 0f;
+
+            Time.timeScale = 1f;
+            SceneLoader.Instance.Load(c.scene, savePlayer: false);
+        }
+
+        /// <summary>Victory: stop the clock.</summary>
+        public void EndRun()
+        {
+            RunOver = true;
+            TimerRunning = false;
+        }
+
         // ---- Run lifecycle ----
 
         /// <summary>Clears everything for a fresh run (Play from the main menu, or Restart Game).</summary>
@@ -157,6 +284,11 @@ namespace SignalLost
             EnemiesDestroyed = 0;
             ShotsFired = 0;
             ShotsHit = 0;
+            RunOver = false;
+            armoryPuzzle = null;
+            gaugeReadings = null;
+            checkpoint = null;
+            LastCheckpointKey = null;
             FusesChanged?.Invoke(0);
             EnemiesDestroyedChanged?.Invoke(0);
         }

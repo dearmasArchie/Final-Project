@@ -1,0 +1,256 @@
+using System.Collections.Generic;
+using System.IO;
+using UnityEditor;
+using UnityEditor.SceneManagement;
+using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.LowLevel;
+using UnityEngine.SceneManagement;
+
+namespace SignalLost.EditorTools
+{
+    /// <summary>
+    /// Automated check of the start of a run: enters Play mode in MainMenu, presses Play, waits for the
+    /// island to load, then reports the scene, the player, the HUD, and any errors to Library/SignalLost/bridge.log.
+    /// Run with the "smoketest" bridge command.
+    /// </summary>
+    [InitializeOnLoad]
+    public static class PlaySmokeTest
+    {
+        const string ActiveKey = "SignalLost.SmokeTest.Active";
+        const string StartKey = "SignalLost.SmokeTest.Start";
+        const string StepKey = "SignalLost.SmokeTest.Step";
+        static readonly string LogPath = Path.Combine("Library/SignalLost", "bridge.log");
+        static readonly List<string> errors = new List<string>();
+
+        static PlaySmokeTest()
+        {
+            if (!SessionState.GetBool(ActiveKey, false)) return;
+            Application.logMessageReceived += OnLog;
+            EditorApplication.update += Tick;
+        }
+
+        public static void Run()
+        {
+            // Keep Play mode running while the Editor window is in the background.
+            PlayerSettings.runInBackground = true;
+            EditorSceneManager.SaveOpenScenes();
+            EditorSceneManager.OpenScene("Assets/_Project/Scenes/MainMenu.unity");
+            SessionState.SetBool(ActiveKey, true);
+            SessionState.SetFloat(StartKey, -1f);
+            SessionState.SetInt(StepKey, 0);
+            EditorApplication.EnterPlaymode();
+        }
+
+        static void OnLog(string message, string stack, LogType type)
+        {
+            if (type == LogType.Error || type == LogType.Exception || type == LogType.Assert)
+                if (errors.Count < 10) errors.Add(message.Split('\n')[0]);
+        }
+
+        static void Tick()
+        {
+            if (!EditorApplication.isPlaying) return;
+            float now = (float)EditorApplication.timeSinceStartup;
+            float start = SessionState.GetFloat(StartKey, -1f);
+            if (start < 0f)
+            {
+                SessionState.SetFloat(StartKey, now);
+                return;
+            }
+
+            float t = now - start;
+            int step = SessionState.GetInt(StepKey, 0);
+
+            if (step == 0 && t > 1.5f)
+            {
+                var menu = Object.FindFirstObjectByType<MainMenuController>();
+                Write($"smoketest: scene={SceneManager.GetActiveScene().name}, main menu found={menu != null}");
+                if (menu != null) menu.Play();
+                SessionState.SetInt(StepKey, 1);
+            }
+            else if (step == 1 && (SceneManager.GetActiveScene().name != "MainMenu" || t > 30f))
+            {
+                Write($"smoketest: scene changed after {t - 1.5f:0.0}s, fade loading={SceneLoader.Instance.IsLoading}, frame={Time.frameCount}");
+                SessionState.SetInt(StepKey, 2);
+                SessionState.SetFloat(StartKey, now);
+            }
+            else if (step == 2 && t > 2f)
+            {
+                // Talk to Dr. Reyes, then press E through the briefing.
+                var reyes = GameObject.Find("Dr_Reyes");
+                var player = GameObject.FindGameObjectWithTag("Player");
+                if (reyes != null && player != null) reyes.GetComponent<DialogueSource>().Interact(player);
+                Write($"smoketest: briefing opened={reyes != null && player != null}");
+                SessionState.SetInt(StepKey, 3);
+                SessionState.SetFloat(StartKey, now);
+            }
+            else if (step >= 3 && step < 13 && t > 0.3f)
+            {
+                // Odd steps press E, even steps release it: five presses for five lines.
+                var keyboard = Keyboard.current;
+                if (keyboard != null)
+                    InputSystem.QueueStateEvent(keyboard, step % 2 == 1 ? new KeyboardState(Key.E) : new KeyboardState());
+                SessionState.SetInt(StepKey, step + 1);
+                SessionState.SetFloat(StartKey, now);
+            }
+            else if (step == 13 && t > 1f)
+            {
+                var door = GameObject.Find("ArmoryDoor");
+                Write($"smoketest: briefing done={GameManager.Instance.IsCleared("Briefing")}, armory still locked={(door != null && door.GetComponent<Door>().IsLocked)}, " +
+                      $"code={GameManager.Instance.ArmoryPuzzle.Code}");
+                // Open the keypad and type a wrong code first.
+                var keypad = Object.FindFirstObjectByType<CodeKeypad>();
+                keypad.Interact(GameObject.FindGameObjectWithTag("Player"));
+                string wrong = GameManager.Instance.ArmoryPuzzle.Code == "0000" ? "1111" : "0000";
+                foreach (char c in wrong) InputSystem.QueueTextEvent(Keyboard.current, c);
+                SessionState.SetInt(StepKey, 20);
+                SessionState.SetFloat(StartKey, now);
+            }
+            else if (step == 20 && t > 0.5f)
+            {
+                Write($"smoketest: after wrong code unlocked={GameManager.Instance.IsCleared(CodeKeypad.UnlockedId)}");
+                foreach (char c in GameManager.Instance.ArmoryPuzzle.Code) InputSystem.QueueTextEvent(Keyboard.current, c);
+                SessionState.SetInt(StepKey, 21);
+                SessionState.SetFloat(StartKey, now);
+            }
+            else if (step == 21 && t > 2f)
+            {
+                var door = GameObject.Find("ArmoryDoor").GetComponent<Door>();
+                var bunker = Object.FindFirstObjectByType<ArmoryCodePuzzle>();
+                Write($"smoketest: after right code unlocked={GameManager.Instance.IsCleared(CodeKeypad.UnlockedId)}, door open={door.IsOpen}, " +
+                      $"bunker puzzle present={bunker != null} at {GameObject.Find("Locker_Blue")?.transform.position}, player can move={GameObject.FindGameObjectWithTag("Player").GetComponent<FirstPersonController>().enabled}");
+                SessionState.SetInt(StepKey, 30);
+                SessionState.SetFloat(StartKey, now);
+            }
+            else if (step == 30 && t > 0.3f)
+            {
+                ReportBunker();
+                ReportPower();
+                // Ride down to test the underground puzzles
+                GameManager.Instance.NextSpawnPointId = "ElevatorBottom";
+                SceneLoader.Instance.Load("UndergroundFacility");
+                SessionState.SetInt(StepKey, 40);
+                SessionState.SetFloat(StartKey, now);
+            }
+            else if (step == 40 && SceneManager.GetActiveScene().name == "UndergroundFacility" && t > 2f)
+            {
+                var gm = GameManager.Instance;
+                var readings = gm.GaugeReadings;
+                var breakerDoor = GameObject.Find("Door_BreakerRoom").GetComponent<Door>();
+                Write($"underground: loaded, gauges={readings[0]}{readings[1]}{readings[2]}, breaker door locked={breakerDoor.IsLocked}");
+                var keypad = GameObject.Find("BreakerRoomKeypad").GetComponent<CodeKeypad>();
+                keypad.Interact(GameObject.FindGameObjectWithTag("Player"));
+                foreach (char c in $"{readings[0]}{readings[1]}{readings[2]}") InputSystem.QueueTextEvent(Keyboard.current, c);
+                SessionState.SetInt(StepKey, 41);
+                SessionState.SetFloat(StartKey, now);
+            }
+            else if (step == 41 && t > 2f)
+            {
+                var gm = GameManager.Instance;
+                var breakerDoor = GameObject.Find("Door_BreakerRoom").GetComponent<Door>();
+                Write($"gauge lock: unlocked={gm.IsCleared(CodeKeypad.BreakerRoomUnlockedId)}, door open={breakerDoor.IsOpen}");
+
+                var routing = Object.FindFirstObjectByType<PipeRouting>();
+                var qDoor = GameObject.Find("Door_Quarantine").GetComponent<Door>();
+                var solution = routing.Solution;
+                routing.SetLeversAndTest(new[] { !solution[0], solution[1], solution[2] });
+                bool drainedAfterWrong = routing.Drained;
+                routing.SetLeversAndTest(solution);
+                Write($"pipe routing: drained after wrong={drainedAfterWrong}, after correct={routing.Drained}, quarantine door unlocked={!qDoor.IsLocked}");
+
+                var wiring = Object.FindFirstObjectByType<WiringPuzzle>();
+                var portal = GameObject.Find("ElevatorPanel_Up").GetComponent<ScenePortal>();
+                gm.CollectFuse(1);
+                gm.CollectFuse(2);
+                bool startsSolved = wiring.Solved;
+                bool beforeCircuit = portal.CanInteract;
+                string promptBefore = portal.Prompt;
+                wiring.SolveForTest();
+                Write($"junction box: starts solved={startsSolved}, in row={wiring.InputRow} out row={wiring.OutputRow}, " +
+                      $"elevator up before={beforeCircuit} (\"{promptBefore}\"), after solve={wiring.Solved}/{portal.CanInteract}");
+                SessionState.SetInt(StepKey, 99);
+            }
+            else if (step == 99)
+            {
+                var player = GameObject.FindGameObjectWithTag("Player");
+                Write($"smoketest: after Play scene={SceneManager.GetActiveScene().name}, player={(player != null ? player.transform.position.ToString() : "none")}, " +
+                      $"HUD={HUDController.Instance != null}, menus={MenuController.Instance != null}, timer={GameManager.Instance.TimeRemaining:0}, timeScale={Time.timeScale}");
+                Write(errors.Count == 0 ? "smoketest: no errors" : "smoketest: ERRORS\n  " + string.Join("\n  ", errors));
+                Write("done smoketest");
+                SessionState.SetBool(ActiveKey, false);
+                EditorApplication.update -= Tick;
+                Application.logMessageReceived -= OnLog;
+                EditorApplication.ExitPlaymode();
+            }
+        }
+
+        /// <summary>Checks the maintenance bunker wherever it stands: grounded, in one piece, switch works, out of enemy sight.</summary>
+        static void ReportBunker()
+        {
+            var puzzle = Object.FindFirstObjectByType<ArmoryCodePuzzle>();
+            if (puzzle == null) { Write("bunker: NOT FOUND"); return; }
+            var root = puzzle.transform;
+            var floor = root.Find("Floor");
+            var terrain = Terrain.activeTerrain;
+            float ground = terrain.SampleHeight(floor.position) + terrain.transform.position.y;
+            Write($"bunker: root pos={root.position} rot={root.eulerAngles.y:0}, floor={floor.position}, ground under floor={ground:0.00} (gap {floor.position.y + 0.1f - ground:0.00} m)");
+
+            // Parts should still sit around the floor (nothing left behind if only some objects were moved)
+            float worst = 0f; string worstName = "";
+            foreach (Transform child in root)
+            {
+                float d = Vector3.Distance(new Vector3(child.position.x, 0, child.position.z), new Vector3(floor.position.x, 0, floor.position.z));
+                if (d > worst) { worst = d; worstName = child.name; }
+            }
+            Write($"bunker: farthest part from floor center = {worstName} at {worst:0.0} m (bunker half-diagonal is ~5.4 m)");
+
+            // Light switch reveals the hidden digit
+            var hidden = GameManager.Instance.ArmoryPuzzle.hiddenColor;
+            var glow = root.Find($"GlowDigit_{GameManager.ArmoryPuzzleData.ColorNames[hidden][0]}{GameManager.ArmoryPuzzleData.ColorNames[hidden].Substring(1).ToLower()}");
+            var lightSwitch = root.GetComponentInChildren<LightSwitch>();
+            var player = GameObject.FindGameObjectWithTag("Player");
+            bool before = glow != null && glow.gameObject.activeSelf;
+            lightSwitch.Interact(player);
+            bool off = glow != null && glow.gameObject.activeSelf;
+            lightSwitch.Interact(player);
+            bool after = glow != null && glow.gameObject.activeSelf;
+            Write($"bunker: glow digit visible lights-on={before}, lights-off={off}, lights-on-again={after}");
+
+            // Distance to the closest enemy or patrol waypoint, and to the safe room door
+            float nearest = float.MaxValue; string nearestName = "";
+            foreach (var enemy in Object.FindObjectsByType<EnemyAI>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+            {
+                float d = Vector3.Distance(enemy.transform.position, floor.position);
+                if (d < nearest) { nearest = d; nearestName = enemy.name; }
+            }
+            foreach (var t in Object.FindObjectsByType<Transform>(FindObjectsSortMode.None))
+            {
+                if (!t.name.StartsWith("WP")) continue;
+                float d = Vector3.Distance(t.position, floor.position);
+                if (d < nearest) { nearest = d; nearestName = $"{t.parent.name}/{t.name}"; }
+            }
+            Write($"bunker: nearest enemy/patrol point = {nearestName} at {nearest:0.0} m (vision range 15 m); " +
+                  $"distance from safe room door = {Vector3.Distance(floor.position, new Vector3(93, floor.position.y, 50)):0} m");
+        }
+
+        /// <summary>Elevator stays locked until the generator bunker's main power switch is on.</summary>
+        static void ReportPower()
+        {
+            GameManager.Instance.HasArcPistol = true;
+            var portal = GameObject.Find("ElevatorPanel_Down").GetComponent<ScenePortal>();
+            bool before = portal.CanInteract;
+            string promptBefore = portal.Prompt;
+            var power = Object.FindFirstObjectByType<PowerSwitch>();
+            int guards = 0;
+            foreach (var enemy in Object.FindObjectsByType<EnemyAI>(FindObjectsSortMode.None))
+                if (enemy.name.Contains("Gen_")) guards++;
+            power.Interact(GameObject.FindGameObjectWithTag("Player"));
+            Write($"power: elevator usable before switch={before} (\"{promptBefore}\"), after switch={portal.CanInteract} (\"{portal.Prompt}\"), " +
+                  $"generator guards={guards}, switch at {power.transform.position}");
+        }
+
+        static void Write(string line) =>
+            File.AppendAllText(LogPath, $"{System.DateTime.Now:HH:mm:ss} {line}{System.Environment.NewLine}");
+    }
+}

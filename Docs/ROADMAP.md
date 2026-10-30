@@ -76,7 +76,7 @@ Goal: walk from the safe room to the bunker and back, and shoot a test target.
 > * **Build HUD Prefab** – creates `Assets/_Project/UI/HUD.prefab` wired to `HUDController`.
 > * **Build Greybox (Both Scenes)** – builds the island and bunker blockouts, spawn points, elevator panels, the HUD, a temporary `DebugPlayer`, and bakes the NavMesh. Re-running rebuilds the `Greybox` object, so move hand-made changes out of it first.
 > * TextMeshPro resources are imported (Assets/TextMesh Pro).
-> * If the Tools menu items don't appear (seen in Unity 6.4), create an empty file `Library/SignalLost/Commands/<command>.cmd` (`setup`, `import-tmp`, `hud`, `greybox`, `player`, `swap-player`, `sandbox`) and the Editor runs it within a second. Results: `Library/SignalLost/bridge.log`.
+> * If the Tools menu items don't appear (seen in Unity 6.4), create an empty file `Library/SignalLost/Commands/<command>.cmd` (`setup`, `import-tmp`, `hud`, `greybox`, `player`, `swap-player`, `sandbox`, `phase2`, `phase3`, `smoketest`) and the Editor runs it within a second. Results: `Library/SignalLost/bridge.log`.
 > * `DebugPlayer` (WASD, mouse, Space, E) is only for testing until A's Player prefab arrives. Delete it then.
 > * Elevator requirements are set to None for now; Phase 2 sets them to Arc Pistol / Fuses 1 and 2.
 
@@ -142,31 +142,76 @@ Goal: Phases 1 and 2 of the game (island road and bunker) are playable in greybo
 Goal: the game can be played from the main menu to the Victory screen (the boss can be Phase 1 only for now).
 
 ### A – Heavy enemies & encounters
-- [ ] **Aegis Warden**: bigger Kyle variant with a front shield; shield blocks Pulse, breaks for 6 s on Overload or explosion
-- [ ] `WaveSpawner.cs`: 90-second upload, 3 escalating waves from the spawn gates
-- [ ] `BossController.cs` Phase 1: riot shield, plasma orbs (shootable), shoulder vents take damage while the shield is down
-- [ ] Boss health bar hooked to the HUD
+- [x] **Aegis Warden**: bigger Kyle variant with a front shield; shield blocks Pulse, breaks for 6 s on Overload or explosion
+- [x] `WaveSpawner.cs`: 90-second upload, 3 escalating waves from the spawn gates
+- [x] `BossController.cs` Phase 1: riot shield, plasma orbs (shootable), shoulder vents take damage while the shield is down
+- [x] Boss health bar hooked to the HUD
 
 ### B – Objectives, flow & menus
-- [ ] `ObjectiveManager.cs`: ordered objective list; updates the HUD objective text
-- [ ] Radio messages from Dr. Reyes at each objective (subtitle box, bottom-left)
-- [ ] Fuse console at the radio tower: insert fuses one at a time; all 3 starts the upload
-- [ ] Signal upload progress bar on the HUD
-- [ ] Return trip: Phase 1 enemies stay dead; reinforcement patrol on the hill trail
-- [ ] Service road gate to the pier opens after the upload
-- [ ] Extraction boat interaction → Victory screen
-- [ ] **Checkpoints** CP1–CP4: save a snapshot; "Retry from Checkpoint" restores it exactly
-- [ ] **Menus:**
-  - [ ] Main Menu: Play, Controls, Settings, Credits, Quit
-  - [ ] Pause Menu (Esc): stops time, unlocks the cursor, pauses audio; Resume, Retry from Checkpoint, Settings, Main Menu
-  - [ ] Game Over: cause of failure; Retry from Checkpoint, Restart, Main Menu
-  - [ ] Victory: completion time, time left, enemies destroyed, accuracy
-  - [ ] Settings: mouse sensitivity, master / music / SFX volume
+- [x] `ObjectiveManager.cs`: ordered objective list; updates the HUD objective text
+- [x] Radio messages from Dr. Reyes at each objective (subtitle box, bottom-left)
+- [x] Fuse console at the radio tower: insert fuses one at a time; all 3 starts the upload
+- [x] Signal upload progress bar on the HUD
+- [x] Return trip: Phase 1 enemies stay dead; reinforcement patrol on the hill trail
+- [x] Service road gate to the pier opens after the upload
+- [x] Extraction boat interaction → Victory screen
+- [x] **Checkpoints** CP1–CP4: save a snapshot; "Retry from Checkpoint" restores it exactly
+- [x] **Menus:**
+  - [x] Main Menu: Play, Controls, Settings, Credits, Quit
+  - [x] Pause Menu (Esc): stops time, unlocks the cursor, pauses audio; Resume, Retry from Checkpoint, Settings, Main Menu
+  - [x] Game Over: cause of failure; Retry from Checkpoint, Restart, Main Menu
+  - [x] Victory: completion time, time left, enemies destroyed, accuracy
+  - [x] Settings: mouse sensitivity, master / music / SFX volume
 
 ### Both – end of day
 - [ ] Merge and play the whole game once, start to finish, timing the run
 
+> Built by the `phase3` bridge command (`Phase3ContentBuilder.cs`): Aegis Warden, Titan and orb prefabs, `GameMenus` prefab, the `MainMenu` scene, and the game loop under `Gameplay_Phase3` in both scenes. Checkpoints: CP1 (bunker arrival), CP2 (hub), CP3 (surface return with Fuses 1+2), CP4 (pier, after the upload). The upload only progresses while the player is inside the compound.
+
 **Done when:** a full run works from Main Menu to Victory; dying shows Game Over with a working checkpoint retry; the timer running out also shows Game Over.
+
+---
+
+## Change Request – Armory Code Puzzle (added 2026-10-30)
+
+Dr. Reyes sends the player to a new maintenance bunker; a randomized code puzzle there opens the armory keypad.
+
+- [x] `GameManager.ArmoryPuzzle`: random digits, color order, hidden locker, and decoys per run
+- [x] `ArmoryCodePuzzle.cs`: wall message, locker digits, decoys, glow digit
+- [x] `LightSwitch.cs`: lights off reveals the hidden glow digit and dims the painted ones
+- [x] `CodeKeypad.cs` + HUD code panel: type 4 digits, ACCESS DENIED / ACCESS GRANTED, Esc cancels without pausing
+- [x] New briefing lines, objectives, radio line on entering the bunker
+- [x] Maintenance bunker ~100 m northwest of the safe room (placed by hand; `CodeBunkerCenter` in the builder matches, and **Tools > Signal Lost > Repaint Bunker Path** / the `bunker-path` command repaints the path after moving it again); first road Enforcer moved >15 m from the safe room door
+- [x] Play-test: briefing → bunker → solve → keypad → Arc Pistol (passed 2026-10-30)
+
+---
+
+## Change Request – Elevator Power (added 2026-10-30)
+
+The freight elevator starts unpowered; a guarded generator bunker east of the road holds the main power lever.
+
+- [x] `PowerSwitch.cs`: main power lever (persists for the run), spark + "POWER RESTORED", work light on
+- [x] `ScenePortal.cs`: `requiresPower` + red/green status light; prompt "No power – restore it at the generator bunker"
+- [x] Generator bunker at X 175, Z 75 with a dirt path from the road; guarded by **2 Enforcers + 2 Recon Stingers** and a red barrel; medkit and battery inside
+- [x] Radio lines: "no power" at the elevator (only before the switch), "power's back" after it
+- [x] Objective: "Restore power at the generator bunker east of the road" between the pistol and the elevator
+- [x] Play-test: pistol → generator bunker fight → lever → elevator down (passed 2026-10-30)
+
+---
+
+## Change Request – Underground Puzzles (added 2026-10-30)
+
+Three more puzzles in the underground facility (options 1D, 3 and 4).
+
+- [x] **Gauge lock (Wing A):** three random pressure gauges between the laser sets; breaker room door with a 3-digit keypad (`Gauge.cs`, `CodeKeypad` gauge mode)
+- [x] **Pipe routing (Wing B):** pipe schematic + junction levers A/B/C + PUMP replace the drainage valve (`PipeRouting.cs`, `PipeLever.cs`, `PumpHandle.cs`); solution A=DOWN, B=UP, C=DOWN
+- [x] **Junction box (hub):** random solvable 3×3 wire grid; the elevator up needs both fuses **and** the restored circuit (`WiringPuzzle.cs`, `WireTile.cs`)
+- [x] Objectives, radio lines, and elevator status light updated; Game Concept updated (Puzzle Overview, objective chain, sections 4 and 10, rubric)
+- [x] Automated test: gauge code opens the breaker room; wrong routing doesn't drain, correct does; elevator up locked until the junction box is solved
+- [x] Play-test the three puzzles by hand (all working)
+- [x] Pipe routing made clearer after play-test: lit route preview, UP/DOWN labels on the schematic, lever state labels, failure message names the junction
+- [x] Re-test the clearer pipe routing (clear now)
+- [ ] Time a full run, then re-tune the purge timer (currently 20:00)
 
 ---
 
