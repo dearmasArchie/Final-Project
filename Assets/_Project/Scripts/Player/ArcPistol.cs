@@ -1,0 +1,219 @@
+using System;
+using System.Collections;
+using UnityEngine;
+
+namespace SignalLost
+{
+    /// <summary>
+    /// The Dual-Mode Arc Pistol.
+    /// Pulse: left-click (hold for auto), 4 shots/s, 20 damage, 1 ammo.
+    /// Overload Beam: hold right-click 1 s and release; hitscan, 60 damage, 4 ammo, 2 s cooldown.
+    /// Unusable (and hidden) until GameManager.HasArcPistol is true.
+    /// </summary>
+    [RequireComponent(typeof(PlayerInputReader))]
+    public class ArcPistol : MonoBehaviour
+    {
+        public const int MagazineSize = 12;
+        public const int MaxReserve = 48;
+
+        /// <summary>Raised on every shot with the muzzle position. Enemies use it to hear gunfire.</summary>
+        public static event Action<Vector3> Fired;
+
+        /// <summary>Other loud events (explosions) alert enemies the same way gunshots do.</summary>
+        public static void RaiseNoise(Vector3 position) => Fired?.Invoke(position);
+
+        [SerializeField] Transform cameraPivot;
+        [SerializeField] Transform muzzle;
+        [SerializeField] GameObject model;
+        [SerializeField] Projectile pulsePrefab;
+        [SerializeField] LineRenderer beamLine;
+        [SerializeField] LayerMask hitMask = ~0;
+
+        [Header("Pulse")]
+        [SerializeField] float pulseDamage = 20f;
+        [SerializeField] float shotsPerSecond = 4f;
+        [SerializeField] float reloadTime = 1.5f;
+        [SerializeField] float maxAimDistance = 200f;
+
+        [Header("Overload Beam")]
+        [SerializeField] float overloadDamage = 60f;
+        [SerializeField] float overloadChargeTime = 1f;
+        [SerializeField] int overloadAmmoCost = 4;
+        [SerializeField] float overloadCooldown = 2f;
+        [SerializeField] float beamVisibleTime = 0.1f;
+
+        PlayerInputReader input;
+        float nextShotTime;
+        float chargeTimer;
+        float overloadReadyTime;
+
+        public int Magazine { get; private set; } = MagazineSize;
+        public int Reserve { get; private set; } = MaxReserve;
+        public bool IsReloading { get; private set; }
+        public bool IsCharging { get; private set; }
+        bool Equipped => GameManager.Instance != null && GameManager.Instance.HasArcPistol;
+
+        void Awake() => input = GetComponent<PlayerInputReader>();
+
+        void Start()
+        {
+            if (beamLine != null) beamLine.enabled = false;
+            RefreshHud();
+        }
+
+        void Update()
+        {
+            if (model != null && model.activeSelf != Equipped) model.SetActive(Equipped);
+            if (!Equipped || Time.timeScale == 0f || Cursor.lockState != CursorLockMode.Locked)
+            {
+                CancelCharge();
+                return;
+            }
+
+            if (input.Reload.WasPressedThisFrame()) TryReload();
+            UpdateOverload();
+            if (!IsCharging && input.Fire.IsPressed() && Time.time >= nextShotTime) TryFirePulse();
+        }
+
+        // ------------------------------------------------------------------ Pulse
+
+        void TryFirePulse()
+        {
+            if (IsReloading) return;
+            if (Magazine <= 0)
+            {
+                TryReload();
+                return;
+            }
+
+            nextShotTime = Time.time + 1f / shotsPerSecond;
+            Magazine--;
+            RefreshHud();
+
+            Vector3 target = AimPoint(out _);
+            var bolt = Instantiate(pulsePrefab, muzzle.position, Quaternion.LookRotation(target - muzzle.position));
+            bolt.Launch(pulseDamage, DamageType.Pulse, hitMask, countForAccuracy: true);
+            Fired?.Invoke(muzzle.position);
+
+            if (Magazine == 0) TryReload();
+        }
+
+        // ------------------------------------------------------------------ Overload Beam
+
+        void UpdateOverload()
+        {
+            bool canCharge = !IsReloading && Time.time >= overloadReadyTime && Magazine >= overloadAmmoCost;
+
+            if (input.AltFire.IsPressed() && canCharge)
+            {
+                IsCharging = true;
+                chargeTimer += Time.deltaTime;
+            }
+            else if (IsCharging)
+            {
+                // Released (or became unable): fire only if fully charged; releasing early costs nothing.
+                if (chargeTimer >= overloadChargeTime && canCharge) FireOverload();
+                CancelCharge();
+            }
+
+            if (HUDController.Instance != null)
+            {
+                float charge = IsCharging ? Mathf.Clamp01(chargeTimer / overloadChargeTime) : 0f;
+                HUDController.Instance.SetOverload(charge, canCharge);
+            }
+        }
+
+        void FireOverload()
+        {
+            Magazine -= overloadAmmoCost;
+            overloadReadyTime = Time.time + overloadCooldown;
+            RefreshHud();
+
+            Vector3 end = AimPoint(out var hit);
+            if (hit.collider != null)
+            {
+                if (!hit.collider.TryGetComponent<IDamageable>(out var target))
+                    target = hit.collider.GetComponentInParent<IDamageable>();
+                target?.TakeDamage(overloadDamage, DamageType.Overload, hit.point);
+                GameManager.Instance.RegisterShot(target != null);
+            }
+            else
+            {
+                GameManager.Instance.RegisterShot(false);
+            }
+
+            Fired?.Invoke(muzzle.position);
+            if (beamLine != null) StartCoroutine(ShowBeam(end));
+            if (Magazine == 0) TryReload();
+        }
+
+        void CancelCharge()
+        {
+            IsCharging = false;
+            chargeTimer = 0f;
+        }
+
+        IEnumerator ShowBeam(Vector3 end)
+        {
+            beamLine.enabled = true;
+            beamLine.SetPosition(0, muzzle.position);
+            beamLine.SetPosition(1, end);
+            yield return new WaitForSeconds(beamVisibleTime);
+            beamLine.enabled = false;
+        }
+
+        // ------------------------------------------------------------------ Ammo
+
+        void TryReload()
+        {
+            if (IsReloading || Magazine == MagazineSize || Reserve == 0) return;
+            StartCoroutine(ReloadRoutine());
+        }
+
+        IEnumerator ReloadRoutine()
+        {
+            IsReloading = true;
+            CancelCharge();
+            yield return new WaitForSeconds(reloadTime);
+            int taken = Mathf.Min(MagazineSize - Magazine, Reserve);
+            Magazine += taken;
+            Reserve -= taken;
+            IsReloading = false;
+            RefreshHud();
+        }
+
+        /// <summary>Battery Clip pickup or ammo locker. Returns false when the reserve is already full.</summary>
+        public bool AddAmmo(int amount)
+        {
+            if (Reserve >= MaxReserve) return false;
+            Reserve = Mathf.Min(MaxReserve, Reserve + amount);
+            RefreshHud();
+            return true;
+        }
+
+        public bool ReserveFull => Reserve >= MaxReserve;
+
+        /// <summary>Used when loading saved state (scene change or checkpoint).</summary>
+        public void SetAmmo(int magazine, int reserve)
+        {
+            Magazine = Mathf.Clamp(magazine, 0, MagazineSize);
+            Reserve = Mathf.Clamp(reserve, 0, MaxReserve);
+            RefreshHud();
+        }
+
+        // ------------------------------------------------------------------ helpers
+
+        Vector3 AimPoint(out RaycastHit hit)
+        {
+            var aimRay = new Ray(cameraPivot.position, cameraPivot.forward);
+            return Physics.Raycast(aimRay, out hit, maxAimDistance, hitMask, QueryTriggerInteraction.Ignore)
+                ? hit.point
+                : aimRay.GetPoint(maxAimDistance);
+        }
+
+        void RefreshHud()
+        {
+            if (HUDController.Instance != null) HUDController.Instance.SetAmmo(Magazine, Reserve);
+        }
+    }
+}
