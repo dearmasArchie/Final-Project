@@ -220,6 +220,7 @@ namespace SignalLost.EditorTools
                 var player = GameObject.FindGameObjectWithTag("Player");
                 Write($"smoketest: after Play scene={SceneManager.GetActiveScene().name}, player={(player != null ? player.transform.position.ToString() : "none")}, " +
                       $"HUD={HUDController.Instance != null}, menus={MenuController.Instance != null}, timer={GameManager.Instance.TimeRemaining:0}, timeScale={Time.timeScale}");
+                ReportTrees();
                 Write(errors.Count == 0 ? "smoketest: no errors" : "smoketest: ERRORS\n  " + string.Join("\n  ", errors));
                 Write("done smoketest");
                 SessionState.SetBool(ActiveKey, false);
@@ -227,6 +228,26 @@ namespace SignalLost.EditorTools
                 Application.logMessageReceived -= OnLog;
                 EditorApplication.ExitPlaymode();
             }
+        }
+
+        /// <summary>Every terrain tree should stop the player: a chest-height ray at each trunk must hit the terrain's tree collider.</summary>
+        static void ReportTrees()
+        {
+            var terrain = Terrain.activeTerrain;
+            if (terrain == null) return;
+            var data = terrain.terrainData;
+            var hits = new int[data.treePrototypes.Length];
+            var totals = new int[data.treePrototypes.Length];
+            foreach (var tree in data.treeInstances)
+            {
+                Vector3 trunk = Vector3.Scale(tree.position, data.size) + terrain.transform.position;
+                totals[tree.prototypeIndex]++;
+                if (Physics.Raycast(trunk + new Vector3(3f, 1.2f, 0f), Vector3.left, out var hit, 3.5f) && hit.collider is TerrainCollider)
+                    hits[tree.prototypeIndex]++;
+            }
+            var parts = new string[hits.Length];
+            for (int i = 0; i < hits.Length; i++) parts[i] = $"{data.treePrototypes[i].prefab.name} {hits[i]}/{totals[i]}";
+            Write($"trees: solid trunks = {string.Join(", ", parts)}");
         }
 
         /// <summary>Checks the maintenance bunker wherever it stands: grounded, in one piece, switch works, out of enemy sight.</summary>

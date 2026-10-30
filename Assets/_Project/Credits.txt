@@ -17,8 +17,8 @@ AUDIO – OpenGameArt (opengameart.org), CC0 (public domain)
   "100 CC0 SFX" (rubberduck)                                    – impacts, explosions, UI
   "Different steps on wood, stone, leaves, gravel and mud" (TinyWorlds) – footsteps
 
-TO ADD WHEN IMPORTED (see Docs/ASSET_DOWNLOADS.md, Part B)
-  Robot Kyle | URP – Unity Technologies (Unity Companion License)
+PART B – imported 2026-10-30 (confirm the Sketchfab author names on each model page)
+  Sci-Fi Robots Bundle (Robert, Engie) – Same Gev Dudios (Asset Store EULA)
   Mixamo animations – Adobe (royalty-free)
   Sci-fi Pistol [PBR] – StarGames studio (Asset Store EULA)
   Conifers [BOTD] – forst (Asset Store EULA)
@@ -28,3 +28,5 @@ TO ADD WHEN IMPORTED (see Docs/ASSET_DOWNLOADS.md, Part B)
   Buster Drone – LaVADraGoN, Sketchfab (CC BY 4.0) – credit required
   Yellow Heavy Robot 8K – Martark, Sketchfab (CC BY 4.0) – credit required
   Small Motorboat – Tijmen Matthys, Sketchfab (CC BY 4.0) – credit required
+  UI Pack – Sci-Fi – Kenney (kenney.nl), CC0
+  Rajdhani font – Indian Type Foundry (SIL Open Font License)

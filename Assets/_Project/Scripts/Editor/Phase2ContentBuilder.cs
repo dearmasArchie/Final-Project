@@ -629,9 +629,13 @@ namespace SignalLost.EditorTools
                     dist = Mathf.Min(dist, Vector2.Distance(p, points[i] + t * ab));
                 }
                 float dirt = 1f - Mathf.InverseLerp(1.2f, 2f, dist);
-                if (dirt <= maps[zi, xi, 1]) continue;
+                float oldDirt = maps[zi, xi, 1];
+                if (dirt <= oldDirt) continue;
+                // Scale the other layers (grass, and rock/sand after the art pass) so the weights still add up to 1
+                float keep = (1f - dirt) / (1f - oldDirt); // oldDirt < dirt <= 1, so no divide by zero
+                for (int k = 0; k < maps.GetLength(2); k++)
+                    if (k != 1) maps[zi, xi, k] *= keep;
                 maps[zi, xi, 1] = dirt;
-                maps[zi, xi, 0] = 1f - dirt;
             }
             data.SetAlphamaps(0, 0, maps);
             EditorUtility.SetDirty(data);

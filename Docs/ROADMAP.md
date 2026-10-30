@@ -94,7 +94,7 @@ Goal: walk from the safe room to the bunker and back, and shoot a test target.
 > * **Build HUD Prefab** – creates `Assets/_Project/UI/HUD.prefab` wired to `HUDController`.
 > * **Build Greybox (Both Scenes)** – builds the island and bunker blockouts, spawn points, elevator panels, the HUD, a temporary `DebugPlayer`, and bakes the NavMesh. Re-running rebuilds the `Greybox` object, so move hand-made changes out of it first.
 > * TextMeshPro resources are imported (Assets/TextMesh Pro).
-> * If the Tools menu items don't appear (seen in Unity 6.4), create an empty file `Library/SignalLost/Commands/<command>.cmd` (`setup`, `import-tmp`, `hud`, `greybox`, `player`, `swap-player`, `sandbox`, `phase2`, `phase3`, `postfx`, `bunker-path`, `smoketest`) and the Editor runs it within a second. Results: `Library/SignalLost/bridge.log`.
+> * If the Tools menu items don't appear (seen in Unity 6.4), create an empty file `Library/SignalLost/Commands/<command>.cmd` (`setup`, `import-tmp`, `hud`, `greybox`, `player`, `swap-player`, `sandbox`, `phase2`, `phase3`, `postfx`, `bunker-path`, `art-island`, `smoketest`) and the Editor runs it within a second. Results: `Library/SignalLost/bridge.log`.
 > * `DebugPlayer` (WASD, mouse, Space, E) is only for testing until A's Player prefab arrives. Delete it then.
 > * `smoketest` plays the game automatically (Main Menu → briefing → both island bunkers → underground puzzles → Titan Phase 2) and writes results to `bridge.log`.
 
@@ -121,7 +121,7 @@ Goal: Phases 1 and 2 of the game (island road and bunker) are playable in greybo
 - [x] `EnemyStats` ScriptableObject (HP, speed, range, damage, fire rate)
 - [x] `WeakPoint.cs`: crit multiplier on the eye/visor collider
 - [x] **Enforcer Unit**: greybox robot (capsule body, glowing visor weak point, arm cannon). EnemyAI already drives Animator parameters `Speed`, `Shoot`, `Hit`, `Die`.
-  - [ ] Swap in Robot Kyle + Mixamo animations (needs your Asset Store and Adobe accounts; done in the Phase 4 art pass)
+  - [ ] Swap in the Sci-Fi Robots Bundle "Robert" (replaces Robot Kyle; Engie for the Aegis Warden) + Mixamo animations (Phase 4 art pass)
 - [x] **Recon Stinger**: greybox hovering drone, zig-zag approach, shock beam
   - [ ] Swap in the Buster Drone model (Phase 4 art pass)
 - [x] Enemy laser projectiles (visible, 25 m/s) with a 0.4 s telegraph flash
@@ -251,10 +251,14 @@ Goal: content complete. **Feature freeze at the end of this phase.**
 
 ### B – Art pass
 - [x] Download Part A of `Docs/ASSET_DOWNLOADS.md` (Poly Haven + OpenGameArt, 164 MB) into `Assets/_Project/Art/PolyHaven` and `Assets/_Project/Audio`; imported without errors
-- [ ] You: download Part B (Asset Store, Mixamo, Sketchfab) – see `Docs/ASSET_DOWNLOADS.md`
+- [x] You: download Part B (Asset Store, Mixamo, Sketchfab) – see `Docs/ASSET_DOWNLOADS.md`. Sci-Fi Robots Bundle used instead of Robot Kyle
+- [x] Clean up Part B: demo scenes, unused robots, other render-pipeline packages, unused particle and UI files moved to `_RemovedAssets/` (git-ignored backup, 237 MB)
+- [ ] Pick 2 music tracks (calm + intense) from the Sci-Fi Music Loops Pack; move the other 9 out (~330 MB)
+- [ ] Shrink the Titan's 8K textures to 2K (about 560 MB on disk now)
 - [x] `Assets/_Project/Credits.txt` created with every downloaded asset (Part B entries listed, to confirm on import)
-- [ ] Island: paint terrain layers, place pine trees and rocks, add the ocean water
-- [ ] Sky: Poly Haven sunset HDRI as the skybox; match the sun color and angle
+- [x] Island: paint terrain layers (grass, dirt paths, rock on slopes/hill, sand on the shore), 240 conifers with solid trunk colliders (own prefab variants in `Art/Island/Trees`) kept off roads, paths, buildings and patrol routes, glossy ocean material – `IslandArtBuilder.cs`, `art-island` command
+- [ ] Island: place rocks along the coast and trail (Step 3, with the prop swap)
+- [x] Sky: Belfast sunset HDRI skybox, rotated so the sun sits NNE behind the radio tower; sun, ambient (trilight) and fog colors sampled from the sky
 - [x] Post-processing Volume: ACES tonemapping, bloom, color adjustments, vignette (outdoor + darker bunker profile; `postfx` command)
 - [ ] SSAO: add the Screen Space Ambient Occlusion feature to `Assets/Settings/PC_Renderer` (one click in the Inspector)
 - [ ] Bunker: apply concrete and metal textures to the ProBuilder geometry; add props, lights, and red/cyan hazard lighting

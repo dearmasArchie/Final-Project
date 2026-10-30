@@ -112,3 +112,6 @@ InitTestScene*.unity*
 
 # Auto-generated cache in Assets folder
 /[Aa]ssets/[Ss]ceneDependencyCache*
+
+# Assets removed from the project (backup, safe to delete)
+/_RemovedAssets/
