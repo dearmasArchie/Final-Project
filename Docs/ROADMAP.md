@@ -19,7 +19,7 @@ The full design is in [GameConcept.md](GameConcept.md). This file breaks the bui
 | 4 – Boss, Art & Audio | 🟡 Code done (Titan Phase 2, hit feedback, lightning, post-processing); art and audio passes waiting on asset downloads |
 | 5 – Polish & Ship | ⬜ Not started |
 
-**Git:** all work is committed locally on branch `docs/roadmap` (latest: `d980f2a`). `main` holds only the template commit. Nothing is pushed to GitHub yet.
+**Git:** all work is committed locally on branch `docs/roadmap` (latest: `3852fab`). `main` holds only the template commit. Nothing is pushed to GitHub yet.
 **Note:** Partner A's tasks were built in this same project, so "merge" items mean merging `docs/roadmap` into `main`.
 
 ---
@@ -94,7 +94,7 @@ Goal: walk from the safe room to the bunker and back, and shoot a test target.
 > * **Build HUD Prefab** – creates `Assets/_Project/UI/HUD.prefab` wired to `HUDController`.
 > * **Build Greybox (Both Scenes)** – builds the island and bunker blockouts, spawn points, elevator panels, the HUD, a temporary `DebugPlayer`, and bakes the NavMesh. Re-running rebuilds the `Greybox` object, so move hand-made changes out of it first.
 > * TextMeshPro resources are imported (Assets/TextMesh Pro).
-> * If the Tools menu items don't appear (seen in Unity 6.4), create an empty file `Library/SignalLost/Commands/<command>.cmd` (`setup`, `import-tmp`, `hud`, `greybox`, `player`, `swap-player`, `sandbox`, `phase2`, `phase3`, `postfx`, `bunker-path`, `art-island`, `smoketest`) and the Editor runs it within a second. Results: `Library/SignalLost/bridge.log`.
+> * If the Tools menu items don't appear (seen in Unity 6.4), create an empty file `Library/SignalLost/Commands/<command>.cmd` (`setup`, `import-tmp`, `hud`, `greybox`, `player`, `swap-player`, `sandbox`, `phase2`, `phase3`, `postfx`, `bunker-path`, `art-island`, `art-bunker`, `refresh`, `smoketest`) and the Editor runs it within a second. Results: `Library/SignalLost/bridge.log`.
 > * `DebugPlayer` (WASD, mouse, Space, E) is only for testing until A's Player prefab arrives. Delete it then.
 > * `smoketest` plays the game automatically (Main Menu → briefing → both island bunkers → underground puzzles → Titan Phase 2) and writes results to `bridge.log`.
 
@@ -261,7 +261,7 @@ Goal: content complete. **Feature freeze at the end of this phase.**
 - [x] Sky: Belfast sunset HDRI skybox, rotated so the sun sits NNE behind the radio tower; sun, ambient (trilight) and fog colors sampled from the sky
 - [x] Post-processing Volume: ACES tonemapping, bloom, color adjustments, vignette (outdoor + darker bunker profile; `postfx` command)
 - [ ] SSAO: add the Screen Space Ambient Occlusion feature to `Assets/Settings/PC_Renderer` (one click in the Inspector)
-- [ ] Bunker: apply concrete and metal textures to the ProBuilder geometry; add props, lights, and red/cyan hazard lighting
+- [x] Bunker: concrete and metal textures on the greybox geometry (world-space triplanar shader `SignalLost/Triplanar Lit`, so stretched cubes don't smear; also reaches the island buildings and both island bunkers), military crates in room corners, brighter room lamps, red/cyan hazard lighting with ceiling light strips, flickering water glow and a pulsing quarantine alarm (`LightFlicker.cs`) – `BunkerArtBuilder.cs`, `art-bunker` command
 - [ ] Replace placeholder crates, barrels, and medkits with Poly Haven models
 - [ ] UI: apply the Kenney Sci-Fi UI graphics and the Rajdhani font
 - [ ] Re-bake the NavMesh after placing props
