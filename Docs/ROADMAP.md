@@ -94,7 +94,7 @@ Goal: walk from the safe room to the bunker and back, and shoot a test target.
 > * **Build HUD Prefab** – creates `Assets/_Project/UI/HUD.prefab` wired to `HUDController`.
 > * **Build Greybox (Both Scenes)** – builds the island and bunker blockouts, spawn points, elevator panels, the HUD, a temporary `DebugPlayer`, and bakes the NavMesh. Re-running rebuilds the `Greybox` object, so move hand-made changes out of it first.
 > * TextMeshPro resources are imported (Assets/TextMesh Pro).
-> * If the Tools menu items don't appear (seen in Unity 6.4), create an empty file `Library/SignalLost/Commands/<command>.cmd` (`setup`, `import-tmp`, `hud`, `greybox`, `player`, `swap-player`, `sandbox`, `phase2`, `phase3`, `postfx`, `bunker-path`, `art-island`, `art-bunker`, `art-props`, `refresh`, `smoketest`) and the Editor runs it within a second. Results: `Library/SignalLost/bridge.log`.
+> * If the Tools menu items don't appear (seen in Unity 6.4), create an empty file `Library/SignalLost/Commands/<command>.cmd` (`setup`, `import-tmp`, `hud`, `greybox`, `player`, `swap-player`, `sandbox`, `phase2`, `phase3`, `postfx`, `bunker-path`, `art-island`, `art-bunker`, `art-props`, `art-enemies`, `refresh`, `smoketest`) and the Editor runs it within a second. Results: `Library/SignalLost/bridge.log`.
 > * `DebugPlayer` (WASD, mouse, Space, E) is only for testing until A's Player prefab arrives. Delete it then.
 > * `smoketest` plays the game automatically (Main Menu → briefing → both island bunkers → underground puzzles → Titan Phase 2) and writes results to `bridge.log`.
 
@@ -121,9 +121,9 @@ Goal: Phases 1 and 2 of the game (island road and bunker) are playable in greybo
 - [x] `EnemyStats` ScriptableObject (HP, speed, range, damage, fire rate)
 - [x] `WeakPoint.cs`: crit multiplier on the eye/visor collider
 - [x] **Enforcer Unit**: greybox robot (capsule body, glowing visor weak point, arm cannon). EnemyAI already drives Animator parameters `Speed`, `Shoot`, `Hit`, `Die`.
-  - [ ] Swap in the Sci-Fi Robots Bundle "Robert" (replaces Robot Kyle; Engie for the Aegis Warden) + Mixamo animations (Phase 4 art pass)
+  - [x] Swap in the Sci-Fi Robots Bundle "Robert" (replaces Robot Kyle; Engie for the Aegis Warden) + Mixamo animations (Humanoid; idle/walk/run blend, firing, hit reaction, death; visor weak point and muzzle ride the head and hand bones) – `EnemyArtBuilder.cs`, `art-enemies` command
 - [x] **Recon Stinger**: greybox hovering drone, zig-zag approach, shock beam
-  - [ ] Swap in the Buster Drone model (Phase 4 art pass)
+  - [x] Swap in the Buster Drone model (its own hover animation, eye weak point on the front)
 - [x] Enemy laser projectiles (visible, 25 m/s) with a 0.4 s telegraph flash
 - [x] Overload Beam: hold to charge 1 s, hitscan, 4 ammo, 2 s cooldown
 - [x] `ExplosiveBarrel.cs` (75 damage, 5 m radius, hurts the player too) and `Destructible.cs` crates with drop table
@@ -244,9 +244,12 @@ Goal: content complete. **Feature freeze at the end of this phase.**
 
 ### A – Boss & combat feel
 - [x] Boss Phase 2: pylon tethers, invulnerability, shockwave stomp, stun window, pylons reboot (+ 2 Stinger reinforcements, chest core double damage) – `BossPylon.cs`, `BossCore.cs`, `ShockwaveRing.cs`
-- [ ] Import the Titan model (Yellow Heavy Robot); rig with Mixamo or animate in code
+- [x] Import the Titan model (Yellow Heavy Robot); animated in code (`MechWalkBob.cs`: walking bob/sway, idle breathing); greybox vents, chest core and riot shield stay as the readable weak points. Extraction boat swapped for the Small Motorboat
 - [x] Hit feedback: hit markers (red X for crits), enemy hit flash, sparks, screen shake on Overload and damage, red damage flash – `ImpactEffects.cs`, `CameraShake.cs`
 - [x] `LightningLine.cs` for the Overload Beam and tethers
+- [x] Death explosions: Particle Pack SmallExplosion on Enforcers, Aegis Wardens and Stingers, BigExplosion on the Titan (`DeathExplosion.cs`)
+- [x] Shields as see-through capsule bubbles around the whole Aegis Warden and Titan (was a flat front box; same rules: blocks Pulse, Overload or explosions drop it for 6 s, so flanking no longer gets past it)
+- [x] Fix: Enforcer walk/run stutter (Mixamo root motion was baked into the pose, so clips not downloaded "In Place" drifted and snapped back each loop)
 - [ ] Balance pass on damage, HP, and fire rates (see the tables in GameConcept.md)
 
 ### B – Art pass
@@ -254,7 +257,7 @@ Goal: content complete. **Feature freeze at the end of this phase.**
 - [x] You: download Part B (Asset Store, Mixamo, Sketchfab) – see `Docs/ASSET_DOWNLOADS.md`. Sci-Fi Robots Bundle used instead of Robot Kyle
 - [x] Clean up Part B: demo scenes, unused robots, other render-pipeline packages, unused particle and UI files moved to `_RemovedAssets/` (git-ignored backup, 237 MB)
 - [ ] Pick 2 music tracks (calm + intense) from the Sci-Fi Music Loops Pack; move the other 9 out (~330 MB)
-- [ ] Shrink the Titan's 8K textures to 2K (about 560 MB on disk now)
+- [x] Shrink the Titan's 8K textures to 2K (572 MB → 23 MB; metallic + roughness packed into a URP metallic/smoothness map; 8K originals in `_RemovedAssets/`)
 - [x] `Assets/_Project/Credits.txt` created with every downloaded asset (Part B entries listed, to confirm on import)
 - [x] Island: paint terrain layers (grass, dirt paths, rock on slopes/hill, sand on the shore), 240 conifers with solid trunk colliders (own prefab variants in `Art/Island/Trees`) kept off roads, paths, buildings and patrol routes, glossy ocean material – `IslandArtBuilder.cs`, `art-island` command
 - [x] Island: 77 Poly Haven boulders and mossy rocks along the shore, beside the hill trail and on open ground, laid on their flattest side, kept off paths and away from trees and buildings – `PropArtBuilder.cs`, `art-props` command

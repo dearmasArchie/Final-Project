@@ -43,6 +43,7 @@ namespace SignalLost.EditorTools
             PlayerPrefabBuilder.BuildPlayer();
             BuildPrefabs();
             PropArtBuilder.DressPrefabs(); // keep the Poly Haven models on the rebuilt crate, barrel and medkit
+            EnemyArtBuilder.DressEnemies(); // and the robot, drone and Titan models on the rebuilt enemies
 
             PopulateIsland();
             PopulateBunker();

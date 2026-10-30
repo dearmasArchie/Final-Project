@@ -66,7 +66,9 @@ namespace SignalLost
             hitBlock = new MaterialPropertyBlock();
             hitBlock.SetColor("_BaseColor", Color.white);
             hitBlock.SetColor("_EmissionColor", Color.white * 1.5f);
+            // Mesh + skinned renderers (the robot models are skinned); not lines or particles
             var renderers = new System.Collections.Generic.List<Renderer>(GetComponentsInChildren<MeshRenderer>());
+            renderers.AddRange(GetComponentsInChildren<SkinnedMeshRenderer>());
             renderers.Remove(sensorRenderer);
             bodyRenderers = renderers.ToArray();
             zigZagSeed = Random.value * 10f;

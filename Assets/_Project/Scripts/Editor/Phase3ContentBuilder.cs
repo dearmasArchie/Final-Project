@@ -47,6 +47,9 @@ namespace SignalLost.EditorTools
             fuse = Load("Pickups/OverrideFuse");
             aegis = SaveAegis();
             titan = SaveTitan();
+            EnemyArtBuilder.DressEnemies(); // keep the Engie and mech models on the rebuilt Aegis Warden and Titan
+            aegis = Load("Enemies/AegisWarden");
+            titan = Load("Enemies/Unit00_Titan");
             menus = BuildMenusPrefab();
 
             BuildMainMenuScene();
