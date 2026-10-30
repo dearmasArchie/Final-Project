@@ -41,6 +41,7 @@ namespace SignalLost
             controller = GetComponent<CharacterController>();
             input = GetComponent<PlayerInputReader>();
             stamina = maxStamina;
+            if (!TryGetComponent<FootstepPlayer>(out _)) gameObject.AddComponent<FootstepPlayer>();
         }
 
         void OnEnable() => SetCursorLocked(true);

@@ -44,8 +44,17 @@ namespace SignalLost
 
         public void Interact(GameObject interactor) => Open();
 
-        public void Open() => IsOpen = true;
-        public void Close() => IsOpen = false;
+        public void Open()
+        {
+            if (!IsOpen && Time.timeSinceLevelLoad > 0.5f) Sfx.Play("door_open", panel.position);
+            IsOpen = true;
+        }
+
+        public void Close()
+        {
+            if (IsOpen && Time.timeSinceLevelLoad > 0.5f) Sfx.Play("door_close", panel.position);
+            IsOpen = false;
+        }
         public void Unlock() => IsLocked = false;
 
         public void Lock(string reason)

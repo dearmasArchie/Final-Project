@@ -16,7 +16,11 @@ namespace SignalLost
         [SerializeField] Slider sfxVolume;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        static void ApplySaved() => AudioListener.volume = PlayerPrefs.GetFloat(MasterVolumeKey, 1f);
+        static void ApplySaved()
+        {
+            AudioListener.volume = PlayerPrefs.GetFloat(MasterVolumeKey, 1f);
+            Sfx.ApplySavedVolumes();
+        }
 
         void OnEnable()
         {
@@ -34,6 +38,8 @@ namespace SignalLost
             {
                 PlayerPrefs.SetFloat(key, value);
                 if (key == MasterVolumeKey) AudioListener.volume = value;
+                else if (key == MusicVolumeKey) Sfx.SetMixerVolume(Sfx.MusicParam, value);
+                else if (key == SfxVolumeKey) Sfx.SetMixerVolume(Sfx.SfxParam, value);
             });
         }
     }

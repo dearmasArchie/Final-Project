@@ -20,6 +20,7 @@ namespace SignalLost
         Quaternion restRotation;
         float phase;
         float walkBlend;
+        int lastStep;
 
         void Awake()
         {
@@ -33,6 +34,14 @@ namespace SignalLost
             float speed = agent != null && agent.enabled ? agent.velocity.magnitude : 0f;
             walkBlend = Mathf.MoveTowards(walkBlend, Mathf.Clamp01(speed / fullSpeed), Time.deltaTime * 2f);
             phase += Time.deltaTime * Mathf.Lerp(0.25f, stepRate, walkBlend) * Mathf.PI * 2f;
+
+            // A footfall each time the bob reaches its lowest point (phase = pi/2 + k*pi)
+            int step = Mathf.FloorToInt((phase - Mathf.PI / 2f) / Mathf.PI);
+            if (step != lastStep)
+            {
+                lastStep = step;
+                if (walkBlend > 0.4f) Sfx.Play("titan_step", transform.position);
+            }
 
             // Walking: a sharp "footfall" bob twice per stride cycle and a roll toward the planted foot.
             // Standing: a slow, shallow breathing motion.

@@ -18,6 +18,7 @@ namespace SignalLost
 
         float tickTimer;
         bool playerInside;
+        AudioSource crackle;
         Vector3 drainedPosition;
 
         public bool Drained { get; private set; }
@@ -29,6 +30,7 @@ namespace SignalLost
             if (!TryGetComponent<Rigidbody>(out var body)) body = gameObject.AddComponent<Rigidbody>();
             body.isKinematic = true;
             drainedPosition = waterVisual.localPosition + Vector3.down * drainDepth;
+            crackle = Sfx.Loop(gameObject, "crackle");
             if (GameManager.Instance.IsCleared(persistentId)) Drain(instant: true);
         }
 
@@ -63,6 +65,7 @@ namespace SignalLost
         {
             if (Drained) return;
             Drained = true;
+            if (crackle != null) crackle.Stop();
             SetWarning(false);
             GameManager.Instance.MarkCleared(persistentId);
             if (instant) waterVisual.gameObject.SetActive(false);
@@ -72,6 +75,7 @@ namespace SignalLost
         {
             if (playerInside == on) return;
             playerInside = on;
+            if (on) Sfx.Play2D("water_zap");
             if (HUDController.Instance != null) HUDController.Instance.SetHazardWarning(on ? "!! ELECTRIFIED WATER !!" : null);
         }
     }

@@ -51,6 +51,7 @@ namespace SignalLost
 
         void Start()
         {
+            if (kind == Kind.Fuse) Sfx.Loop(gameObject, "hum", volumeScale: 0.36f, pitch: 1.3f);
             if (!string.IsNullOrEmpty(persistentId) && GameManager.Instance.IsCleared(persistentId))
                 Destroy(gameObject);
         }
@@ -63,6 +64,7 @@ namespace SignalLost
         public void Interact(GameObject interactor)
         {
             var gm = GameManager.Instance;
+            Sfx.Play2D(kind == Kind.Medkit ? "pickup_medkit" : kind == Kind.Fuse ? "pickup_fuse" : kind == Kind.ArcPistol ? "pickup_pistol" : "pickup_battery");
             switch (kind)
             {
                 case Kind.BatteryClip: interactor.GetComponent<ArcPistol>().AddAmmo(amount); break;

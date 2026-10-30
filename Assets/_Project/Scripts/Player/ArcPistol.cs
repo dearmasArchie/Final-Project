@@ -46,6 +46,7 @@ namespace SignalLost
         float nextShotTime;
         float chargeTimer;
         float overloadReadyTime;
+        AudioSource chargeSource;
 
         public int Magazine { get; private set; } = MagazineSize;
         public int Reserve { get; private set; } = MaxReserve;
@@ -82,6 +83,11 @@ namespace SignalLost
             if (IsReloading) return;
             if (Magazine <= 0)
             {
+                if (Reserve == 0)
+                {
+                    nextShotTime = Time.time + 0.4f;
+                    Sfx.Play2D("dry_fire");
+                }
                 TryReload();
                 return;
             }
@@ -93,6 +99,7 @@ namespace SignalLost
             Vector3 target = AimPoint(out _);
             var bolt = Instantiate(pulsePrefab, muzzle.position, Quaternion.LookRotation(target - muzzle.position));
             bolt.Launch(pulseDamage, DamageType.Pulse, hitMask, countForAccuracy: true);
+            Sfx.Play2D("pulse_fire");
             Fired?.Invoke(muzzle.position);
 
             if (Magazine == 0) TryReload();
@@ -106,8 +113,10 @@ namespace SignalLost
 
             if (input.AltFire.IsPressed() && canCharge)
             {
+                if (!IsCharging) StartChargeSound();
                 IsCharging = true;
                 chargeTimer += Time.deltaTime;
+                if (chargeSource != null) chargeSource.pitch = 0.7f + 0.9f * Mathf.Clamp01(chargeTimer / overloadChargeTime);
             }
             else if (IsCharging)
             {
@@ -126,6 +135,7 @@ namespace SignalLost
         void FireOverload()
         {
             Magazine -= overloadAmmoCost;
+            Sfx.Play2D("overload_fire");
             overloadReadyTime = Time.time + overloadCooldown;
             RefreshHud();
 
@@ -137,6 +147,7 @@ namespace SignalLost
                 target?.TakeDamage(overloadDamage, DamageType.Overload, hit.point);
                 GameManager.Instance.RegisterShot(target != null);
                 ImpactEffects.Sparks(hit.point, hit.normal, new Color(0.6f, 0.95f, 1f), 24);
+                Sfx.Play(target != null ? "impact_hit" : "impact_surface", hit.point);
                 if (target != null && HUDController.Instance != null) HUDController.Instance.ShowHitMarker(false);
             }
             else
@@ -150,8 +161,19 @@ namespace SignalLost
             if (Magazine == 0) TryReload();
         }
 
+        void StartChargeSound()
+        {
+            if (chargeSource == null)
+            {
+                chargeSource = Sfx.Loop(gameObject, "overload_charge", autoplay: false);
+                if (chargeSource != null) chargeSource.spatialBlend = 0f;
+            }
+            if (chargeSource != null) chargeSource.Play();
+        }
+
         void CancelCharge()
         {
+            if (chargeSource != null && chargeSource.isPlaying) chargeSource.Stop();
             IsCharging = false;
             chargeTimer = 0f;
         }
@@ -184,11 +206,13 @@ namespace SignalLost
         {
             IsReloading = true;
             CancelCharge();
+            Sfx.Play2D("reload");
             yield return new WaitForSeconds(reloadTime);
             int taken = Mathf.Min(MagazineSize - Magazine, Reserve);
             Magazine += taken;
             Reserve -= taken;
             IsReloading = false;
+            Sfx.Play2D("reload_done");
             RefreshHud();
         }
 

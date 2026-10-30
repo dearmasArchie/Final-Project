@@ -70,6 +70,7 @@ namespace SignalLost
                             * (target - muzzle.position).normalized;
             var bolt = Instantiate(boltPrefab, muzzle.position, Quaternion.LookRotation(direction));
             bolt.Launch(damagePerBolt, DamageType.Hazard, hitMask, countForAccuracy: false);
+            Sfx.Play("enemy_laser", muzzle.position);
         }
     }
 }

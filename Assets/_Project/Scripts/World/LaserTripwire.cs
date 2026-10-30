@@ -21,6 +21,7 @@ namespace SignalLost
 
         void Awake()
         {
+            if (beams.Length > 0) Sfx.Loop(beams[0], "laser_hum");
             foreach (var beam in beams)
             {
                 beam.AddComponent<LaserBeam>().owner = this;
@@ -33,6 +34,7 @@ namespace SignalLost
         {
             if (!Active) return;
             Active = false;
+            Sfx.Play("emitter_off", transform.position);
             foreach (var beam in beams) beam.SetActive(false);
             if (emitterLight != null) emitterLight.material.SetColor("_EmissionColor", Color.black);
         }
@@ -46,7 +48,12 @@ namespace SignalLost
 
             nextTouchTime = Time.time + touchCooldown;
             health.TakeDamage(touchDamage, DamageType.Hazard, other.transform.position);
-            if (alarm != null && alarmEnemyPrefab != null) alarm.Spawn(alarmEnemyPrefab);
+            Sfx.Play("laser_zap", other.transform.position);
+            if (alarm != null && alarmEnemyPrefab != null)
+            {
+                alarm.Spawn(alarmEnemyPrefab);
+                Sfx.Play("siren", transform.position);
+            }
         }
     }
 }

@@ -49,6 +49,7 @@ namespace SignalLost
 
             bool crit = target is WeakPoint && damageType == DamageType.Pulse;
             ImpactEffects.Sparks(hit.point, hit.normal, crit ? new Color(1f, 0.4f, 0.3f) : new Color(0.5f, 0.9f, 1f), crit ? 16 : 8);
+            Sfx.Play(target == null ? "impact_surface" : crit ? "impact_crit" : "impact_hit", hit.point);
             if (countForAccuracy && target != null && HUDController.Instance != null) HUDController.Instance.ShowHitMarker(crit);
             Finish(target != null);
         }

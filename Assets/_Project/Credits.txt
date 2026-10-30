@@ -16,6 +16,7 @@ AUDIO – OpenGameArt (opengameart.org), CC0 (public domain)
   "50 CC0 Sci-Fi SFX" (rubberduck)                              – weapon, laser, alarm sounds
   "100 CC0 SFX" (rubberduck)                                    – impacts, explosions, UI
   "Different steps on wood, stone, leaves, gravel and mud" (TinyWorlds) – footsteps
+  Siren, radio static, crackle, hum, servo, alert beep, stomp and UI click sounds – generated for this project (public domain)
 
 PART B – imported 2026-10-30 (confirm the Sketchfab author names on each model page)
   Sci-Fi Robots Bundle (Robert, Engie) – Same Gev Dudios (Asset Store EULA)

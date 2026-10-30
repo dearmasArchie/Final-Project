@@ -55,6 +55,8 @@ namespace SignalLost
         public bool VentsExposed => !InPhase2 && !riotShield.IsUp;
         public bool CoreExposed => InPhase2 && Stunned;
 
+        bool stompCharging;
+
         void Awake()
         {
             agent = GetComponent<NavMeshAgent>();
@@ -116,6 +118,7 @@ namespace SignalLost
         void EnterPhase2()
         {
             InPhase2 = true;
+            Sfx.Play("siren", transform.position);
             agent.ResetPath();
             agent.isStopped = true;
             riotShield.gameObject.SetActive(false);
@@ -142,9 +145,16 @@ namespace SignalLost
             FacePlayer(30f);
             FireOrbsWhenReady(volleyInterval + 2f);
             stompTimer -= Time.deltaTime;
+            if (!stompCharging && stompTimer <= 1.6f)
+            {
+                stompCharging = true;
+                Sfx.Play("stomp_charge", transform.position);
+            }
             if (stompTimer <= 0f)
             {
                 stompTimer = stompInterval;
+                stompCharging = false;
+                Sfx.Play("stomp", transform.position);
                 Instantiate(shockwavePrefab, new Vector3(transform.position.x, transform.position.y, transform.position.z), Quaternion.identity);
             }
         }
@@ -182,6 +192,7 @@ namespace SignalLost
             volleyTimer -= Time.deltaTime;
             if (volleyTimer > 0f) return;
             volleyTimer = interval;
+            Sfx.Play("orb_fire", orbLauncher.position);
             for (int i = 0; i < orbsPerVolley; i++)
             {
                 float spread = (i - (orbsPerVolley - 1) / 2f) * 25f;

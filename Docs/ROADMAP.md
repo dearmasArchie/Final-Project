@@ -94,7 +94,7 @@ Goal: walk from the safe room to the bunker and back, and shoot a test target.
 > * **Build HUD Prefab** – creates `Assets/_Project/UI/HUD.prefab` wired to `HUDController`.
 > * **Build Greybox (Both Scenes)** – builds the island and bunker blockouts, spawn points, elevator panels, the HUD, a temporary `DebugPlayer`, and bakes the NavMesh. Re-running rebuilds the `Greybox` object, so move hand-made changes out of it first.
 > * TextMeshPro resources are imported (Assets/TextMesh Pro).
-> * If the Tools menu items don't appear (seen in Unity 6.4), create an empty file `Library/SignalLost/Commands/<command>.cmd` (`setup`, `import-tmp`, `hud`, `greybox`, `player`, `swap-player`, `sandbox`, `phase2`, `phase3`, `postfx`, `bunker-path`, `art-island`, `art-bunker`, `art-props`, `art-enemies`, `refresh`, `smoketest`) and the Editor runs it within a second. Results: `Library/SignalLost/bridge.log`.
+> * If the Tools menu items don't appear (seen in Unity 6.4), create an empty file `Library/SignalLost/Commands/<command>.cmd` (`setup`, `import-tmp`, `hud`, `greybox`, `player`, `swap-player`, `sandbox`, `phase2`, `phase3`, `postfx`, `bunker-path`, `art-island`, `art-bunker`, `art-props`, `art-enemies`, `audio`, `refresh`, `smoketest`) and the Editor runs it within a second. Results: `Library/SignalLost/bridge.log`.
 > * `DebugPlayer` (WASD, mouse, Space, E) is only for testing until A's Player prefab arrives. Delete it then.
 > * `smoketest` plays the game automatically (Main Menu → briefing → both island bunkers → underground puzzles → Titan Phase 2) and writes results to `bridge.log`.
 
@@ -271,11 +271,14 @@ Goal: content complete. **Feature freeze at the end of this phase.**
 - [x] NavMesh after props: rocks and military crates carve the NavMesh at runtime (NavMeshObstacle), so no re-bake is needed
 
 ### B – Audio pass
-- [ ] Audio Mixer with Music and SFX groups (connected to the Settings sliders)
-- [ ] `MusicManager.cs`: exploration, combat, and boss tracks with crossfades
-- [ ] Footsteps by surface (dirt, metal)
-- [ ] SFX: weapon, reload, hits, explosions, crates, lasers, water crackle, siren, radio static, UI clicks
-- [ ] 3D audio (`spatialBlend = 1`): fuse and pylon hums, robot servos, alert beeps, boss footsteps
+- [x] Audio Mixer `Audio/MainMixer` (Master > Music, SFX; `MusicVolume` / `SfxVolume` exposed) connected to the Settings sliders (`SettingsPanel` → `Sfx.SetMixerVolume`; master still uses `AudioListener.volume`)
+- [x] `MusicManager.cs`: exploration / combat (any bot in Chase or Attack, held 5 s) / boss (player within 70 m of a living Titan) with crossfades. **Stand-in tracks** (`loop_ambient_01`, `loop_machine_02`, `boss_battle_loop.mp3`) until the two Music Loops Pack tracks are picked; set them on `Resources/AudioLibrary` (Exploration / Combat)
+- [x] Footsteps by surface (`FootstepPlayer.cs`: gravel on terrain, stone on concrete and metal; landing thud)
+- [x] SFX: weapon, overload charge, reload, dry fire, hits and crits, player hurt, explosions, crates, lasers, water crackle, siren, radio static, UI clicks, keypad, doors, pickups, shield break
+- [x] 3D audio (`spatialBlend = 1`): fuse and pylon hums, robot servos (`EnemyAudio.cs`), alert beeps, shock beam, laser hum, Titan footsteps and stomp charge-up
+- [x] `Sfx.cs` (sound by name: `Sfx.Play`, `Play2D`, `Loop`), `AudioLibrary` asset in `Resources` (swap any clip in the Inspector), `AudioBuilder.cs` (`audio` bridge command; re-running only adds missing ids), 9 synthesized sounds in `Audio/Generated`
+- [ ] Listen through and swap any clip that doesn't fit (clip choices were made from file names)
+- [ ] Pick the two music tracks and move the other 9 out
 
 ### Both – end of day
 - [ ] Merge and play a full run

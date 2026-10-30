@@ -25,6 +25,7 @@ namespace SignalLost
             if (IsDead || amount <= 0f) return;
             Current = Mathf.Max(0f, Current - amount);
             RefreshHud();
+            if (amount >= 5f) Sfx.Play2D("player_hurt"); // not the small water and beam ticks
             if (HUDController.Instance != null) HUDController.Instance.FlashDamage(amount);
             if (CameraShake.Instance != null) CameraShake.Instance.Shake(Mathf.Clamp(amount / 400f, 0.015f, 0.08f), 0.2f);
             Damaged?.Invoke(amount, hitPoint);

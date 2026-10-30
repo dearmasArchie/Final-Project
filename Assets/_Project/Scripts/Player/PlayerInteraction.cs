@@ -27,7 +27,10 @@ namespace SignalLost
                 HUDController.Instance.SetPrompt(Current?.Prompt, Current != null && Current.CanInteract);
 
             if (Time.timeScale > 0f && input.Interact.WasPressedThisFrame() && Current != null && Current.CanInteract)
+            {
+                Sfx.Play2D("interact");
                 Current.Interact(gameObject);
+            }
         }
 
         void OnDisable()

@@ -10,7 +10,7 @@ namespace SignalLost.EditorTools
     /// Drop an empty file named &lt;command&gt;.cmd into Library/SignalLost/Commands and the Editor runs it
     /// within about a second (not during Play mode). Results go to Library/SignalLost/bridge.log.
     /// Commands: setup, import-tmp, hud, greybox, player, swap-player, sandbox, phase2, phase3, postfx, bunker-path,
-    /// art-island, art-bunker, art-props, art-enemies, refresh, smoketest.
+    /// art-island, art-bunker, art-props, art-enemies, audio, refresh, smoketest.
     /// </summary>
     [InitializeOnLoad]
     public static class EditorCommandBridge
@@ -70,6 +70,7 @@ namespace SignalLost.EditorTools
                     case "art-bunker": BunkerArtBuilder.Build(); break;
                     case "art-props": PropArtBuilder.Build(); break;
                     case "art-enemies": EnemyArtBuilder.Build(); break;
+                    case "audio": AudioBuilder.Build(); break;
                     case "refresh": AssetDatabase.Refresh(); break; // picks up new scripts without focusing Unity
                     case "smoketest": PlaySmokeTest.Run(); return; // reports when finished
                     default: Log($"unknown command {command}"); return;

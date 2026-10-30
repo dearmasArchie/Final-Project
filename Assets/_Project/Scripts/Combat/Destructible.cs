@@ -14,7 +14,12 @@ namespace SignalLost
         public void TakeDamage(float amount, DamageType type, Vector3 hitPoint)
         {
             health -= amount;
-            if (health > 0f) return;
+            if (health > 0f)
+            {
+                Sfx.Play("crate_hit", transform.position);
+                return;
+            }
+            Sfx.Play("crate_break", transform.position);
 
             float roll = Random.value;
             GameObject drop = roll < batteryChance ? batteryPrefab

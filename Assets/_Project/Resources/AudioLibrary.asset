@@ -1,0 +1,481 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c96e897b823a66468dedc85d43edab7, type: 3}
+  m_Name: AudioLibrary
+  m_EditorClassIdentifier: Assembly-CSharp::SignalLost.AudioLibrary
+  mixer: {fileID: 24100000, guid: c58037da6e654d0468ae62debca1929c, type: 2}
+  musicGroup: {fileID: 1442438496858646742, guid: c58037da6e654d0468ae62debca1929c, type: 2}
+  sfxGroup: {fileID: -6726529656293402808, guid: c58037da6e654d0468ae62debca1929c, type: 2}
+  exploration: {fileID: 8300000, guid: 74fd1a20e006cbc4fa11c8c19342c3d4, type: 3}
+  combat: {fileID: 8300000, guid: 4fe306954138361429037cd559888da6, type: 3}
+  boss: {fileID: 8300000, guid: d7ec71714df8ac244a0fcc9560864812, type: 3}
+  sounds:
+  - id: pulse_fire
+    clips:
+    - {fileID: 8300000, guid: 5ff5bd936a30a904da907f35c8dd382e, type: 3}
+    - {fileID: 8300000, guid: 8154f5e18ea48164e9cb0132012cf432, type: 3}
+    - {fileID: 8300000, guid: e0894d72d41ebbe49b525ac71176337b, type: 3}
+    volume: 0.55
+    pitch: {x: 0.95, y: 1.1}
+    minDistance: 3
+    maxDistance: 40
+    playSeconds: 0
+  - id: overload_fire
+    clips:
+    - {fileID: 8300000, guid: 18d6a007b013c9d4ebf7f7c44e1e5f06, type: 3}
+    - {fileID: 8300000, guid: 17f3805d11575844d85b49435bac1572, type: 3}
+    - {fileID: 8300000, guid: 380a61624a607f042ab5e96218f37633, type: 3}
+    volume: 0.9
+    pitch: {x: 0.95, y: 1.05}
+    minDistance: 3
+    maxDistance: 40
+    playSeconds: 0
+  - id: overload_charge
+    clips:
+    - {fileID: 8300000, guid: a9e3fee688cf000499bded40dd54ff48, type: 3}
+    volume: 0.5
+    pitch: {x: 1, y: 1}
+    minDistance: 3
+    maxDistance: 40
+    playSeconds: 0
+  - id: dry_fire
+    clips:
+    - {fileID: 8300000, guid: e8339afb63339ac4ea10a2885d245849, type: 3}
+    volume: 0.6
+    pitch: {x: 1, y: 1}
+    minDistance: 3
+    maxDistance: 40
+    playSeconds: 0
+  - id: reload
+    clips:
+    - {fileID: 8300000, guid: f84a2bf3a6b43994a970dab1c4bc6fe8, type: 3}
+    - {fileID: 8300000, guid: 8661ec677881a5a4ea46398c20eb9e79, type: 3}
+    - {fileID: 8300000, guid: 5034636124c582b4893800f869124732, type: 3}
+    volume: 0.7
+    pitch: {x: 1, y: 1}
+    minDistance: 3
+    maxDistance: 40
+    playSeconds: 0
+  - id: reload_done
+    clips:
+    - {fileID: 8300000, guid: 9807aed188be2a3459ced8e23a168765, type: 3}
+    - {fileID: 8300000, guid: 1ce7890406010c443a54576a00835e5a, type: 3}
+    volume: 0.7
+    pitch: {x: 1, y: 1}
+    minDistance: 3
+    maxDistance: 40
+    playSeconds: 0
+  - id: impact_surface
+    clips:
+    - {fileID: 8300000, guid: dfad69dd3e5809c499c5845af5a77fc5, type: 3}
+    - {fileID: 8300000, guid: 1f952a3383ec3e04d8212fd363086f6a, type: 3}
+    volume: 0.4
+    pitch: {x: 0.9, y: 1.1}
+    minDistance: 3
+    maxDistance: 35
+    playSeconds: 0
+  - id: impact_hit
+    clips:
+    - {fileID: 8300000, guid: 2dd65f87e81d1f04c8e1afc2e3402db2, type: 3}
+    - {fileID: 8300000, guid: 5b9cb487ebe8a84469be69452a2343c7, type: 3}
+    volume: 0.6
+    pitch: {x: 0.95, y: 1.05}
+    minDistance: 3
+    maxDistance: 40
+    playSeconds: 0
+  - id: impact_crit
+    clips:
+    - {fileID: 8300000, guid: 076d5fed628ca7c4fbdd298a60966ccf, type: 3}
+    volume: 0.75
+    pitch: {x: 1.25, y: 1.35}
+    minDistance: 3
+    maxDistance: 40
+    playSeconds: 0
+  - id: player_hurt
+    clips:
+    - {fileID: 8300000, guid: 1f952a3383ec3e04d8212fd363086f6a, type: 3}
+    volume: 0.8
+    pitch: {x: 0.85, y: 0.95}
+    minDistance: 3
+    maxDistance: 40
+    playSeconds: 0
+  - id: interact
+    clips:
+    - {fileID: 8300000, guid: d9717cae1a7bf8f4f9797293c6a3f721, type: 3}
+    volume: 0.4
+    pitch: {x: 0.95, y: 1.05}
+    minDistance: 3
+    maxDistance: 40
+    playSeconds: 0
+  - id: enemy_laser
+    clips:
+    - {fileID: 8300000, guid: 60a0682fbc82bd244bdae3f3445cfd17, type: 3}
+    - {fileID: 8300000, guid: e3298e35eed19c942b6f4d2d41cd21ba, type: 3}
+    - {fileID: 8300000, guid: b02661b1983843f4a8e25854215c13f1, type: 3}
+    volume: 0.5
+    pitch: {x: 0.9, y: 1.1}
+    minDistance: 5
+    maxDistance: 60
+    playSeconds: 0
+  - id: enemy_hit
+    clips:
+    - {fileID: 8300000, guid: 9c4d5d2c4f9c658428ac34f6c87c70bf, type: 3}
+    - {fileID: 8300000, guid: facdee04db46f234ebef155455649bcd, type: 3}
+    - {fileID: 8300000, guid: 076d5fed628ca7c4fbdd298a60966ccf, type: 3}
+    volume: 0.6
+    pitch: {x: 0.9, y: 1.1}
+    minDistance: 3
+    maxDistance: 35
+    playSeconds: 0
+  - id: enemy_die
+    clips:
+    - {fileID: 8300000, guid: cdb77eaa1d6da014c93ee4b5d500ec4f, type: 3}
+    - {fileID: 8300000, guid: bccc57bc60a8bf8479df57f282c9cc9c, type: 3}
+    volume: 0.8
+    pitch: {x: 0.9, y: 1.05}
+    minDistance: 4
+    maxDistance: 45
+    playSeconds: 0
+  - id: stun
+    clips:
+    - {fileID: 8300000, guid: 4aeecaee7f3303d438ea931c7960bf27, type: 3}
+    volume: 0.7
+    pitch: {x: 0.95, y: 1.05}
+    minDistance: 3
+    maxDistance: 35
+    playSeconds: 0
+  - id: alert_beep
+    clips:
+    - {fileID: 8300000, guid: 607095e5381b5aa46a3a6104c5e39fd3, type: 3}
+    volume: 0.7
+    pitch: {x: 1, y: 1.1}
+    minDistance: 5
+    maxDistance: 45
+    playSeconds: 0
+  - id: servo
+    clips:
+    - {fileID: 8300000, guid: 483ef9863a436084cbd4003461b23652, type: 3}
+    volume: 0.4
+    pitch: {x: 1, y: 1}
+    minDistance: 2
+    maxDistance: 18
+    playSeconds: 0
+  - id: shock_beam
+    clips:
+    - {fileID: 8300000, guid: 1c807b6ba8fb9544d9c02bf47d9ce979, type: 3}
+    volume: 0.5
+    pitch: {x: 1, y: 1}
+    minDistance: 2
+    maxDistance: 15
+    playSeconds: 0
+  - id: shield_break
+    clips:
+    - {fileID: 8300000, guid: 5711d7b4def34ab40a69d7bdc41beb87, type: 3}
+    - {fileID: 8300000, guid: 91df2829e2d26bd4699fca216fba1dac, type: 3}
+    volume: 0.9
+    pitch: {x: 0.9, y: 1.05}
+    minDistance: 4
+    maxDistance: 50
+    playSeconds: 0
+  - id: explosion
+    clips:
+    - {fileID: 8300000, guid: 212a98d028df8c64681ed587066d044d, type: 3}
+    - {fileID: 8300000, guid: 557661465bfdd554e8a967bdf77d94cf, type: 3}
+    volume: 1
+    pitch: {x: 0.9, y: 1.1}
+    minDistance: 8
+    maxDistance: 90
+    playSeconds: 0
+  - id: explosion_big
+    clips:
+    - {fileID: 8300000, guid: 50481a362077bf549aa4f825c4e4f039, type: 3}
+    volume: 1.2
+    pitch: {x: 0.7, y: 0.85}
+    minDistance: 15
+    maxDistance: 140
+    playSeconds: 0
+  - id: spark
+    clips:
+    - {fileID: 8300000, guid: 6933dd485c4212945ab0c90cb6148abe, type: 3}
+    volume: 0.6
+    pitch: {x: 0.95, y: 1.1}
+    minDistance: 3
+    maxDistance: 30
+    playSeconds: 0
+  - id: crate_hit
+    clips:
+    - {fileID: 8300000, guid: 26602ce8293900c4fba7480450253fa2, type: 3}
+    - {fileID: 8300000, guid: 99b693ec51ece4841a0877962375e3ab, type: 3}
+    volume: 0.7
+    pitch: {x: 0.9, y: 1.1}
+    minDistance: 3
+    maxDistance: 30
+    playSeconds: 0
+  - id: crate_break
+    clips:
+    - {fileID: 8300000, guid: 01d66dc7fe778224a9c21a6c9c150ea2, type: 3}
+    - {fileID: 8300000, guid: 029030b4b2a909648a977afd7faa7ec1, type: 3}
+    volume: 0.9
+    pitch: {x: 0.9, y: 1.1}
+    minDistance: 4
+    maxDistance: 40
+    playSeconds: 0
+  - id: laser_hum
+    clips:
+    - {fileID: 8300000, guid: 329344d010ff97645b2dc90c4bcfe0b4, type: 3}
+    volume: 0.35
+    pitch: {x: 1.6, y: 1.6}
+    minDistance: 1.5
+    maxDistance: 12
+    playSeconds: 0
+  - id: laser_zap
+    clips:
+    - {fileID: 8300000, guid: 84e553e4e49e9224da947ee5b4425e29, type: 3}
+    volume: 0.8
+    pitch: {x: 0.95, y: 1.05}
+    minDistance: 3
+    maxDistance: 35
+    playSeconds: 0
+  - id: emitter_off
+    clips:
+    - {fileID: 8300000, guid: 58b634375077b02438f76de4dc643000, type: 3}
+    volume: 0.7
+    pitch: {x: 0.95, y: 1.05}
+    minDistance: 3
+    maxDistance: 30
+    playSeconds: 0
+  - id: siren
+    clips:
+    - {fileID: 8300000, guid: 443f7773ab05e9c478954aef79d04359, type: 3}
+    volume: 0.8
+    pitch: {x: 1, y: 1}
+    minDistance: 10
+    maxDistance: 70
+    playSeconds: 5
+  - id: crackle
+    clips:
+    - {fileID: 8300000, guid: eabd5d94529f78f4c900dcbc0a15133c, type: 3}
+    volume: 0.5
+    pitch: {x: 1, y: 1}
+    minDistance: 3
+    maxDistance: 25
+    playSeconds: 0
+  - id: water_zap
+    clips:
+    - {fileID: 8300000, guid: d2131f780328269478f76d33465d18e1, type: 3}
+    volume: 0.6
+    pitch: {x: 0.95, y: 1.05}
+    minDistance: 3
+    maxDistance: 30
+    playSeconds: 0
+  - id: door_open
+    clips:
+    - {fileID: 8300000, guid: 7fc6596d03560de458ae8e6e847ce4e5, type: 3}
+    - {fileID: 8300000, guid: b58b6da942f50ef43a5fdc9c07e25a80, type: 3}
+    volume: 0.8
+    pitch: {x: 0.95, y: 1.05}
+    minDistance: 4
+    maxDistance: 35
+    playSeconds: 0
+  - id: door_close
+    clips:
+    - {fileID: 8300000, guid: c03024946fa39944c9535c22363fb330, type: 3}
+    - {fileID: 8300000, guid: b91c6c524269188438773368d184385b, type: 3}
+    - {fileID: 8300000, guid: 558b1f1c60ce1bd44945655cdae90ef5, type: 3}
+    volume: 0.8
+    pitch: {x: 0.95, y: 1.05}
+    minDistance: 4
+    maxDistance: 35
+    playSeconds: 0
+  - id: power_on
+    clips:
+    - {fileID: 8300000, guid: bc6e179036f108745b83722d5ce6c0eb, type: 3}
+    volume: 0.9
+    pitch: {x: 1, y: 1}
+    minDistance: 6
+    maxDistance: 50
+    playSeconds: 0
+  - id: hum
+    clips:
+    - {fileID: 8300000, guid: 329344d010ff97645b2dc90c4bcfe0b4, type: 3}
+    volume: 0.5
+    pitch: {x: 1, y: 1}
+    minDistance: 2
+    maxDistance: 25
+    playSeconds: 0
+  - id: pickup_medkit
+    clips:
+    - {fileID: 8300000, guid: 49a3099684f80eb4ea0f6addd032345c, type: 3}
+    volume: 0.8
+    pitch: {x: 1, y: 1}
+    minDistance: 3
+    maxDistance: 30
+    playSeconds: 0
+  - id: pickup_battery
+    clips:
+    - {fileID: 8300000, guid: 7c23acb152983e645b10df5f0dd7667e, type: 3}
+    volume: 0.8
+    pitch: {x: 1, y: 1}
+    minDistance: 3
+    maxDistance: 30
+    playSeconds: 0
+  - id: pickup_fuse
+    clips:
+    - {fileID: 8300000, guid: 72b9dec7a61d8c84c8b9466431ea971b, type: 3}
+    volume: 0.8
+    pitch: {x: 1, y: 1}
+    minDistance: 3
+    maxDistance: 30
+    playSeconds: 0
+  - id: pickup_pistol
+    clips:
+    - {fileID: 8300000, guid: 20bb5fddeeef3e544904c53306e28486, type: 3}
+    volume: 0.8
+    pitch: {x: 1, y: 1}
+    minDistance: 3
+    maxDistance: 30
+    playSeconds: 0
+  - id: keypad_key
+    clips:
+    - {fileID: 8300000, guid: c1faa8cad6ea6b642961af8b2cc9f83d, type: 3}
+    - {fileID: 8300000, guid: 33e666c1258cbff4da763b8f20158b7a, type: 3}
+    - {fileID: 8300000, guid: 1029aa70c6f20d240bc66579738d9aa3, type: 3}
+    volume: 0.6
+    pitch: {x: 0.95, y: 1.05}
+    minDistance: 3
+    maxDistance: 30
+    playSeconds: 0
+  - id: keypad_ok
+    clips:
+    - {fileID: 8300000, guid: 2ec09561bba6cc14b9605ff0a2d1f59b, type: 3}
+    volume: 0.8
+    pitch: {x: 1, y: 1}
+    minDistance: 3
+    maxDistance: 30
+    playSeconds: 0
+  - id: keypad_bad
+    clips:
+    - {fileID: 8300000, guid: 9165d5e668ac8cb45b6af0ec831a6d6b, type: 3}
+    volume: 0.8
+    pitch: {x: 1, y: 1}
+    minDistance: 3
+    maxDistance: 30
+    playSeconds: 0
+  - id: radio_static
+    clips:
+    - {fileID: 8300000, guid: a6393e8f59e9e884bafce5f71e4f4094, type: 3}
+    volume: 0.5
+    pitch: {x: 0.95, y: 1.05}
+    minDistance: 3
+    maxDistance: 30
+    playSeconds: 0
+  - id: ui_click
+    clips:
+    - {fileID: 8300000, guid: e9771278a81b7f643919e7c38401023a, type: 3}
+    volume: 0.7
+    pitch: {x: 1, y: 1}
+    minDistance: 3
+    maxDistance: 30
+    playSeconds: 0
+  - id: orb_fire
+    clips:
+    - {fileID: 8300000, guid: 1c296947519a8ef4380c5302267cf26d, type: 3}
+    - {fileID: 8300000, guid: 50238a32333496c46bf4f0eef34ca63c, type: 3}
+    volume: 0.8
+    pitch: {x: 0.7, y: 0.8}
+    minDistance: 5
+    maxDistance: 60
+    playSeconds: 0
+  - id: stomp_charge
+    clips:
+    - {fileID: 8300000, guid: 72d6de983942e1a4783f7ad2846d9ed8, type: 3}
+    volume: 1
+    pitch: {x: 1, y: 1}
+    minDistance: 20
+    maxDistance: 120
+    playSeconds: 0
+  - id: stomp
+    clips:
+    - {fileID: 8300000, guid: bc519069714c11d4c853c049c1bf30ed, type: 3}
+    - {fileID: 8300000, guid: 9b73f107594078f4788eec56383669cc, type: 3}
+    volume: 1.2
+    pitch: {x: 0.6, y: 0.7}
+    minDistance: 20
+    maxDistance: 130
+    playSeconds: 0
+  - id: titan_step
+    clips:
+    - {fileID: 8300000, guid: 0e81a787060d7034680f3fe9ae04e482, type: 3}
+    volume: 1
+    pitch: {x: 0.9, y: 1.1}
+    minDistance: 15
+    maxDistance: 110
+    playSeconds: 0
+  - id: step_gravel
+    clips:
+    - {fileID: 8300000, guid: d82442fc02975fc4ab9d561d6c49c032, type: 3}
+    - {fileID: 8300000, guid: 83557423add937f469f36766590944e2, type: 3}
+    volume: 0.7
+    pitch: {x: 0.9, y: 1.1}
+    minDistance: 2
+    maxDistance: 25
+    playSeconds: 0
+  - id: step_stone
+    clips:
+    - {fileID: 8300000, guid: b0dddbb31071fa74682111a7549e3f85, type: 3}
+    volume: 0.7
+    pitch: {x: 0.9, y: 1.1}
+    minDistance: 2
+    maxDistance: 25
+    playSeconds: 0
+  - id: step_dirt
+    clips:
+    - {fileID: 8300000, guid: d82442fc02975fc4ab9d561d6c49c032, type: 3}
+    volume: 0.7
+    pitch: {x: 0.9, y: 1.1}
+    minDistance: 2
+    maxDistance: 25
+    playSeconds: 0
+  - id: step_grass
+    clips:
+    - {fileID: 8300000, guid: 677570ae54837834bbf6024993ff48d9, type: 3}
+    - {fileID: 8300000, guid: c2cebac0b9e68e444bd8bed8fe301053, type: 3}
+    volume: 0.6
+    pitch: {x: 0.9, y: 1.1}
+    minDistance: 2
+    maxDistance: 25
+    playSeconds: 0
+  - id: step_sand
+    clips:
+    - {fileID: 8300000, guid: 83557423add937f469f36766590944e2, type: 3}
+    volume: 0.7
+    pitch: {x: 0.85, y: 0.95}
+    minDistance: 2
+    maxDistance: 25
+    playSeconds: 0
+  - id: step_rock
+    clips:
+    - {fileID: 8300000, guid: b0dddbb31071fa74682111a7549e3f85, type: 3}
+    volume: 0.7
+    pitch: {x: 0.75, y: 0.85}
+    minDistance: 2
+    maxDistance: 25
+    playSeconds: 0
+  - id: step_puddle
+    clips:
+    - {fileID: 8300000, guid: 38ef517dd7aa3c04aa6471249d19ca11, type: 3}
+    - {fileID: 8300000, guid: 064b21c2633f2dd408edb8f457d5e85d, type: 3}
+    volume: 0.8
+    pitch: {x: 0.9, y: 1.1}
+    minDistance: 2
+    maxDistance: 25
+    playSeconds: 0

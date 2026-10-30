@@ -45,7 +45,11 @@ namespace SignalLost
 
         public bool CanInteract => NextInsertable > 0;
 
-        void Start() => RefreshSlots();
+        void Start()
+        {
+            RefreshSlots();
+            Sfx.Loop(gameObject, "hum", volumeScale: 0.36f);
+        }
 
         public void Interact(GameObject interactor)
         {

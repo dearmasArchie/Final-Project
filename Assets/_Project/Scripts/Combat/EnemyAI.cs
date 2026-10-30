@@ -14,6 +14,7 @@ namespace SignalLost
         public enum State { Patrol, Chase, Attack, Stunned, Dead }
 
         static readonly List<EnemyAI> all = new List<EnemyAI>();
+        public static IReadOnlyList<EnemyAI> All => all;
         static readonly int SpeedParam = Animator.StringToHash("Speed");
         static readonly int ShootParam = Animator.StringToHash("Shoot");
         static readonly int HitParam = Animator.StringToHash("Hit");
@@ -58,6 +59,7 @@ namespace SignalLost
 
         void Awake()
         {
+            if (!TryGetComponent<EnemyAudio>(out _)) gameObject.AddComponent<EnemyAudio>();
             agent = GetComponent<NavMeshAgent>();
             health = GetComponent<Health>();
             attack = GetComponent<EnemyAttack>();
@@ -203,6 +205,7 @@ namespace SignalLost
                 if (animator != null) animator.SetBool(ShootParam, false);
             }
 
+            if (CurrentState == State.Patrol && next == State.Chase) Sfx.Play("alert_beep", transform.position);
             CurrentState = next;
             agent.isStopped = next == State.Stunned;
             agent.updateRotation = next != State.Attack;
@@ -238,6 +241,7 @@ namespace SignalLost
         {
             if (CurrentState == State.Dead) return;
             if (animator != null) animator.SetTrigger(HitParam);
+            Sfx.Play("enemy_hit", transform.position + Vector3.up);
             hitFlashTimer = 0.08f;
             foreach (var r in bodyRenderers) r.SetPropertyBlock(hitBlock);
             Alert(broadcast: true);
@@ -257,12 +261,14 @@ namespace SignalLost
         {
             if (CurrentState == State.Dead) return;
             EnterState(State.Stunned);
+            Sfx.Play("stun", transform.position + Vector3.up);
             stunTimer = stats.stunDuration;
         }
 
         void OnDied()
         {
             EnterState(State.Dead);
+            Sfx.Play("enemy_die", transform.position + Vector3.up);
             agent.enabled = false;
             foreach (var c in GetComponentsInChildren<Collider>()) c.enabled = false;
             if (animator != null) animator.SetTrigger(DieParam);

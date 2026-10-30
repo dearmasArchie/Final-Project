@@ -14,6 +14,7 @@ namespace SignalLost
         [SerializeField] Transform tetherPoint;
 
         Health health;
+        AudioSource hum;
         Collider[] colliders;
         MaterialPropertyBlock dark;
 
@@ -24,6 +25,7 @@ namespace SignalLost
         void Awake()
         {
             health = GetComponent<Health>();
+            hum = Sfx.Loop(gameObject, "hum", volumeScale: 0.6f, pitch: 1.4f);
             colliders = GetComponentsInChildren<Collider>();
             dark = new MaterialPropertyBlock();
             dark.SetColor("_BaseColor", new Color(0.1f, 0.1f, 0.1f));
@@ -37,6 +39,7 @@ namespace SignalLost
         {
             foreach (var c in colliders) c.enabled = false;
             foreach (var r in glowRenderers) r.SetPropertyBlock(dark);
+            if (hum != null) hum.Stop();
             ExplosionFlash.Spawn(transform.position + Vector3.up * 3f, 2f);
             Destroyed?.Invoke(this);
         }
@@ -44,6 +47,7 @@ namespace SignalLost
         public void Reboot(float healthFraction)
         {
             health.SetHealth(health.Max * healthFraction);
+            if (hum != null) hum.Play();
             foreach (var c in colliders) c.enabled = true;
             foreach (var r in glowRenderers) r.SetPropertyBlock(null);
         }

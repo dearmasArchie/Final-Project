@@ -34,6 +34,7 @@ namespace SignalLost
 
         void SetUp(bool up)
         {
+            if (IsUp && !up) Sfx.Play("shield_break", transform.position);
             IsUp = up;
             shieldCollider.enabled = up;
             if (shieldRenderer != null) shieldRenderer.enabled = up;

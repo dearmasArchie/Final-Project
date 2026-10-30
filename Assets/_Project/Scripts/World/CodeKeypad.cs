@@ -63,6 +63,7 @@ namespace SignalLost
             string code = Code;
             if (!open || closeAt >= 0f || !char.IsDigit(c) || entry.Length >= code.Length) return;
             entry += c;
+            Sfx.Play2D("keypad_key");
             if (entry.Length < code.Length)
             {
                 Refresh("", Color.white);
@@ -74,12 +75,14 @@ namespace SignalLost
                 GameManager.Instance.MarkCleared(unlockId);
                 door.Unlock();
                 door.Open();
+                Sfx.Play2D("keypad_ok");
                 Refresh("ACCESS GRANTED", new Color(0.4f, 1f, 0.5f));
                 closeAt = Time.unscaledTime + 1f;
                 ObjectiveManager.RefreshNow();
             }
             else
             {
+                Sfx.Play2D("keypad_bad");
                 Refresh("ACCESS DENIED", new Color(1f, 0.3f, 0.25f));
                 entry = "";
             }

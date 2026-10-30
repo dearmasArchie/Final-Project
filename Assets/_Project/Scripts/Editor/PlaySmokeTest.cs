@@ -221,6 +221,7 @@ namespace SignalLost.EditorTools
                 Write($"smoketest: after Play scene={SceneManager.GetActiveScene().name}, player={(player != null ? player.transform.position.ToString() : "none")}, " +
                       $"HUD={HUDController.Instance != null}, menus={MenuController.Instance != null}, timer={GameManager.Instance.TimeRemaining:0}, timeScale={Time.timeScale}");
                 ReportTrees();
+                ReportAudio();
                 Write(errors.Count == 0 ? "smoketest: no errors" : "smoketest: ERRORS\n  " + string.Join("\n  ", errors));
                 Write("done smoketest");
                 SessionState.SetBool(ActiveKey, false);
@@ -228,6 +229,23 @@ namespace SignalLost.EditorTools
                 Application.logMessageReceived -= OnLog;
                 EditorApplication.ExitPlaymode();
             }
+        }
+
+        /// <summary>The library loads, the mixer volumes are exposed, music is running, and the player has footsteps.</summary>
+        static void ReportAudio()
+        {
+            var library = Sfx.Library;
+            if (library == null) { Write("audio: NO LIBRARY (run the audio command)"); return; }
+            bool music = library.mixer.SetFloat(Sfx.MusicParam, -3f);
+            bool sfx = library.mixer.SetFloat(Sfx.SfxParam, 0f);
+            Sfx.ApplySavedVolumes();
+            var player = GameObject.FindGameObjectWithTag("Player");
+            var source = Object.FindFirstObjectByType<MusicManager>();
+            int playing = 0;
+            if (source != null) foreach (var a in source.GetComponents<AudioSource>()) if (a.isPlaying) playing++;
+            Sfx.Play2D("pulse_fire");
+            Write($"audio: sounds={library.sounds.Length}, mixer music={music} sfx={sfx}, music manager={source != null} tracks playing={playing}, " +
+                  $"footsteps={(player != null && player.GetComponent<FootstepPlayer>() != null)}, bots with servo={Object.FindObjectsByType<EnemyAudio>(FindObjectsSortMode.None).Length}");
         }
 
         /// <summary>Every terrain tree should stop the player: a chest-height ray at each trunk must hit the terrain's tree collider.</summary>

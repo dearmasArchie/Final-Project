@@ -14,6 +14,7 @@ namespace SignalLost
 
         public static void Spawn(Vector3 position, float radius)
         {
+            Sfx.Play(radius >= 4f ? "explosion_big" : radius >= 1.5f ? "explosion" : "spark", position);
             var go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             go.name = "ExplosionFlash";
             Destroy(go.GetComponent<Collider>());

@@ -27,6 +27,7 @@ namespace SignalLost
         public void Interact(GameObject interactor)
         {
             GameManager.Instance.MarkCleared(PoweredId);
+            Sfx.Play("power_on", transform.position);
             SetVisuals(true);
             ExplosionFlash.Spawn(transform.position, 0.6f); // spark
             if (HUDController.Instance != null) HUDController.Instance.ShowToast("POWER RESTORED");

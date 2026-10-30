@@ -24960,6 +24960,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1925276326}
     m_Modifications:
+    - target: {fileID: 2931610708823306289, guid: cf4223d659f57c749bf06d6d33baf1bb, type: 3}
+      propertyPath: hitMask.m_Bits
+      value: 3383
+      objectReference: {fileID: 0}
     - target: {fileID: 4520204232077583503, guid: cf4223d659f57c749bf06d6d33baf1bb, type: 3}
       propertyPath: m_Name
       value: Enforcer_Gen_E1
@@ -24967,6 +24971,10 @@ PrefabInstance:
     - target: {fileID: 5546327588265896338, guid: cf4223d659f57c749bf06d6d33baf1bb, type: 3}
       propertyPath: persistentId
       value: Gen_E1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5546327588265896338, guid: cf4223d659f57c749bf06d6d33baf1bb, type: 3}
+      propertyPath: sightMask.m_Bits
+      value: 3383
       objectReference: {fileID: 0}
     - target: {fileID: 5546327588265896338, guid: cf4223d659f57c749bf06d6d33baf1bb, type: 3}
       propertyPath: waypoints.Array.size
@@ -26811,6 +26819,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1806505568}
     m_Modifications:
+    - target: {fileID: 2931610708823306289, guid: cf4223d659f57c749bf06d6d33baf1bb, type: 3}
+      propertyPath: hitMask.m_Bits
+      value: 3383
+      objectReference: {fileID: 0}
     - target: {fileID: 4520204232077583503, guid: cf4223d659f57c749bf06d6d33baf1bb, type: 3}
       propertyPath: m_Name
       value: Enforcer_Island_E2
@@ -26818,6 +26830,10 @@ PrefabInstance:
     - target: {fileID: 5546327588265896338, guid: cf4223d659f57c749bf06d6d33baf1bb, type: 3}
       propertyPath: persistentId
       value: Island_E2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5546327588265896338, guid: cf4223d659f57c749bf06d6d33baf1bb, type: 3}
+      propertyPath: sightMask.m_Bits
+      value: 3383
       objectReference: {fileID: 0}
     - target: {fileID: 5546327588265896338, guid: cf4223d659f57c749bf06d6d33baf1bb, type: 3}
       propertyPath: waypoints.Array.size

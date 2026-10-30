@@ -13,8 +13,13 @@ namespace SignalLost
         [SerializeField] float damageTickInterval = 0.25f;
 
         float tickTimer;
+        AudioSource buzz;
 
-        void Awake() => SetBeam(false, Vector3.zero);
+        void Awake()
+        {
+            buzz = Sfx.Loop(gameObject, "shock_beam", autoplay: false);
+            SetBeam(false, Vector3.zero);
+        }
 
         public override void Tick(EnemyAI ai, Vector3 target)
         {
@@ -37,6 +42,11 @@ namespace SignalLost
 
         void SetBeam(bool on, Vector3 target)
         {
+            if (buzz != null)
+            {
+                if (on && !buzz.isPlaying) buzz.Play();
+                else if (!on && buzz.isPlaying) buzz.Stop();
+            }
             if (beam == null) return;
             beam.enabled = on;
             if (!on) return;

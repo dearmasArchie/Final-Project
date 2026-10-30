@@ -32,6 +32,7 @@ namespace SignalLost
             if (effectPrefab == null) return;
             var effect = Instantiate(effectPrefab, transform.TransformPoint(offset), Quaternion.identity);
             effect.transform.localScale *= scale;
+            Sfx.Play(effectPrefab.name.Contains("Big") ? "explosion_big" : "explosion", effect.transform.position);
             // Particle systems ignore transform scale unless they scale with the hierarchy
             foreach (var ps in effect.GetComponentsInChildren<ParticleSystem>())
             {
