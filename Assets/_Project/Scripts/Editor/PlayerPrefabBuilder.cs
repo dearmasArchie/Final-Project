@@ -3,6 +3,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 using Object = UnityEngine.Object;
 
 namespace SignalLost.EditorTools
@@ -46,6 +47,9 @@ namespace SignalLost.EditorTools
             camGo.transform.localPosition = new Vector3(0, 1.6f, 0);
             camGo.GetComponent<Camera>().nearClipPlane = 0.05f;
             var cam = camGo.transform;
+            // Mouse look rotates the pivot; the shake only offsets its position, so they never fight
+            camGo.AddComponent<CameraShake>();
+            camGo.GetComponent<Camera>().GetUniversalAdditionalCameraData().renderPostProcessing = true;
 
             // Greybox gun: replaced by the Sci-fi Pistol model in the art pass.
             var gun = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -68,6 +72,11 @@ namespace SignalLost.EditorTools
             beam.shadowCastingMode = ShadowCastingMode.Off;
             var beamColor = new Color(0.5f, 0.95f, 1f);
             beam.sharedMaterial = Mat("OverloadBeam", beamColor, beamColor * 6f);
+            var lightning = beam.gameObject.AddComponent<LightningLine>();
+            var lso = new SerializedObject(lightning);
+            lso.FindProperty("jitter").floatValue = 0.12f;
+            lso.FindProperty("segments").intValue = 16;
+            lso.ApplyModifiedPropertiesWithoutUndo();
 
             root.AddComponent<PlayerInputReader>();
             var fpc = root.AddComponent<FirstPersonController>();

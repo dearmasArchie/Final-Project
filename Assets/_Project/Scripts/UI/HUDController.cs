@@ -39,6 +39,8 @@ namespace SignalLost
         [SerializeField] TMP_Text codeTitle;
         [SerializeField] TMP_Text codeDisplay;
         [SerializeField] TMP_Text codeStatus;
+        [SerializeField] TMP_Text hitMarker;
+        [SerializeField] UnityEngine.UI.Image damageFlash;
         [SerializeField] Color timerNormal = Color.white;
         [SerializeField] Color timerWarning = new Color(1f, 0.25f, 0.2f);
 
@@ -46,6 +48,8 @@ namespace SignalLost
 
         float radioHideTime;
         float toastHideTime;
+        float hitMarkerTime;
+        float damageFlashAlpha;
 
         void Awake() => Instance = this;
 
@@ -72,6 +76,8 @@ namespace SignalLost
             radioPanel.SetActive(false);
             toastText.gameObject.SetActive(false);
             HideCodePanel();
+            hitMarker.alpha = 0f;
+            damageFlash.color = new Color(1f, 0f, 0f, 0f);
         }
 
         void Update()
@@ -83,7 +89,25 @@ namespace SignalLost
 
             if (radioPanel.activeSelf && Time.unscaledTime >= radioHideTime) radioPanel.SetActive(false);
             if (toastText.gameObject.activeSelf && Time.unscaledTime >= toastHideTime) toastText.gameObject.SetActive(false);
+
+            hitMarker.alpha = Mathf.Clamp01((hitMarkerTime - Time.unscaledTime) / 0.15f);
+            if (damageFlashAlpha > 0f)
+            {
+                damageFlashAlpha = Mathf.Max(0f, damageFlashAlpha - Time.unscaledDeltaTime * 1.5f);
+                damageFlash.color = new Color(1f, 0f, 0f, damageFlashAlpha);
+            }
         }
+
+        /// <summary>X around the crosshair when a shot hits; red for a weak-point crit.</summary>
+        public void ShowHitMarker(bool crit)
+        {
+            hitMarker.color = crit ? new Color(1f, 0.25f, 0.2f) : Color.white;
+            hitMarker.fontSize = crit ? 44f : 34f;
+            hitMarkerTime = Time.unscaledTime + 0.15f;
+        }
+
+        /// <summary>Red screen-edge flash when the player takes damage (stronger for bigger hits).</summary>
+        public void FlashDamage(float amount) => damageFlashAlpha = Mathf.Clamp(damageFlashAlpha + amount / 60f, 0.15f, 0.6f);
 
         public void SetHealth(float current, float max)
         {

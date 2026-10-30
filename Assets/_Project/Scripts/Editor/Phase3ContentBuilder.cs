@@ -161,6 +161,42 @@ namespace SignalLost.EditorTools
                 var vent = Child(root, "ShoulderVent", PrimitiveType.Cube, new Vector3(x, 4.25f, -0.1f), new Vector3(0.7f, 0.45f, 0.7f), ventMat);
                 SetRef(vent.AddComponent<BossVent>(), "boss", boss);
             }
+            // Phase 2: chest core, tether anchor + two lightning tethers, shockwave prefab, Stinger reinforcements
+            var core = Child(root, "ChestCore", PrimitiveType.Sphere, new Vector3(0, 3.2f, 1.15f), Vector3.one * 0.8f,
+                Mat("Boss_Core", new Color(0.25f, 0.2f, 0.1f), new Color(0.5f, 0.4f, 0.1f)));
+            SetRef(core.AddComponent<BossCore>(), "boss", boss);
+            var anchor = new GameObject("TetherAnchor").transform;
+            anchor.SetParent(root.transform, false);
+            anchor.localPosition = new Vector3(0, 4.2f, 0);
+            var tetherMat = Mat("Boss_Tether", new Color(0.4f, 0.9f, 1f), new Color(1f, 3f, 4f));
+            var tethers = new LightningLine[2];
+            for (int i = 0; i < 2; i++)
+            {
+                var go = new GameObject($"Tether{i + 1}");
+                go.transform.SetParent(root.transform, false);
+                var line = go.AddComponent<LineRenderer>();
+                line.widthMultiplier = 0.12f;
+                line.sharedMaterial = tetherMat;
+                line.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                tethers[i] = go.AddComponent<LightningLine>();
+            }
+
+            var ringGo = new GameObject("ShockwaveRing");
+            var ringLine = ringGo.AddComponent<LineRenderer>();
+            ringLine.widthMultiplier = 0.35f;
+            ringLine.sharedMaterial = Mat("Boss_Shockwave", new Color(1f, 0.6f, 0.2f), new Color(4f, 1.8f, 0.4f));
+            ringLine.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            ringGo.AddComponent<ShockwaveRing>();
+            var ring = SavePrefab(ringGo, $"{PrefabFolder}/Enemies/ShockwaveRing.prefab").GetComponent<ShockwaveRing>();
+
+            var bso = new SerializedObject(boss);
+            SetObjects(bso.FindProperty("tethers"), tethers);
+            bso.FindProperty("tetherAnchor").objectReferenceValue = anchor;
+            bso.FindProperty("coreRenderer").objectReferenceValue = core.GetComponent<Renderer>();
+            bso.FindProperty("shockwavePrefab").objectReferenceValue = ring;
+            bso.FindProperty("reinforcementPrefab").objectReferenceValue = stinger;
+            bso.ApplyModifiedPropertiesWithoutUndo();
+
             return SavePrefab(root, $"{PrefabFolder}/Enemies/Unit00_Titan.prefab");
         }
 
@@ -470,6 +506,20 @@ namespace SignalLost.EditorTools
             bso.ApplyModifiedPropertiesWithoutUndo();
             var boss = Place(bossGate.transform, titan, new Vector3(140f, 6.3f, 26f));
             boss.transform.rotation = Quaternion.Euler(0, 0, 0);
+
+            // Phase 2 power pylons on the pier (replace the greybox pylon boxes)
+            HideGreybox("Pylon_West");
+            HideGreybox("Pylon_East");
+            var pylons = new[]
+            {
+                MakePylon(bossGate.transform, "Pylon_West", new Vector3(131f, 6.3f, 10f)),
+                MakePylon(bossGate.transform, "Pylon_East", new Vector3(149f, 6.3f, 10f))
+            };
+            var reinforcementPoints = Points(bossGate.transform, "BossReinforcement", new Vector3(134f, 6.3f, 32f), new Vector3(146f, 6.3f, 32f));
+            var bossSo = new SerializedObject(boss.GetComponent<BossController>());
+            SetObjects(bossSo.FindProperty("pylons"), pylons);
+            SetObjects(bossSo.FindProperty("reinforcementPoints"), reinforcementPoints);
+            bossSo.ApplyModifiedPropertiesWithoutUndo();
             UnityEventTools.AddPersistentListener(boss.GetComponent<BossController>().onDefeated, new UnityAction(bossLine.Play));
 
             UnityEventTools.AddPersistentListener(upload.onUploadComplete, new UnityAction(gate.Unlock));
@@ -581,6 +631,34 @@ namespace SignalLost.EditorTools
             var cso = new SerializedObject(cp);
             cso.FindProperty("condition").enumValueIndex = (int)condition;
             cso.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        static BossPylon MakePylon(Transform parent, string name, Vector3 floor)
+        {
+            var root = new GameObject(name);
+            root.layer = enemyLayer;
+            root.transform.SetParent(parent, false);
+            root.transform.position = floor;
+            var column = Child(root, "Column", PrimitiveType.Cube, new Vector3(0, 3f, 0), new Vector3(1f, 6f, 1f),
+                Mat("Pylon_Column", new Color(0.3f, 0.32f, 0.35f), Color.black));
+            var glowMat = Mat("Pylon_Glow", new Color(0.4f, 0.9f, 1f), new Color(1f, 3f, 4f));
+            var band = Child(root, "GlowBand", PrimitiveType.Cube, new Vector3(0, 3f, 0), new Vector3(1.05f, 0.4f, 1.05f), glowMat, keepCollider: false);
+            var top = Child(root, "GlowTop", PrimitiveType.Sphere, new Vector3(0, 6.3f, 0), Vector3.one * 0.8f, glowMat);
+            var tetherPoint = new GameObject("TetherPoint").transform;
+            tetherPoint.SetParent(root.transform, false);
+            tetherPoint.localPosition = new Vector3(0, 6.3f, 0);
+            var health = root.AddComponent<Health>();
+            var hso = new SerializedObject(health);
+            hso.FindProperty("maxHealth").floatValue = 100f;
+            hso.FindProperty("destroyOnDeath").boolValue = false;
+            hso.ApplyModifiedPropertiesWithoutUndo();
+            var pylon = root.AddComponent<BossPylon>();
+            var pso = new SerializedObject(pylon);
+            SetObjects(pso.FindProperty("glowRenderers"), band.GetComponent<Renderer>(), top.GetComponent<Renderer>());
+            pso.FindProperty("tetherPoint").objectReferenceValue = tetherPoint;
+            pso.ApplyModifiedPropertiesWithoutUndo();
+            column.name = "Column";
+            return pylon;
         }
 
         static void SetWave(SerializedProperty wave, float atSecond, params GameObject[] enemies)

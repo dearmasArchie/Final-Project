@@ -36,5 +36,12 @@ namespace SignalLost
             Current = maxHealth;
             IsDead = false;
         }
+
+        /// <summary>Revive or adjust HP directly (e.g. Titan pylons rebooting at half health).</summary>
+        public void SetHealth(float value)
+        {
+            Current = Mathf.Clamp(value, 0f, maxHealth);
+            IsDead = Current <= 0f;
+        }
     }
 }

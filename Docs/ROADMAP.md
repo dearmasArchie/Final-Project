@@ -16,7 +16,7 @@ The full design is in [GameConcept.md](GameConcept.md). This file breaks the bui
 | 2 – Combat & Interactions | ✅ Done, play-tested |
 | 3 – Full Game Loop | 🟡 Built; all parts tested — **one full timed run from Main Menu to Victory still needed** |
 | Change requests (armory code, elevator power, underground puzzles) | ✅ Done, play-tested |
-| 4 – Boss, Art & Audio | ⬜ Not started |
+| 4 – Boss, Art & Audio | 🟡 Code done (Titan Phase 2, hit feedback, lightning, post-processing); art and audio passes waiting on asset downloads |
 | 5 – Polish & Ship | ⬜ Not started |
 
 **Git:** all work is committed locally on branch `docs/roadmap` (latest: `d980f2a`). `main` holds only the template commit. Nothing is pushed to GitHub yet.
@@ -94,9 +94,9 @@ Goal: walk from the safe room to the bunker and back, and shoot a test target.
 > * **Build HUD Prefab** – creates `Assets/_Project/UI/HUD.prefab` wired to `HUDController`.
 > * **Build Greybox (Both Scenes)** – builds the island and bunker blockouts, spawn points, elevator panels, the HUD, a temporary `DebugPlayer`, and bakes the NavMesh. Re-running rebuilds the `Greybox` object, so move hand-made changes out of it first.
 > * TextMeshPro resources are imported (Assets/TextMesh Pro).
-> * If the Tools menu items don't appear (seen in Unity 6.4), create an empty file `Library/SignalLost/Commands/<command>.cmd` (`setup`, `import-tmp`, `hud`, `greybox`, `player`, `swap-player`, `sandbox`, `phase2`, `phase3`, `bunker-path`, `smoketest`) and the Editor runs it within a second. Results: `Library/SignalLost/bridge.log`.
+> * If the Tools menu items don't appear (seen in Unity 6.4), create an empty file `Library/SignalLost/Commands/<command>.cmd` (`setup`, `import-tmp`, `hud`, `greybox`, `player`, `swap-player`, `sandbox`, `phase2`, `phase3`, `postfx`, `bunker-path`, `smoketest`) and the Editor runs it within a second. Results: `Library/SignalLost/bridge.log`.
 > * `DebugPlayer` (WASD, mouse, Space, E) is only for testing until A's Player prefab arrives. Delete it then.
-> * `smoketest` plays the game automatically (Main Menu → briefing → both island bunkers → underground puzzles) and writes results to `bridge.log`.
+> * `smoketest` plays the game automatically (Main Menu → briefing → both island bunkers → underground puzzles → Titan Phase 2) and writes results to `bridge.log`.
 
 ### Both – end of day
 - [x] A delivers the Player prefab; B places it in both scenes (DebugPlayer removed)
@@ -243,18 +243,20 @@ Three more puzzles in the underground facility (options 1D, 3 and 4).
 Goal: content complete. **Feature freeze at the end of this phase.**
 
 ### A – Boss & combat feel
-- [ ] Boss Phase 2: pylon tethers, invulnerability, shockwave stomp, stun window, pylons reboot
+- [x] Boss Phase 2: pylon tethers, invulnerability, shockwave stomp, stun window, pylons reboot (+ 2 Stinger reinforcements, chest core double damage) – `BossPylon.cs`, `BossCore.cs`, `ShockwaveRing.cs`
 - [ ] Import the Titan model (Yellow Heavy Robot); rig with Mixamo or animate in code
-- [ ] Hit feedback: hit markers, crit marker, enemy hit flash, sparks, screen shake on Overload
-- [ ] `LightningLine.cs` for the Overload Beam and tethers
+- [x] Hit feedback: hit markers (red X for crits), enemy hit flash, sparks, screen shake on Overload and damage, red damage flash – `ImpactEffects.cs`, `CameraShake.cs`
+- [x] `LightningLine.cs` for the Overload Beam and tethers
 - [ ] Balance pass on damage, HP, and fire rates (see the tables in GameConcept.md)
 
 ### B – Art pass
-- [ ] Download the approved assets (see the asset list in GameConcept.md, section 13) at 2K; set texture Max Size to 2048
-- [ ] Add every asset to `Credits.txt` as it is imported
+- [x] Download Part A of `Docs/ASSET_DOWNLOADS.md` (Poly Haven + OpenGameArt, 164 MB) into `Assets/_Project/Art/PolyHaven` and `Assets/_Project/Audio`; imported without errors
+- [ ] You: download Part B (Asset Store, Mixamo, Sketchfab) – see `Docs/ASSET_DOWNLOADS.md`
+- [x] `Assets/_Project/Credits.txt` created with every downloaded asset (Part B entries listed, to confirm on import)
 - [ ] Island: paint terrain layers, place pine trees and rocks, add the ocean water
 - [ ] Sky: Poly Haven sunset HDRI as the skybox; match the sun color and angle
-- [ ] Post-processing Volume: ACES tonemapping, bloom, color adjustments, vignette; SSAO on the URP renderer
+- [x] Post-processing Volume: ACES tonemapping, bloom, color adjustments, vignette (outdoor + darker bunker profile; `postfx` command)
+- [ ] SSAO: add the Screen Space Ambient Occlusion feature to `Assets/Settings/PC_Renderer` (one click in the Inspector)
 - [ ] Bunker: apply concrete and metal textures to the ProBuilder geometry; add props, lights, and red/cyan hazard lighting
 - [ ] Replace placeholder crates, barrels, and medkits with Poly Haven models
 - [ ] UI: apply the Kenney Sci-Fi UI graphics and the Rajdhani font

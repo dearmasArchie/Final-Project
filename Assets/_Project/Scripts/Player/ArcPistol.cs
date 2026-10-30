@@ -40,7 +40,7 @@ namespace SignalLost
         [SerializeField] float overloadChargeTime = 1f;
         [SerializeField] int overloadAmmoCost = 4;
         [SerializeField] float overloadCooldown = 2f;
-        [SerializeField] float beamVisibleTime = 0.1f;
+        [SerializeField] float beamVisibleTime = 0.15f;
 
         PlayerInputReader input;
         float nextShotTime;
@@ -136,6 +136,8 @@ namespace SignalLost
                     target = hit.collider.GetComponentInParent<IDamageable>();
                 target?.TakeDamage(overloadDamage, DamageType.Overload, hit.point);
                 GameManager.Instance.RegisterShot(target != null);
+                ImpactEffects.Sparks(hit.point, hit.normal, new Color(0.6f, 0.95f, 1f), 24);
+                if (target != null && HUDController.Instance != null) HUDController.Instance.ShowHitMarker(false);
             }
             else
             {
@@ -143,6 +145,7 @@ namespace SignalLost
             }
 
             Fired?.Invoke(muzzle.position);
+            if (CameraShake.Instance != null) CameraShake.Instance.Shake(0.06f, 0.25f);
             if (beamLine != null) StartCoroutine(ShowBeam(end));
             if (Magazine == 0) TryReload();
         }
@@ -155,6 +158,13 @@ namespace SignalLost
 
         IEnumerator ShowBeam(Vector3 end)
         {
+            if (beamLine.TryGetComponent<LightningLine>(out var lightning))
+            {
+                lightning.Show(muzzle.position, end);
+                yield return new WaitForSeconds(beamVisibleTime);
+                lightning.Hide();
+                yield break;
+            }
             beamLine.enabled = true;
             beamLine.SetPosition(0, muzzle.position);
             beamLine.SetPosition(1, end);

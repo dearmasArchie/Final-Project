@@ -41,6 +41,9 @@ namespace SignalLost
         Animator animator;
         Transform player;
         MaterialPropertyBlock block;
+        MaterialPropertyBlock hitBlock;
+        Renderer[] bodyRenderers;
+        float hitFlashTimer;
 
         Vector3 lastKnownPosition;
         float lostTimer;
@@ -60,6 +63,12 @@ namespace SignalLost
             attack = GetComponent<EnemyAttack>();
             animator = GetComponentInChildren<Animator>();
             block = new MaterialPropertyBlock();
+            hitBlock = new MaterialPropertyBlock();
+            hitBlock.SetColor("_BaseColor", Color.white);
+            hitBlock.SetColor("_EmissionColor", Color.white * 1.5f);
+            var renderers = new System.Collections.Generic.List<Renderer>(GetComponentsInChildren<MeshRenderer>());
+            renderers.Remove(sensorRenderer);
+            bodyRenderers = renderers.ToArray();
             zigZagSeed = Random.value * 10f;
         }
 
@@ -113,6 +122,7 @@ namespace SignalLost
 
             if (animator != null) animator.SetFloat(SpeedParam, agent.velocity.magnitude);
             UpdateSensorColor();
+            UpdateHitFlash();
         }
 
         // ------------------------------------------------------------------ states
@@ -226,6 +236,8 @@ namespace SignalLost
         {
             if (CurrentState == State.Dead) return;
             if (animator != null) animator.SetTrigger(HitParam);
+            hitFlashTimer = 0.08f;
+            foreach (var r in bodyRenderers) r.SetPropertyBlock(hitBlock);
             Alert(broadcast: true);
 
             if (CurrentState == State.Attack && stats.sideStepWhenHit && sideStepTimer <= 0f)
@@ -294,6 +306,13 @@ namespace SignalLost
             flat.y = 0f;
             if (flat.sqrMagnitude < 0.01f) return;
             transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(flat), 360f * Time.deltaTime);
+        }
+
+        void UpdateHitFlash()
+        {
+            if (hitFlashTimer <= 0f) return;
+            hitFlashTimer -= Time.deltaTime;
+            if (hitFlashTimer <= 0f) foreach (var r in bodyRenderers) r.SetPropertyBlock(null);
         }
 
         /// <summary>Attack telegraph: the sensor flashes white for this long.</summary>

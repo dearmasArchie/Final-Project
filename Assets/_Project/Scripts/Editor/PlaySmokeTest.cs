@@ -169,6 +169,50 @@ namespace SignalLost.EditorTools
                 wiring.SolveForTest();
                 Write($"junction box: starts solved={startsSolved}, in row={wiring.InputRow} out row={wiring.OutputRow}, " +
                       $"elevator up before={beforeCircuit} (\"{promptBefore}\"), after solve={wiring.Solved}/{portal.CanInteract}");
+
+                // Jump ahead to the boss: mark the upload done and ride back up
+                gm.MarkCleared(WaveSpawner.CompletedId);
+                gm.NextSpawnPointId = "ElevatorTop";
+                SceneLoader.Instance.Load("IslandExterior");
+                SessionState.SetInt(StepKey, 50);
+                SessionState.SetFloat(StartKey, now);
+            }
+            else if (step == 50 && SceneManager.GetActiveScene().name == "IslandExterior" && t > 2f)
+            {
+                var boss = Object.FindFirstObjectByType<BossController>();
+                if (boss == null) { Write("boss: NOT ACTIVE after upload"); SessionState.SetInt(StepKey, 99); return; }
+                float hpStart = boss.Health.Current;
+                boss.ForcePhase2ForTest();
+                boss.CheckPhaseForTest();
+                float hpPhase2 = boss.Health.Current;
+                // Invulnerable while tethered: vents and core do nothing
+                foreach (var vent in boss.GetComponentsInChildren<BossVent>()) vent.TakeDamage(60f, DamageType.Overload, vent.transform.position);
+                boss.GetComponentInChildren<BossCore>().TakeDamage(60f, DamageType.Pulse, boss.transform.position);
+                Write($"boss: hp start={hpStart}, phase2={boss.InPhase2} at {hpPhase2}, after hits while tethered={boss.Health.Current} (should be {hpPhase2})");
+                SessionState.SetInt(StepKey, 51);
+                SessionState.SetFloat(StartKey, now);
+            }
+            else if (step == 51 && t > 2.5f)
+            {
+                var boss = Object.FindFirstObjectByType<BossController>();
+                int rings = Object.FindObjectsByType<ShockwaveRing>(FindObjectsSortMode.None).Length;
+                var pylons = Object.FindObjectsByType<BossPylon>(FindObjectsSortMode.None);
+                foreach (var pylon in pylons) pylon.GetComponent<Health>().TakeDamage(200f, DamageType.Pulse, pylon.transform.position);
+                float before = boss.Health.Current;
+                boss.GetComponentInChildren<BossCore>().TakeDamage(20f, DamageType.Pulse, boss.transform.position);
+                Write($"boss: shockwave rings seen={rings}, pylons={pylons.Length} destroyed → stunned={boss.Stunned}, core exposed={boss.CoreExposed}, " +
+                      $"core hit 20 → hp {before} → {boss.Health.Current}");
+                SessionState.SetInt(StepKey, 52);
+                SessionState.SetFloat(StartKey, now);
+            }
+            else if (step == 52 && t > 5.5f)
+            {
+                var boss = Object.FindFirstObjectByType<BossController>();
+                var pylons = Object.FindObjectsByType<BossPylon>(FindObjectsSortMode.None);
+                int up = 0;
+                foreach (var pylon in pylons) if (!pylon.IsDown) up++;
+                Write($"boss: after stun → stunned={boss.Stunned}, pylons back up={up}/{pylons.Length} at {pylons[0].GetComponent<Health>().Current} HP, " +
+                      $"post-processing volume={Object.FindFirstObjectByType<UnityEngine.Rendering.Volume>() != null}");
                 SessionState.SetInt(StepKey, 99);
             }
             else if (step == 99)

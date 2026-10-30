@@ -60,6 +60,7 @@ namespace SignalLost.EditorTools
                     case "sandbox": PlayerPrefabBuilder.BuildSandbox(); break;
                     case "phase2": Phase2ContentBuilder.Build(); break;
                     case "phase3": Phase3ContentBuilder.Build(); break;
+                    case "postfx": PostProcessBuilder.Build(); break;
                     case "bunker-path":
                         UnityEditor.SceneManagement.EditorSceneManager.OpenScene("Assets/_Project/Scenes/IslandExterior.unity");
                         Phase2ContentBuilder.RepaintBunkerPathToCurrentBunker();

@@ -1,0 +1,30 @@
+PROJECT OUTPOST: SIGNAL LOST – Asset Credits
+IT 402W Final Project – Bulacan State University
+==============================================
+
+Built with Unity 6 (Universal Render Pipeline). Fonts: LiberationSans (TextMesh Pro, SIL Open Font License).
+
+TEXTURES, SKY AND MODELS – Poly Haven (polyhaven.com), CC0 (public domain)
+  Textures: Aerial Grass Rock, Brown Mud Leaves 01, Rocky Terrain 02, Coast Sand Rocks 02,
+            Concrete Floor Worn 001, Concrete Wall 008, Metal Plate
+  Sky:      Belfast Sunset (Pure Sky)
+  Models:   Boulder 01, Rock Moss Set 01, Barrel 01, Wooden Crate 01, Wooden Military Crate,
+            Medical Box, Metal Jerrycan
+
+AUDIO – OpenGameArt (opengameart.org), CC0 (public domain)
+  "Boss Battle (loop)" (pro-sensory)                            – boss music
+  "50 CC0 Sci-Fi SFX" (rubberduck)                              – weapon, laser, alarm sounds
+  "100 CC0 SFX" (rubberduck)                                    – impacts, explosions, UI
+  "Different steps on wood, stone, leaves, gravel and mud" (TinyWorlds) – footsteps
+
+TO ADD WHEN IMPORTED (see Docs/ASSET_DOWNLOADS.md, Part B)
+  Robot Kyle | URP – Unity Technologies (Unity Companion License)
+  Mixamo animations – Adobe (royalty-free)
+  Sci-fi Pistol [PBR] – StarGames studio (Asset Store EULA)
+  Conifers [BOTD] – forst (Asset Store EULA)
+  Particle Pack – Unity Technologies (Asset Store EULA)
+  Free Laser Weapons – Daniel SoundsGood (Asset Store EULA)
+  Sci-Fi Music Loops Pack – Robson Cozendey (Asset Store EULA)
+  Buster Drone – LaVADraGoN, Sketchfab (CC BY 4.0) – credit required
+  Yellow Heavy Robot 8K – Martark, Sketchfab (CC BY 4.0) – credit required
+  Small Motorboat – Tijmen Matthys, Sketchfab (CC BY 4.0) – credit required

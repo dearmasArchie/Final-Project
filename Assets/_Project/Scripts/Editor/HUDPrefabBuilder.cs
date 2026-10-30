@@ -109,6 +109,18 @@ namespace SignalLost.EditorTools
             Text(code.transform, "Hint", new Vector2(0, 16), new Vector2(480, 30), 18,
                 TextAlignmentOptions.Bottom, Anchor.BottomCenter, "Type the code   [Backspace] Delete   [Esc] Cancel");
 
+            // Full-screen red flash for damage (behind everything else, so it's created first among the late elements)
+            var flash = new GameObject("DamageFlash", typeof(RectTransform), typeof(Image));
+            flash.transform.SetParent(root.transform, false);
+            flash.transform.SetAsFirstSibling();
+            var flashImage = flash.GetComponent<Image>();
+            flashImage.color = new Color(1f, 0f, 0f, 0f);
+            flashImage.raycastTarget = false;
+            SetRect(flash.GetComponent<RectTransform>(), Anchor.Stretch, Vector2.zero, Vector2.zero);
+
+            var hitMarker = Text(root.transform, "HitMarker", Vector2.zero, new Vector2(80, 80), 34,
+                TextAlignmentOptions.Center, Anchor.Center, "X");
+
             var hazardText = Text(root.transform, "HazardText", new Vector2(0, -110), new Vector2(800, 40), 30,
                 TextAlignmentOptions.Center, Anchor.Center, "!! HAZARD !!");
             hazardText.color = new Color(1f, 0.25f, 0.2f);
@@ -154,6 +166,8 @@ namespace SignalLost.EditorTools
             so.FindProperty("codeTitle").objectReferenceValue = codeTitle;
             so.FindProperty("codeDisplay").objectReferenceValue = codeDisplay;
             so.FindProperty("codeStatus").objectReferenceValue = codeStatus;
+            so.FindProperty("hitMarker").objectReferenceValue = hitMarker;
+            so.FindProperty("damageFlash").objectReferenceValue = flashImage;
             so.ApplyModifiedPropertiesWithoutUndo();
 
             var prefab = PrefabUtility.SaveAsPrefabAsset(root, PrefabPath);
