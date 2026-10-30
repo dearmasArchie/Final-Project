@@ -31,10 +31,150 @@ namespace SignalLost.EditorTools
 
             var scene = EditorSceneManager.OpenScene(IslandScene);
             int rocks = PlaceRocks(Terrain.activeTerrain);
+            string puddles = PlacePuddles(Terrain.activeTerrain, 7);
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene);
             AssetDatabase.SaveAssets();
-            EditorCommandBridge.Log($"art-props: {props}, rocks={rocks}");
+            EditorCommandBridge.Log($"art-props: {props}, rocks={rocks}, puddles={puddles}");
+        }
+
+        // ------------------------------------------------------------------ puddles
+
+        const string PuddleRootName = "ArtPass_Puddles";
+        const string PuddleFolder = "Assets/_Project/Art/Island/Puddles";
+
+        /// <summary>
+        /// Rain puddles on flat stretches of the dirt roads and paths: irregular flat water shapes that follow the
+        /// ground, glossy so they mirror the sunset sky. No collider (the player walks through them). Spaced at least
+        /// 25 m apart and kept clear of buildings and rocks.
+        /// </summary>
+        static string PlacePuddles(Terrain terrain, int count)
+        {
+            var old = GameObject.Find(PuddleRootName);
+            if (old != null) Object.DestroyImmediate(old);
+            var root = new GameObject(PuddleRootName).transform;
+            if (!AssetDatabase.IsValidFolder(PuddleFolder)) AssetDatabase.CreateFolder("Assets/_Project/Art/Island", "Puddles");
+
+            var data = terrain.terrainData;
+            int res = data.alphamapResolution;
+            var maps = data.GetAlphamaps(0, 0, res, res);
+            var blocked = IslandArtBuilder.BlockedAreas(terrain);
+            var rocks = GameObject.Find(RockRootName);
+            var material = PuddleMaterial();
+            var rng = new System.Random(77);
+            var placed = new List<Vector2>();
+            var where = new List<string>();
+
+            for (int attempt = 0; attempt < 6000 && placed.Count < count; attempt++)
+            {
+                float x = 30f + (float)rng.NextDouble() * 190f;
+                float z = 15f + (float)rng.NextDouble() * 210f;
+                float u = x / data.size.x, v = z / data.size.z;
+                int ax = Mathf.RoundToInt(u * (res - 1)), az = Mathf.RoundToInt(v * (res - 1));
+                if (maps[az, ax, 1] < 0.6f) continue;                            // on a dirt road or path
+                if (data.GetSteepness(u, v) > 4f) continue;                      // water only sits on flat ground
+                var p = new Vector2(x, z);
+                if (IslandArtBuilder.IsBlocked(blocked, p)) continue;
+                bool crowded = false;
+                foreach (var other in placed)
+                    if ((other - p).sqrMagnitude < 25f * 25f) { crowded = true; break; }
+                if (crowded) continue;
+                if (rocks != null)
+                    foreach (Transform rock in rocks.transform)
+                        if ((new Vector2(rock.position.x, rock.position.z) - p).sqrMagnitude < 9f) { crowded = true; break; }
+                if (crowded) continue;
+
+                float size = Mathf.Lerp(0.9f, 1.8f, (float)rng.NextDouble());
+                var mesh = PuddleMesh(terrain, p, size, rng, $"Puddle_{placed.Count}");
+                var go = new GameObject($"Puddle_{placed.Count}");
+                go.transform.SetParent(root, false);
+                go.AddComponent<MeshFilter>().sharedMesh = mesh;
+                var renderer = go.AddComponent<MeshRenderer>();
+                renderer.sharedMaterial = material;
+                renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                GameObjectUtility.SetStaticEditorFlags(go, StaticEditorFlags.BatchingStatic);
+                placed.Add(p);
+                where.Add($"({x:0},{z:0})");
+            }
+            return $"{placed.Count} at {string.Join(" ", where)}";
+        }
+
+        /// <summary>
+        /// A wobbly disc (noise on the edge radius) in world space, each vertex lifted 2 cm above the terrain so it
+        /// follows small bumps without z-fighting. Saved as an asset so the scene keeps it.
+        /// </summary>
+        static Mesh PuddleMesh(Terrain terrain, Vector2 center, float radius, System.Random rng, string name)
+        {
+            const int segments = 28, rings = 3;
+            float seed = (float)rng.NextDouble() * 100f;
+            float stretch = Mathf.Lerp(1f, 1.7f, (float)rng.NextDouble());   // oval puddles
+            float angle = (float)rng.NextDouble() * Mathf.PI;
+            var rotation = Quaternion.Euler(0, angle * Mathf.Rad2Deg, 0);
+
+            var vertices = new List<Vector3>();
+            var uvs = new List<Vector2>();
+            var triangles = new List<int>();
+            Vector3 Point(float r, float a)
+            {
+                float edge = 1f + 0.28f * (Mathf.PerlinNoise(seed + Mathf.Cos(a) * 1.3f, seed + Mathf.Sin(a) * 1.3f) - 0.5f) * 2f;
+                var local = rotation * new Vector3(Mathf.Cos(a) * r * edge * stretch, 0f, Mathf.Sin(a) * r * edge);
+                var world = new Vector3(center.x + local.x, 0f, center.y + local.z);
+                world.y = terrain.SampleHeight(world) + terrain.transform.position.y + 0.02f;
+                return world;
+            }
+
+            // Center vertex, then rings out to the edge
+            var c = new Vector3(center.x, 0f, center.y);
+            c.y = terrain.SampleHeight(c) + terrain.transform.position.y + 0.02f;
+            vertices.Add(c);
+            uvs.Add(new Vector2(0.5f, 0.5f));
+            for (int ring = 1; ring <= rings; ring++)
+                for (int s = 0; s < segments; s++)
+                {
+                    float a = s / (float)segments * Mathf.PI * 2f;
+                    vertices.Add(Point(radius * ring / rings, a));
+                    uvs.Add(new Vector2(0.5f + Mathf.Cos(a) * 0.5f * ring / rings, 0.5f + Mathf.Sin(a) * 0.5f * ring / rings));
+                }
+            for (int s = 0; s < segments; s++)
+            {
+                int next = (s + 1) % segments;
+                triangles.AddRange(new[] { 0, 1 + next, 1 + s });
+                for (int ring = 1; ring < rings; ring++)
+                {
+                    int a0 = 1 + (ring - 1) * segments + s, a1 = 1 + (ring - 1) * segments + next;
+                    int b0 = 1 + ring * segments + s, b1 = 1 + ring * segments + next;
+                    triangles.AddRange(new[] { a0, a1, b1, a0, b1, b0 });
+                }
+            }
+
+            var mesh = new Mesh { name = name };
+            mesh.SetVertices(vertices);
+            mesh.SetUVs(0, uvs);
+            mesh.SetTriangles(triangles, 0);
+            mesh.RecalculateNormals();
+            mesh.RecalculateBounds();
+            string path = $"{PuddleFolder}/{name}.asset";
+            AssetDatabase.DeleteAsset(path);
+            AssetDatabase.CreateAsset(mesh, path);
+            return mesh;
+        }
+
+        /// <summary>Dark, near-mirror water: mostly reflection of the sky, a little of the mud colour underneath.</summary>
+        static Material PuddleMaterial()
+        {
+            string path = $"{PuddleFolder}/Puddle_Water.mat";
+            var mat = AssetDatabase.LoadAssetAtPath<Material>(path);
+            if (mat == null)
+            {
+                mat = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+                AssetDatabase.CreateAsset(mat, path);
+            }
+            mat.SetColor("_BaseColor", new Color(0.06f, 0.07f, 0.07f));
+            mat.SetFloat("_Smoothness", 0.97f);
+            mat.SetFloat("_Metallic", 0f);
+            mat.SetFloat("_EnvironmentReflections", 1f);
+            EditorUtility.SetDirty(mat);
+            return mat;
         }
 
         // ------------------------------------------------------------------ prefabs

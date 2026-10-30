@@ -261,6 +261,7 @@ Goal: content complete. **Feature freeze at the end of this phase.**
 - [x] `Assets/_Project/Credits.txt` created with every downloaded asset (Part B entries listed, to confirm on import)
 - [x] Island: paint terrain layers (grass, dirt paths, rock on slopes/hill, sand on the shore), 240 conifers with solid trunk colliders (own prefab variants in `Art/Island/Trees`) kept off roads, paths, buildings and patrol routes, glossy ocean material – `IslandArtBuilder.cs`, `art-island` command
 - [x] Island: 77 Poly Haven boulders and mossy rocks along the shore, beside the hill trail and on open ground, laid on their flattest side, kept off paths and away from trees and buildings – `PropArtBuilder.cs`, `art-props` command
+- [x] Island: 7 rain puddles on flat stretches of the dirt roads and paths (glossy, sky-reflecting, no collider) – `PropArtBuilder.cs`, `art-props` command
 - [x] Sky: Belfast sunset HDRI skybox, rotated so the sun sits NNE behind the radio tower; sun, ambient (trilight) and fog colors sampled from the sky
 - [x] Post-processing Volume: ACES tonemapping, bloom, color adjustments, vignette (outdoor + darker bunker profile; `postfx` command)
 - [ ] SSAO: add the Screen Space Ambient Occlusion feature to `Assets/Settings/PC_Renderer` (one click in the Inspector)
