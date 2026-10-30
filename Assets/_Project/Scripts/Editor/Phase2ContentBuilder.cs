@@ -42,6 +42,7 @@ namespace SignalLost.EditorTools
             HUDPrefabBuilder.Build();
             PlayerPrefabBuilder.BuildPlayer();
             BuildPrefabs();
+            PropArtBuilder.DressPrefabs(); // keep the Poly Haven models on the rebuilt crate, barrel and medkit
 
             PopulateIsland();
             PopulateBunker();

@@ -362,7 +362,7 @@ namespace SignalLost.EditorTools
         }
 
         /// <summary>XZ rectangles (grown by a margin) around buildings, props and patrol waypoints.</summary>
-        static List<Rect> BlockedAreas(Terrain terrain)
+        internal static List<Rect> BlockedAreas(Terrain terrain)
         {
             var rects = new List<Rect>();
             foreach (var col in Object.FindObjectsByType<Collider>(FindObjectsSortMode.None))
@@ -383,7 +383,7 @@ namespace SignalLost.EditorTools
             return rects;
         }
 
-        static bool IsBlocked(List<Rect> rects, Vector2 p)
+        internal static bool IsBlocked(List<Rect> rects, Vector2 p)
         {
             foreach (var r in rects)
                 if (r.Contains(p)) return true;
@@ -391,7 +391,7 @@ namespace SignalLost.EditorTools
         }
 
         /// <summary>Alphamap cells within radius of any painted dirt (roads and paths).</summary>
-        static bool[,] NearPath(TerrainData data, float radiusMeters)
+        internal static bool[,] NearPath(TerrainData data, float radiusMeters)
         {
             int res = data.alphamapResolution;
             var maps = data.GetAlphamaps(0, 0, res, res);
