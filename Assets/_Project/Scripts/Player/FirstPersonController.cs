@@ -42,6 +42,7 @@ namespace SignalLost
             input = GetComponent<PlayerInputReader>();
             stamina = maxStamina;
             if (!TryGetComponent<FootstepPlayer>(out _)) gameObject.AddComponent<FootstepPlayer>();
+            if (!TryGetComponent<FallRecovery>(out _)) gameObject.AddComponent<FallRecovery>();
         }
 
         void OnEnable() => SetCursorLocked(true);

@@ -288,10 +288,7 @@ namespace SignalLost.EditorTools
             var settingsBack = MakeButton(settingsPanel, "Back", 4);
 
             var creditsPanel = Panel(root.transform, "CreditsPanel", "CREDITS");
-            Label(creditsPanel, "Text",
-                "IT 402W Final Project – Bulacan State University\n[Insert Names]\n\n" +
-                "Built with Unity 6 (URP). Asset credits are listed in Credits.txt\nand are added here in the Phase 4 art pass.",
-                24, new Vector2(0, 80), new Vector2(1000, 300));
+            CreditsScreenBuilder.Populate(creditsPanel);
             var creditsBack = MakeButton(creditsPanel, "Back", 4);
 
             var so = new SerializedObject(controller);

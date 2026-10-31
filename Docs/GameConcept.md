@@ -377,13 +377,13 @@ public interface IDamageable
 | **1. 3D Game & Core Gameplay** | 15 | 12–15 minute first-person action loop across 2 gameplay scenes: shooting, puzzles, hazards, wave defense, and a two-phase boss, with checkpoints. |
 | **2. Player Interaction** | 10 | 11 interaction types through `IInteractable`: NPC briefing, code keypads (armory, breaker room), light switch, main power lever, keypad doors, elevator scene transition, pickups and fuse console, breaker puzzle, junction levers + pump, wire tiles. Six puzzles in total (see the Puzzle Overview). |
 | **3. Offensive/Attack Mechanic** | 10 | Dual-mode Arc Pistol (Pulse + charged Overload Beam), reloads, weak-point crits (drone eyes, robot visors) with stun, shield breaking, destructible crates, explosive barrels, laser emitters. |
-| **4. 3D Environment & GameObjects** | 10 | Sculpted island terrain with water, roads, and landmarks, plus a modular two-wing bunker with hazards. |
+| **4. 3D Environment & GameObjects** | 10 | Sculpted island terrain with painted layers, 480 trees, rocks, a pier, a chain-link-fenced radio tower and a custom water shader (island sea and electrified floodwater), plus a modular two-wing bunker with a laser corridor, hazards and detailed props. |
 | **5. AI Implementation** | 15 | 3 enemy types (a flying drone and two animated humanoid robots) on `NavMeshAgent` with Patrol/Chase/Attack/Stunned states, vision cones with line of sight, gunfire hearing, squad alerts, attack telegraphs, and a two-phase boss. |
 | **6. User Interface (UI)** | 10 | Full HUD (HP, stamina, timer, upload/boss bar, objectives, radio subtitles, ammo, prompts, damage direction) and 4 menu screens with settings. |
-| **7. Audio Implementation** | 5 | Music that changes with game state, surface footsteps, weapon and hazard SFX, 3D spatial audio on bots, fuses, pylons, and the boss. |
+| **7. Audio Implementation** | 5 | Music that changes with game state (calm exploration, combat, boss) with crossfades through an Audio Mixer, surface footsteps, weapon and hazard SFX, 3D spatial audio on bots, fuses, pylons, and the boss. |
 | **8. Objective & Win/Lose Conditions** | 10 | Clear objective chain (3 fuses → tower defense → boss → boat), lose on 0 HP or purge timer, checkpoint retry. |
 | **9. Technical Implementation** | 10 | Interfaces (`IInteractable`, `IDamageable`), ScriptableObject enemy data, persistent cross-scene state, checkpoint snapshots, one script per system. |
-| **10. Presentation, Polish & Creativity** | 5 | Dusk lighting and bloom, readable sensor lights, radio storytelling, particle effects, scene fades, credits screen. |
+| **10. Presentation, Polish & Creativity** | 5 | Dusk lighting and bloom, readable sensor lights, radio storytelling, particle effects, scene fades, scrollable credits screen. |
 | **TOTAL** | **100** | |
 
 ---
@@ -406,7 +406,7 @@ public interface IDamageable
 | Day | Partner A (Gameplay) | Partner B (World & Systems) | End-of-day milestone |
 | :---- | :---- | :---- | :---- |
 | **1 – Foundation** | Project setup, first-person controller, interaction raycast, Arc Pistol Pulse + reload, `IDamageable`, test dummy | Graybox both scenes (ProBuilder), bake NavMesh, `GameManager`, elevator scene transition, spawn points, HUD skeleton | Walk from the safe room to the bunker and back; shoot a dummy |
-| **2 – Combat & Interactions** | `EnemyAI` state machine, vision, squad alert; Enforcer (Robot Kyle + Mixamo Animator) and Stinger; Overload Beam; barrels and crates | Doors and keypads, pickups, NPC dialogue, laser tripwires, breaker puzzle, electrified water and valve | Phases 1 and 2 playable in graybox |
+| **2 – Combat & Interactions** | `EnemyAI` state machine, vision, squad alert; Enforcer (Sci-Fi Robots Bundle "Robert" + Mixamo Animator) and Stinger; Overload Beam; barrels and crates | Doors and keypads, pickups, NPC dialogue, laser tripwires, breaker puzzle, electrified water and valve | Phases 1 and 2 playable in graybox |
 | **3 – Full Loop** | Aegis Warden and shield, quarantine room spawns, wave spawner, boss Phase 1 | `ObjectiveManager` and radio lines, purge timer, checkpoints, fuse console, all menu screens | Game playable start to finish |
 | **4 – Boss & Art Pass** | Boss Phase 2, enemy hit effects, balance pass | Replace graybox with assets, paint terrain, trees, dusk lighting, water, audio and music states | **Content complete. Feature freeze.** |
 | **5 – Polish & Ship** | Playtest and fix bugs | Playtest and fix bugs | Windows build tested on another PC, backup gameplay video recorded, document finalized |

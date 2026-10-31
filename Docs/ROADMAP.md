@@ -7,7 +7,7 @@ The full design is in [GameConcept.md](GameConcept.md). This file breaks the bui
 * **A** = Partner A (gameplay: player, weapon, enemies, boss). **B** = Partner B (world & systems: scenes, GameManager, interactions, puzzles, UI, audio). **Both** = do it together.
 * Day numbers are targets. If a phase runs late, use the cut list at the bottom instead of skipping the Done-when test.
 
-## Current Status (updated 2026-10-30)
+## Current Status (updated 2026-10-31)
 
 | Phase | Status |
 | :---- | :---- |
@@ -17,7 +17,7 @@ The full design is in [GameConcept.md](GameConcept.md). This file breaks the bui
 | 3 – Full Game Loop | 🟡 Built; all parts tested — **one full timed run from Main Menu to Victory still needed** |
 | Change requests (armory code, elevator power, underground puzzles) | ✅ Done, play-tested |
 | 4 – Boss, Art & Audio | 🟡 Code done (Titan Phase 2, hit feedback, lightning, post-processing); art and audio passes waiting on asset downloads |
-| 5 – Polish & Ship | ⬜ Not started |
+| 5 – Polish & Ship | 🟡 Started: Windows build made and launches, credits screen done, fall recovery added; needs your play-testing, a different-PC test and the video |
 
 **Git:** all work is committed locally on branch `docs/roadmap` (latest: `3852fab`). `main` holds only the template commit. Nothing is pushed to GitHub yet.
 **Note:** Partner A's tasks were built in this same project, so "merge" items mean merging `docs/roadmap` into `main`.
@@ -314,12 +314,13 @@ Goal: a stable Windows build and everything needed for grading.
 - [ ] Fix bugs, most serious first (crashes, soft-locks, progression blockers)
 - [ ] Time the runs: a first-time run should finish with a few minutes left on the purge timer; tune if not
 - [ ] Check every lose condition (0 HP, timer) and every checkpoint retry
-- [ ] Check the game can't get stuck: no ammo dead-ends, no doors locked forever, no falling out of the map
-- [ ] Credits screen lists every asset and license
-- [ ] Build for Windows (File > Build Profiles); test the .exe on a different PC
+- [ ] Check the game can't get stuck: no ammo dead-ends, no doors locked forever, no falling out of the map *(partly done: ammo lockers at the hub, compound, generator bunker and pier; `FallRecovery.cs` returns the player to the last safe ground if they fall below y = -25. Doors and the full path still need a human run)*
+- [x] Credits screen lists every asset and license: scrollable panel filled from `Resources/Credits.txt` (`CreditsText.cs`, `CreditsScreenBuilder.cs`, `credits` command, also used when `phase3` rebuilds the menu). **Still to fill in:** team names and the Sketchfab authors/licenses for the battery and fuse models
+- [x] Build for Windows (`build` bridge command, `BuildTools.cs`): `Builds/SignalLost/ProjectOutpost_SignalLost.exe`, 595 MB, 0 errors, launched for 40 s with no exceptions (2026-10-31). Delete the `*_BurstDebugInformation_DoNotShip` folder before zipping
+- [ ] Test the .exe on a different PC
 - [ ] Record a full gameplay video as a backup for the presentation
 - [ ] Update GameConcept.md so it matches the final game (names and the student details at the top)
-- [ ] Prepare the presentation: rubric table, key features, short demo route
+- [x] Presentation notes drafted: [PRESENTATION.md](PRESENTATION.md) (pitch, demo route, points per rubric criterion)
 
 **Done when:** the build runs on another PC from Main Menu to Victory without errors, and the video and document are ready to submit.
 

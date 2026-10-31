@@ -1,0 +1,39 @@
+PROJECT OUTPOST: SIGNAL LOST
+IT 402W Final Project – Bulacan State University
+Team: [Insert team names]
+
+Built with Unity 6 (Universal Render Pipeline).
+
+
+TEXTURES, SKY AND MODELS – Poly Haven (polyhaven.com), CC0 public domain
+Textures: Aerial Grass Rock, Brown Mud Leaves 01, Rocky Terrain 02, Coast Sand Rocks 02, Concrete Floor Worn 001, Concrete Wall 008, Metal Plate
+Sky: Belfast Sunset (Pure Sky)
+Models: Boulder 01, Rock Moss Set 01, Barrel 01, Wooden Crate 01, Wooden Military Crate, Medical Box, Metal Jerrycan, Power Box 01, Utility Box 01, Caged Hanging Light, Industrial Caged Sconce, Steel Frame Shelves 01, Portable Generator, Vintage Radio Transceiver, Modular Chainlink Fence
+
+AUDIO – OpenGameArt (opengameart.org), CC0 public domain
+"Boss Battle (loop)" by pro-sensory – boss music
+"50 CC0 Sci-Fi SFX" by rubberduck – weapon, laser and alarm sounds
+"100 CC0 SFX" by rubberduck – impacts, explosions and interface sounds
+"Different steps on wood, stone, leaves, gravel and mud" by TinyWorlds – footsteps
+Siren, radio static, crackle, hum, servo, alert beep, stomp and click sounds were generated for this project (public domain)
+
+UNITY ASSET STORE (Asset Store EULA)
+Sci-Fi Robots Bundle (Robert, Engie) – Same Gev Dudios
+Sci-fi Pistol [PBR] – StarGames studio
+Conifers [BOTD] – forst
+Particle Pack – Unity Technologies
+Free Laser Weapons – Daniel SoundsGood
+Sci-Fi Music Loops Pack – Robson Cozendey ("Cut Scene" for exploration, "Space Battle" for combat)
+
+SKETCHFAB – CC BY 4.0
+Buster Drone – LaVADraGoN
+Yellow Heavy Robot 8K – Martark
+Small Motorboat – Tijmen Matthys
+Battery cell model – Sketchfab (author and license to be confirmed)
+Cartridge Fuse model – Sketchfab (author and license to be confirmed)
+
+ANIMATION, UI AND FONTS
+Mixamo animations – Adobe (royalty-free)
+Fantasy UI Borders – Kenney (kenney.nl), CC0
+Rajdhani font – Indian Type Foundry (SIL Open Font License)
+Liberation Sans (TextMesh Pro default) – SIL Open Font License
