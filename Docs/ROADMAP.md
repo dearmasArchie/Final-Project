@@ -234,7 +234,7 @@ Three more puzzles in the underground facility (options 1D, 3 and 4).
 - [x] Play-test the three puzzles by hand (all working)
 - [x] Pipe routing made clearer after play-test: lit route preview, UP/DOWN labels on the schematic, lever state labels, failure message names the junction
 - [x] Re-test the clearer pipe routing (clear now)
-- [ ] Time a full run (Phase 3 check), then re-tune the purge timer (currently 20:00; estimated run 15–17 min)
+- [ ] Time a full run (Phase 3 check). Decision: the purge timer **stays at 20:00**
 
 ---
 
@@ -251,7 +251,7 @@ Goal: content complete. **Feature freeze at the end of this phase.**
 - [x] Shields as see-through capsule bubbles around the whole Aegis Warden and Titan (was a flat front box; same rules: blocks Pulse, Overload or explosions drop it for 6 s, so flanking no longer gets past it)
 - [x] Fix: Enforcer walk/run stutter (Mixamo root motion was baked into the pose, so clips not downloaded "In Place" drifted and snapped back each loop)
 - [x] Enforcer scaled 1.5x (about 2.8 m; hitbox, visor, muzzle, agent and death explosion scale with it – `EnforcerScale` in `EnemyArtBuilder.cs`). It is now taller than the Aegis Warden, on purpose
-- [ ] Balance pass on damage, HP, and fire rates (see the tables in GameConcept.md)
+- [x] Balance review (2026-10-31): prefab values match the GameConcept tables except the Recon Stinger shock beam (6 dmg/s in code, table said 12) and the Titan plasma orbs (10 dmg in code, table said 15). The tested code values were kept and the tables corrected. Further tuning waits for the full timed run (purge timer stays 20:00)
 
 ### B – Art pass
 - [x] Download Part A of `Docs/ASSET_DOWNLOADS.md` (Poly Haven + OpenGameArt, 164 MB) into `Assets/_Project/Art/PolyHaven` and `Assets/_Project/Audio`; imported without errors
@@ -265,7 +265,7 @@ Goal: content complete. **Feature freeze at the end of this phase.**
 - [x] Island: 7 rain puddles on flat stretches of the dirt roads and paths (glossy, sky-reflecting, no collider) – `PropArtBuilder.cs`, `art-props` command
 - [x] Sky: Belfast sunset HDRI skybox, rotated so the sun sits NNE behind the radio tower; sun, ambient (trilight) and fog colors sampled from the sky
 - [x] Post-processing Volume: ACES tonemapping, bloom, color adjustments, vignette (outdoor + darker bunker profile; `postfx` command)
-- [ ] SSAO: add the Screen Space Ambient Occlusion feature to `Assets/Settings/PC_Renderer` (one click in the Inspector)
+- [x] SSAO: the Screen Space Ambient Occlusion feature was already on `Assets/Settings/PC_Renderer` (template default, depth-normals); raised Intensity 0.4 → 0.8 and Radius 0.3 → 0.4
 - [x] Bunker: concrete and metal textures on the greybox geometry (world-space triplanar shader `SignalLost/Triplanar Lit`, so stretched cubes don't smear; also reaches the island buildings and both island bunkers), military crates in room corners, brighter room lamps, red/cyan hazard lighting with ceiling light strips, flickering water glow and a pulsing quarantine alarm (`LightFlicker.cs`) – `BunkerArtBuilder.cs`, `art-bunker` command
 - [x] Replace placeholder crates, barrels, and medkits with Poly Haven models (models fitted inside the greybox shapes, which keep their colliders and scripts; `Phase2ContentBuilder` re-applies them when it rebuilds the prefabs)
 - [x] UI: Kenney Fantasy UI Borders (CC0) + Rajdhani font on the HUD, pause/game over/victory/settings menus and the Main Menu – framed charcoal panels, line-frame buttons that turn amber on hover, fading amber dividers under titles and beside the timer, thin frames on the bars, off-white text with amber accents (cyan removed) – `UIArtBuilder.cs`, `art-ui` command (also re-applied by the HUD and Phase 3 builders). Kenney Sci-Fi UI moved to `_RemovedAssets/` (unused)
@@ -280,6 +280,11 @@ Goal: content complete. **Feature freeze at the end of this phase.**
   - Underground rooms: ceiling beams, corner pillars, pipe runs with valves, caged lamps, door frames, shelves, power cabinets and a generator (spots occupied by gameplay objects are skipped)
   - Maintenance bunker furniture (`DetailArtBuilder.CodeBunkerFurniture.cs`): two steel shelves on the east wall stocked with jerrycans and military crates, a workbench (toolbox, vise, papers, mug, jerrycan), a desk with the field radio on the west wall, a stool, and crate stacks replacing the plain supply box; everything keeps the doorway, switch and wall clues clear and has colliders
   - Generator bunker interior (`DetailArtBuilder.GeneratorBunker.cs`): ceiling beams with caged lamps and pipe runs, two stocked steel shelves, a workbench with tools, jerrycans, oil stains and a hazard border around the generator, fire extinguisher, high-voltage plate, and cables to the power cabinet; furniture now sits on the true floor top in both bunkers
+  - Wing A laser corridor rebuilt (`DetailArtBuilder.Lasers.cs`, `lasers` command; also called by `phase2`): six fixed gates (never randomized) with the gap alternating north and south so the player weaves left and right; beams are straight, slanted across the corridor, tilted in height, or both; emitters are steel columns with lenses, receiver posts have ports, beams have a bright core and a soft halo, floor marks show the blocked side. Verified with a capsule route search that a path exists from the hub to the breaker door
+  - Ammo locker and medkits outside the generator bunker and at the pier; reserve ammo cap is 72 (`ArcPistol.MaxReserve`); Game Concept updated from 48
+  - Pier: plank deck, fascia and piles, railings on the open edges, bollards and rope by the boat, life ring, lamp posts, corrugated painted containers, a harbour shed, crates, jerrycans and a net pile (`DetailArtBuilder.Pier.cs`)
+  - Central Hub lighting (`DetailArtBuilder.HubLighting.cs`): the single blown-out ceiling light is now a soft fill; each caged lamp has its own warm light with soft shadows from the beams and pillars; red accent over the laser wing door, cyan over the flooded wing door, a cyan wash on the junction box, and low cool corner fills
+- [x] Water pass (2026-10-31) – `SignalLostWater.shader` (`SignalLost/Water`), `WaterArtBuilder.cs`, `water` command (also applied by `art-island` and `phase2`): the island sea and the Wing B floodwater use one custom URP shader with animated ripples that calm with distance, depth-based color with refraction of the seabed (extra color depth so the sea reads deep), sunset sky reflection with fresnel and sun glint, and foam along shores and around the stepping crates. The island sea is teal near the shore and dark blue offshore. Wing B is dark murky water with thin, patchy, flickering cyan electric arcs, lamp highlights and a foam rim. Needs Depth Texture and Opaque Texture on the URP asset (both on in `PC_RPAsset`). Materials in `Art/Water`. Drain animation and damage are unchanged.
 - [x] NavMesh after props: rocks and military crates carve the NavMesh at runtime (NavMeshObstacle), so no re-bake is needed
 
 ### B – Audio pass
@@ -290,7 +295,7 @@ Goal: content complete. **Feature freeze at the end of this phase.**
 - [x] 3D audio (`spatialBlend = 1`): fuse and pylon hums, robot servos (`EnemyAudio.cs`), alert beeps, shock beam, laser hum, Titan footsteps and stomp charge-up
 - [x] `Sfx.cs` (sound by name: `Sfx.Play`, `Play2D`, `Loop`), `AudioLibrary` asset in `Resources` (swap any clip in the Inspector), `AudioBuilder.cs` (`audio` bridge command; re-running only adds missing ids), 9 synthesized sounds in `Audio/Generated`
 - [ ] Listen through and swap any clip that doesn't fit (clip choices were made from file names)
-- [ ] Pick the two music tracks and move the other 9 out
+- [x] Music picked (2026-10-31) by loudness/brightness analysis, since the tracks were not auditioned: calm = `08. Cut Scene` (quietest, darkest) → `Audio/Music/music_exploration_cut_scene.wav`; intense = `02. Space Battle` (loud, bright) → `music_combat_space_battle.wav`; both import as streaming Vorbis. The other 9 are in `_RemovedAssets/SciFiMusic_unused/` (git-ignored). `AudioLibrary` got per-track gains (exploration 1.0, combat 0.35 because that loop is mastered ~6× louder, boss 0.8) used by `MusicManager`. **Swap them in `AudioLibrary` if you dislike them.**
 
 ### Both – end of day
 - [ ] Merge and play a full run

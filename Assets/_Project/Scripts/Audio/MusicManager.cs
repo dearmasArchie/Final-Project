@@ -70,11 +70,14 @@ namespace SignalLost
             for (int i = 0; i < sources.Length; i++)
             {
                 var s = sources[i];
-                float goal = i == active && target != null ? 1f : 0f;
+                float goal = i == active && target != null ? TrackGain(library, target) : 0f;
                 s.volume = Mathf.MoveTowards(s.volume, goal, Time.unscaledDeltaTime / fade);
                 if (goal == 0f && s.volume == 0f && s.isPlaying) s.Stop();
             }
         }
+
+        static float TrackGain(AudioLibrary library, AudioClip clip) =>
+            clip == library.boss ? library.bossGain : clip == library.combat ? library.combatGain : library.explorationGain;
 
         void StartTrack(AudioClip clip)
         {

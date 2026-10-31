@@ -16,6 +16,7 @@ namespace SignalLost.EditorTools
             report.Add("elevator " + BuildElevator(root, "ElevatorPanel_Up", Vector3.forward, Vector3.forward, 4f));
             report.Add("structure " + BunkerStructure(root));
             report.Add("equipment " + BunkerEquipment(root));
+            report.Add(DressHubLighting(root));
             return string.Join("; ", report);
         }
 

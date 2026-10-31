@@ -158,7 +158,7 @@ A small concrete bunker ~100 m northwest of the safe room, reached unarmed along
 ### Wing A: Gauge Lock, Laser Corridor & Breaker Puzzle
 
 * **Gauge lock:** The breaker room is sealed by a door with a **3-digit keypad**. Three **pressure gauges** (PRESSURE 1, 2, 3) are mounted along the corridor wall, spread between the laser sets; each needle points at a number from 0 to 9, random each run. A plate by the keypad reads *"CODE = PRESSURE READINGS, FIRST TO LAST."* The player reads the needles (not painted digits) and has to get past the lasers to reach the keypad.
-* **Laser corridor:** Red laser beams cross a narrow hallway. Touching a beam deals 25 damage and sounds an alarm that spawns one Recon Stinger. Shooting the wall-mounted emitter boxes switches the beams off.
+* **Laser corridor:** Six fixed laser gates (the same every run) force the player to weave left and right along a narrow hallway: each gate is a wall-mounted emitter, a free-standing receiver post and a fan of beams, with the gap on alternating sides. Some beams run straight across, some are slanted across the corridor, some tilt in height, and one gate does both. Touching a beam deals 25 damage and sounds an alarm that spawns one Recon Stinger. Shooting an emitter switches its beams off.
 * **Breaker puzzle:** Fuse 1 is locked in a glass pod wired to three wall breakers labeled **COOLANT**, **MAIN**, and **AUX**. The correct order is picked at random each run (one of six orders) and written in a maintenance log on a terminal at the start of the laser corridor. The player has to find and read it.
 * **Wrong order:** An alarm sounds, the levers reset, and one Enforcer Unit marches in through a side door (at most two alarm Enforcers alive at once).
 * **Correct order:** The pod opens and Fuse 1 can be collected.
@@ -186,7 +186,7 @@ A small concrete bunker ~100 m northwest of the safe room, reached unarmed along
 | **Pulse** | Left-click (hold for auto) | Fast electric projectile, 4 shots per second | 20 body / 45 weak-point crit (+0.5 s stun) | 1 |
 | **Overload Beam** | Hold right-click 1.0 s, release | Hitscan beam. Breaks shields, detonates barrels. Releasing early cancels at no cost. 2-second cooldown after firing. | 60 | 4 |
 
-* **Magazine:** 12 rounds. `R` reloads in 1.5 seconds; it reloads automatically when empty. Reserve holds up to 48.
+* **Magazine:** 12 rounds. `R` reloads in 1.5 seconds; it reloads automatically when empty. Reserve holds up to 72.
 * **No soft-locks:** Ammo lockers in the underground hub, a supply crate in the tower compound, and a crate at the pier all refill over time, so the player can never be stuck without ammo.
 * **Feedback:** Hit markers on the crosshair (a red marker for crits), sparks on impact, a bright flash and screen shake when the Overload Beam fires.
 
@@ -220,7 +220,7 @@ Enemy lasers are visible projectiles (25 m/s), not hitscan, so the player can do
 
 | Enemy | HP | Speed | Attack Range | Attack | Weak Point / Counter |
 | :---- | :---- | :---- | :---- | :---- | :---- |
-| **Recon Stinger** (drone) | 40 | 6.0 | 4 m | Flies at you in a zig-zag, shock beam 12 dmg per second while in range | One eye crit destroys it |
+| **Recon Stinger** (drone) | 40 | 6.0 | 4 m | Flies at you in a zig-zag, shock beam 6 dmg per second while in range | One eye crit destroys it |
 | **Enforcer Unit** (humanoid robot) | 100 | 3.5 | 10 m | Arm-mounted laser rifle: 3-round burst, 6 dmg per bolt, every 2 s. Side-steps when hit. | Visor headshots; barrels for groups |
 | **Aegis Warden** (heavy humanoid robot) | 180 | 2.5 | 12 m | Shoulder cannon: slow heavy plasma bolt, 20 dmg with small splash, every 2.5 s | Carries a large energy riot shield on its left arm that blocks Pulse from the front. Overload Beam or a barrel blast breaks it for 6 s, then it regenerates. Flanking also works. |
 
@@ -230,7 +230,7 @@ The arena is the pier, with shipping containers for cover, two power pylons, and
 
 **Phase 1: Riot Shield (500 → 250 HP)**
 
-* The Titan advances slowly behind a front riot shield. Every 5 seconds it launches three slow plasma orbs (15 damage each) that the player can shoot down.
+* The Titan advances slowly behind a front riot shield. Every 5 seconds it launches three slow plasma orbs (10 damage each) that the player can shoot down.
 * An Overload Beam knocks the shield down for 6 seconds and exposes two glowing cyan shoulder vents. In Phase 1 the Titan only takes damage through the vents.
 
 **Phase 2: Pylon Tether (250 → 0 HP)**
@@ -289,7 +289,7 @@ Realistic PBR models lit by a photographed sunset sky (HDRI), with post-processi
 | **Top-center** | Purge timer (`20:00`), turns red under 2:00. Below it: signal upload bar (Phase 3) or `UNIT 00-TITAN` health bar (Phase 4) |
 | **Top-right** | Current objective and fuse counter (`Override Fuses: 1 / 3`) |
 | **Bottom-left** | Radio subtitles from Dr. Reyes with a portrait icon |
-| **Bottom-right** | Ammo (`12 / 48`) and Overload charge/cooldown ring |
+| **Bottom-right** | Ammo (`12 / 72`) and Overload charge/cooldown ring |
 | **Center** | Crosshair with hit markers, interaction prompt, red screen-edge flash showing damage direction |
 | **Pop-up** | "Checkpoint reached" message, hazard warning |
 

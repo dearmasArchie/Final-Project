@@ -15,8 +15,8 @@ MonoBehaviour:
   mixer: {fileID: 24100000, guid: c58037da6e654d0468ae62debca1929c, type: 2}
   musicGroup: {fileID: 1442438496858646742, guid: c58037da6e654d0468ae62debca1929c, type: 2}
   sfxGroup: {fileID: -6726529656293402808, guid: c58037da6e654d0468ae62debca1929c, type: 2}
-  exploration: {fileID: 8300000, guid: 74fd1a20e006cbc4fa11c8c19342c3d4, type: 3}
-  combat: {fileID: 8300000, guid: 4fe306954138361429037cd559888da6, type: 3}
+  exploration: {fileID: 8300000, guid: 31e50e79c366c5e44aba1519ddfbe7db, type: 3}
+  combat: {fileID: 8300000, guid: 202a8e9bca7f7ba4aa661bc1e21c2a2a, type: 3}
   boss: {fileID: 8300000, guid: d7ec71714df8ac244a0fcc9560864812, type: 3}
   sounds:
   - id: pulse_fire

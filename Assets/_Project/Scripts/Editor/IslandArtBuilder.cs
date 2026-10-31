@@ -217,23 +217,11 @@ namespace SignalLost.EditorTools
             return $"sky rotation={rotation}, sun pixel=({sunX},{sunY}) elevation={elevation:F1}, sun color={sun.color}";
         }
 
-        /// <summary>Deep blue-green, glossy sea on the greybox Ocean plane so it reflects the sunset.</summary>
+        /// <summary>Gives the greybox Ocean plane the water shader (ripples, depth color, foam, sunset reflection).</summary>
         static void PaintOcean()
         {
-            var ocean = GameObject.Find("Ocean");
-            if (ocean == null) return;
-            string path = $"{OutFolder}/Island_Ocean.mat";
-            var mat = AssetDatabase.LoadAssetAtPath<Material>(path);
-            if (mat == null)
-            {
-                mat = new Material(Shader.Find("Universal Render Pipeline/Lit"));
-                AssetDatabase.CreateAsset(mat, path);
-            }
-            mat.SetColor("_BaseColor", new Color(0.04f, 0.14f, 0.2f));
-            mat.SetFloat("_Smoothness", 0.93f);
-            mat.SetFloat("_Metallic", 0f);
-            EditorUtility.SetDirty(mat);
-            ocean.GetComponent<Renderer>().sharedMaterial = mat;
+            foreach (var r in Object.FindObjectsByType<Renderer>(FindObjectsInactive.Include))
+                if (r.name == "Ocean") r.sharedMaterial = WaterArtBuilder.OceanMaterial();
         }
 
         /// <summary>Direction for a latitude-longitude UV, matching Unity's Skybox/Panoramic shader.</summary>

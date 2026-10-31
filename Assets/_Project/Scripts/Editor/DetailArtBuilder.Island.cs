@@ -21,6 +21,8 @@ namespace SignalLost.EditorTools
             report.Add(DressGeneratorBunkerInterior(root));
             report.Add("buildings " + DressBuildings(root));
             report.Add("fence " + BuildFence(root));
+            report.Add("pier " + DressPier(root));
+            report.Add("generator supplies " + DressGeneratorSupplies(root));
             return string.Join("; ", report);
         }
 

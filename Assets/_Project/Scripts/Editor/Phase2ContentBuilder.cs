@@ -693,30 +693,8 @@ namespace SignalLost.EditorTools
             alarm.transform.SetParent(wing, false);
             SetRefs(alarm, "spawnPoints", Points(wing, "AlarmPoint", new Vector3(-40, 0, 24), new Vector3(-40, 0, 16), new Vector3(-29, 0, 20)));
 
-            // Laser corridor: three emitters, three beams each
-            var red = Mat("Laser_Red", new Color(1f, 0.1f, 0.05f), new Color(4f, 0.2f, 0.1f));
-            foreach (float x in new[] { -13f, -19f, -25f })
-            {
-                var emitter = Prim(wing, $"LaserEmitter_{-x}", PrimitiveType.Cube, new Vector3(x, 1.1f, 21.7f),
-                    new Vector3(0.35f, 1.6f, 0.3f), Mat("Laser_Emitter", new Color(0.2f, 0.2f, 0.22f), new Color(2f, 0.1f, 0.05f)));
-                var beams = new List<GameObject>();
-                foreach (float h in new[] { 0.45f, 1.05f, 1.65f })
-                {
-                    var beam = Prim(emitter.transform, "Beam", PrimitiveType.Cube, new Vector3(x, h, 20f), new Vector3(0.03f, 0.03f, 3.7f), red);
-                    var box = beam.GetComponent<BoxCollider>();
-                    box.isTrigger = true;
-                    box.size = new Vector3(3f, 3f, 1f); // ~9 cm thick
-                    beam.GetComponent<Renderer>().shadowCastingMode = ShadowCastingMode.Off;
-                    beams.Add(beam);
-                }
-                var trip = emitter.AddComponent<LaserTripwire>();
-                var so = new SerializedObject(trip);
-                SetObjects(so.FindProperty("beams"), beams.ToArray());
-                so.FindProperty("emitterLight").objectReferenceValue = emitter.GetComponent<Renderer>();
-                so.FindProperty("alarm").objectReferenceValue = alarm;
-                so.FindProperty("alarmEnemyPrefab").objectReferenceValue = stinger;
-                so.ApplyModifiedPropertiesWithoutUndo();
-            }
+            // Laser corridor: six fixed gates the player weaves through (DetailArtBuilder.Lasers.cs)
+            DetailArtBuilder.BuildLaserCorridor(wing, alarm, stinger);
 
             // Maintenance log terminal (before the lasers)
             var terminal = Prim(wing, "MaintenanceTerminal", PrimitiveType.Cube, new Vector3(-10f, 1.3f, 21.75f),
@@ -834,7 +812,7 @@ namespace SignalLost.EditorTools
             volume.isTrigger = true;
             volume.size = new Vector3(19.4f, 0.6f, 15.4f);
             var visual = Prim(waterGo.transform, "WaterSurface", PrimitiveType.Cube, new Vector3(26f, -0.1f, 20f), new Vector3(19.4f, 0.02f, 15.4f),
-                Mat("Water_Electrified", new Color(0.1f, 0.35f, 0.5f, 0.7f), new Color(0.1f, 0.5f, 0.8f), transparent: true));
+                WaterArtBuilder.FloodMaterial());
             Object.DestroyImmediate(visual.GetComponent<Collider>());
             var water = waterGo.AddComponent<ElectrifiedWater>();
             SetRef(water, "waterVisual", visual.transform);

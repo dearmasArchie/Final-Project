@@ -14,7 +14,7 @@ namespace SignalLost
     public class ArcPistol : MonoBehaviour
     {
         public const int MagazineSize = 12;
-        public const int MaxReserve = 48;
+        public const int MaxReserve = 72;
 
         /// <summary>Raised on every shot with the muzzle position. Enemies use it to hear gunfire.</summary>
         public static event Action<Vector3> Fired;

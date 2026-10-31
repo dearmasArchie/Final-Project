@@ -29,6 +29,9 @@ namespace SignalLost
         public AudioClip exploration;
         public AudioClip combat;
         public AudioClip boss;
+        [Range(0f, 1f)] public float explorationGain = 1f;
+        [Range(0f, 1f)] public float combatGain = 0.35f;   // the combat loop is mastered much louder than the calm one
+        [Range(0f, 1f)] public float bossGain = 0.8f;
         public SoundEntry[] sounds;
 
         public SoundEntry Find(string id)

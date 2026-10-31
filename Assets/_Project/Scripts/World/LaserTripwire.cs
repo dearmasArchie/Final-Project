@@ -10,6 +10,8 @@ namespace SignalLost
     {
         [SerializeField] GameObject[] beams;
         [SerializeField] Renderer emitterLight;
+        [Tooltip("Other glowing parts (lenses, receiver ports) that go dark when the emitter is shot.")]
+        [SerializeField] Renderer[] glowRenderers;
         [SerializeField] float touchDamage = 25f;
         [SerializeField] float touchCooldown = 1f;
         [SerializeField] AlarmSpawner alarm;
@@ -37,6 +39,9 @@ namespace SignalLost
             Sfx.Play("emitter_off", transform.position);
             foreach (var beam in beams) beam.SetActive(false);
             if (emitterLight != null) emitterLight.material.SetColor("_EmissionColor", Color.black);
+            if (glowRenderers != null)
+                foreach (var r in glowRenderers)
+                    if (r != null) r.material.SetColor("_EmissionColor", Color.black);
         }
 
         /// <summary>Called by LaserBeam when something touches a beam.</summary>
