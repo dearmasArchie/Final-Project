@@ -7,6 +7,10 @@ namespace SignalLost
     {
         [SerializeField] Light[] lights;
         [SerializeField] Transform lever;
+        [Tooltip("Axis the toggle swings around, in the lever's parent space.")]
+        [SerializeField] Vector3 leverAxis = Vector3.right;
+        [SerializeField] float onAngle = -35f;
+        [SerializeField] float offAngle = 35f;
         [SerializeField] ArmoryCodePuzzle puzzle;
 
         bool on = true;
@@ -18,7 +22,7 @@ namespace SignalLost
         {
             on = !on;
             foreach (var l in lights) l.enabled = on;
-            if (lever != null) lever.localRotation = Quaternion.Euler(on ? -35f : 35f, 0f, 0f);
+            if (lever != null) lever.localRotation = Quaternion.AngleAxis(on ? onAngle : offAngle, leverAxis);
             if (puzzle != null) puzzle.SetLights(on);
         }
     }

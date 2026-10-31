@@ -321,9 +321,9 @@ namespace SignalLost.EditorTools
             var rng = new System.Random(4021);
             int placed = 0;
             // (zone, how many, size range in meters)
-            placed += Scatter(root, terrain, meshes, rng, blocked, onPath, nearPath, res, taken, treeCount, Zone.Shore, 40, 1.2f, 3.2f);
-            placed += Scatter(root, terrain, meshes, rng, blocked, onPath, nearPath, res, taken, treeCount, Zone.Trail, 24, 0.6f, 1.8f);
-            placed += Scatter(root, terrain, meshes, rng, blocked, onPath, nearPath, res, taken, treeCount, Zone.Open, 16, 0.5f, 1.5f);
+            placed += Scatter(root, terrain, meshes, rng, blocked, onPath, nearPath, res, taken, treeCount, Zone.Shore, 120, 1.2f, 3.2f);
+            placed += Scatter(root, terrain, meshes, rng, blocked, onPath, nearPath, res, taken, treeCount, Zone.Trail, 72, 0.6f, 1.8f);
+            placed += Scatter(root, terrain, meshes, rng, blocked, onPath, nearPath, res, taken, treeCount, Zone.Open, 48, 0.5f, 1.5f);
             return placed;
         }
 
@@ -334,7 +334,7 @@ namespace SignalLost.EditorTools
         {
             var data = terrain.terrainData;
             int placed = 0;
-            for (int attempt = 0; attempt < count * 60 && placed < count; attempt++)
+            for (int attempt = 0; attempt < count * 200 && placed < count; attempt++)
             {
                 float x = 24f + (float)rng.NextDouble() * 202f;
                 float z = 8f + (float)rng.NextDouble() * 223f;

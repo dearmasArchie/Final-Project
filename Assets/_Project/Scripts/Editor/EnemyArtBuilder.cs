@@ -20,6 +20,9 @@ namespace SignalLost.EditorTools
     /// </summary>
     public static class EnemyArtBuilder
     {
+        /// <summary>The Enforcer is 1.5x a normal robot (about 2.8 m tall).</summary>
+        const float EnforcerScale = 1.5f;
+
         const string EnemyFolder = "Assets/_Project/Prefabs/Enemies";
         const string OutFolder = "Assets/_Project/Art/Enemies";
         const string MixamoFolder = "Assets/_Project/Art/Mixamo";
@@ -61,7 +64,8 @@ namespace SignalLost.EditorTools
             var parts = new List<string>
             {
                 "enforcer " + DressRobot("Enforcer", $"{RobotFolder}/Prefabs/Robert.prefab", robert, rifle, 1.85f,
-                    visor: "Visor_WeakPoint", hide: new[] { "Body", "Head", "ArmCannon" }, muzzleBone: HumanBodyBones.RightHand, cannon: null),
+                    visor: "Visor_WeakPoint", hide: new[] { "Body", "Head", "ArmCannon" }, muzzleBone: HumanBodyBones.RightHand, cannon: null,
+                    scale: EnforcerScale),
                 "aegis " + DressRobot("AegisWarden", $"{RobotFolder}/Prefabs/Engie.prefab", engie, shield, 2.35f,
                     visor: "Visor_WeakPoint", hide: new[] { "Body", "Head" }, muzzleBone: HumanBodyBones.UpperChest, cannon: "ShoulderCannon"),
                 "stinger " + DressStinger(),
@@ -82,7 +86,7 @@ namespace SignalLost.EditorTools
             var small = AssetDatabase.LoadAssetAtPath<GameObject>($"{ExplosionFolder}/SmallExplosion.prefab");
             var big = AssetDatabase.LoadAssetAtPath<GameObject>($"{ExplosionFolder}/BigExplosion.prefab");
             if (small == null || big == null) return "missing Particle Pack prefabs";
-            Explosion("Enforcer", small, 1f, new Vector3(0, 1.1f, 0));
+            Explosion("Enforcer", small, EnforcerScale, new Vector3(0, 1.1f, 0));
             Explosion("AegisWarden", small, 1.4f, new Vector3(0, 1.3f, 0));
             Explosion("ReconStinger", small, 0.7f, Vector3.zero);
             Explosion("Unit00_Titan", big, 1.6f, new Vector3(0, 3f, 0));
@@ -274,7 +278,7 @@ namespace SignalLost.EditorTools
         // ------------------------------------------------------------------ robots
 
         static string DressRobot(string prefabName, string robotPrefab, Avatar avatar, AnimatorController controller, float height,
-            string visor, string[] hide, HumanBodyBones muzzleBone, string cannon)
+            string visor, string[] hide, HumanBodyBones muzzleBone, string cannon, float scale = 1f)
         {
             var source = AssetDatabase.LoadAssetAtPath<GameObject>(robotPrefab);
             if (source == null) return "missing model";
@@ -284,6 +288,9 @@ namespace SignalLost.EditorTools
             {
                 RemoveOldModel(root);
                 Hide(root, hide);
+                // Whole-prefab scale (colliders, weak point, muzzle, NavMeshAgent); the model is then fitted in world units.
+                root.transform.localScale = Vector3.one * scale;
+                height *= scale;
 
                 var model = Spawn(source, root.transform);
                 foreach (var col in model.GetComponentsInChildren<Collider>()) Object.DestroyImmediate(col);

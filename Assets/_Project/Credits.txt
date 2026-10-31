@@ -9,7 +9,9 @@ TEXTURES, SKY AND MODELS – Poly Haven (polyhaven.com), CC0 (public domain)
             Concrete Floor Worn 001, Concrete Wall 008, Metal Plate
   Sky:      Belfast Sunset (Pure Sky)
   Models:   Boulder 01, Rock Moss Set 01, Barrel 01, Wooden Crate 01, Wooden Military Crate,
-            Medical Box, Metal Jerrycan
+            Medical Box, Metal Jerrycan, Power Box 01, Utility Box 01,
+            Caged Hanging Light, Industrial Caged Sconce, Steel Frame Shelves 01, Portable Generator,
+            Vintage Radio Transceiver, Modular Chainlink Fence
 
 AUDIO – OpenGameArt (opengameart.org), CC0 (public domain)
   "Boss Battle (loop)" (pro-sensory)                            – boss music
@@ -29,5 +31,7 @@ PART B – imported 2026-10-30 (confirm the Sketchfab author names on each model
   Buster Drone – LaVADraGoN, Sketchfab (CC BY 4.0) – credit required
   Yellow Heavy Robot 8K – Martark, Sketchfab (CC BY 4.0) – credit required
   Small Motorboat – Tijmen Matthys, Sketchfab (CC BY 4.0) – credit required
-  UI Pack – Sci-Fi – Kenney (kenney.nl), CC0
+  Fantasy UI Borders – Kenney (kenney.nl), CC0 – menu and HUD frames, dividers
   Rajdhani font – Indian Type Foundry (SIL Open Font License)
+  Battery cell model – Sketchfab (author and license to confirm on the model page)
+  Cartridge Fuse model – Sketchfab (author and license to confirm on the model page)

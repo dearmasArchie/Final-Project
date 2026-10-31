@@ -97,6 +97,7 @@ namespace SignalLost.EditorTools
 
             var prefab = PrefabUtility.SaveAsPrefabAsset(root, PlayerPath);
             Object.DestroyImmediate(root);
+            DetailArtBuilder.DressPistol(); // swaps the grey gun box for the Sci-fi Pistol (needs the saved prefab)
             Debug.Log($"[Signal Lost] Player prefab saved to {PlayerPath}");
             return prefab;
         }

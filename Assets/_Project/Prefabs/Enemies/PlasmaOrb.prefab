@@ -127,6 +127,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SignalLost.BossOrb
   speed: 6
   turnRate: 60
-  damage: 15
+  damage: 10
   lifetime: 8
   hitRadius: 0.8

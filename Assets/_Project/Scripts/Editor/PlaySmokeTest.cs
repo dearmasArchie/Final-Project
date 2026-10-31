@@ -290,7 +290,9 @@ namespace SignalLost.EditorTools
 
             // Light switch reveals the hidden digit
             var hidden = GameManager.Instance.ArmoryPuzzle.hiddenColor;
-            var glow = root.Find($"GlowDigit_{GameManager.ArmoryPuzzleData.ColorNames[hidden][0]}{GameManager.ArmoryPuzzleData.ColorNames[hidden].Substring(1).ToLower()}");
+            string glowName = $"GlowDigit_{GameManager.ArmoryPuzzleData.ColorNames[hidden][0]}{GameManager.ArmoryPuzzleData.ColorNames[hidden].Substring(1).ToLower()}";
+            Transform glow = null;
+            foreach (var t in root.GetComponentsInChildren<Transform>(true)) if (t.name == glowName) { glow = t; break; }   // lives under PaintClues
             var lightSwitch = root.GetComponentInChildren<LightSwitch>();
             var player = GameObject.FindGameObjectWithTag("Player");
             bool before = glow != null && glow.gameObject.activeSelf;

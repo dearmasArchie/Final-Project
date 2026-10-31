@@ -55,6 +55,7 @@ namespace SignalLost.EditorTools
             BuildMainMenuScene();
             PopulateIsland();
             PopulateBunker();
+            UIArtBuilder.Build(); // restyle the rebuilt menus and Main Menu scene
             EditorSceneManager.OpenScene(Island);
             Debug.Log("[Signal Lost] Phase 3 content built.");
         }

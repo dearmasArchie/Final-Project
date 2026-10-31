@@ -170,8 +170,10 @@ namespace SignalLost.EditorTools
             so.FindProperty("damageFlash").objectReferenceValue = flashImage;
             so.ApplyModifiedPropertiesWithoutUndo();
 
-            var prefab = PrefabUtility.SaveAsPrefabAsset(root, PrefabPath);
+            PrefabUtility.SaveAsPrefabAsset(root, PrefabPath);
             Object.DestroyImmediate(root);
+            UIArtBuilder.StyleHud(PrefabPath); // Kenney borders, Rajdhani, amber accents
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath);
             Debug.Log($"[Signal Lost] HUD prefab saved to {PrefabPath}");
             return prefab;
         }

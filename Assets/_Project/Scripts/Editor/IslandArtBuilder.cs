@@ -322,7 +322,7 @@ namespace SignalLost.EditorTools
             var rng = new System.Random(402);
             var placed = new List<Vector2>();
             var instances = new List<TreeInstance>();
-            for (int attempt = 0; attempt < 8000 && instances.Count < 240; attempt++)
+            for (int attempt = 0; attempt < 30000 && instances.Count < 480; attempt++)
             {
                 float x = 26f + (float)rng.NextDouble() * 198f;
                 float z = 10f + (float)rng.NextDouble() * 219f;

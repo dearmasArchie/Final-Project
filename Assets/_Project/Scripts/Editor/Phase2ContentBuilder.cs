@@ -43,6 +43,8 @@ namespace SignalLost.EditorTools
             PlayerPrefabBuilder.BuildPlayer();
             BuildPrefabs();
             PropArtBuilder.DressPrefabs(); // keep the Poly Haven models on the rebuilt crate, barrel and medkit
+            DetailArtBuilder.DressPickups(); // and the battery cell and fuse
+            DetailArtBuilder.DressPistol();  // and the pistol pickup (the player prefab too)
             EnemyArtBuilder.DressEnemies(); // and the robot, drone and Titan models on the rebuilt enemies
 
             PopulateIsland();
@@ -467,6 +469,7 @@ namespace SignalLost.EditorTools
             rso.FindProperty("persistentId").stringValue = "CodeBunkerVisited";
             rso.ApplyModifiedPropertiesWithoutUndo();
 
+            DetailArtBuilder.DressCodeBunker(group); // paint-smudge clues and the toggle switch instead of colored lockers
             PaintBunkerPath(terrain, new Vector2(cx + 4.6f, cz));
         }
 

@@ -57,6 +57,27 @@ Saved into the project under `Assets/_Project/Art/PolyHaven/<asset>/` and `Asset
 | Buster Drone | Sketchfab (free account), CC BY 4.0 | Recon Stinger | Download FBX; credit the author |
 | Yellow Heavy Robot 8K | Sketchfab, CC BY 4.0 | Unit 00-Titan | Download FBX; credit the author |
 | Small Motorboat | Sketchfab, CC BY 4.0 | Extraction boat | Download FBX; credit the author |
-| UI Pack – Sci-Fi (optional) | kenney.nl, CC0 | HUD/menu graphics | Kenney blocks scripted downloads, so this one is yours to click |
+| Fantasy UI Borders | kenney.nl, CC0 | HUD/menu frames and dividers | Used instead of UI Pack – Sci-Fi (which looked too sci-fi for the realistic art) |
 
 Put Part B files anywhere under `Assets/_Project/Art/` (or import the Asset Store packages normally) and tell Claude; it will wire them into the prefabs and scenes.
+
+---
+
+## Part C – Detail pass (added 2026-10-31)
+
+Poly Haven models, CC0, 2K, downloaded by Claude into `Assets/_Project/Art/PolyHaven/Models/<asset>/` (~165 MB kept):
+
+| Asset | Use |
+| :---- | :---- |
+| `power_box_01` | Breaker cabinets in the bunker rooms and beside island doors |
+| `utility_box_01` | Main power switch cabinet, wall cabinets |
+| `caged_hanging_light` | Ceiling lamps and the elevator car lamp |
+| `industrial_caged_sconce` | Lamps over the island building doors |
+| `steel_frame_shelves_01` | Shelves in the bunker rooms |
+| `portable_generator` | Generator at the tower compound and in the quarantine room |
+| `vintage_radio_transceiver` | Field radio at the tower compound |
+| `modular_chainlink_fence` | Fence around the tower compound and the service gate leaf |
+
+Sketchfab (downloaded by you, in `Assets/_Project/Art/SketchFab/`): `battery` (battery cell) and `cartridge fuse` (fuse). Confirm the authors and licenses on their pages for the credits.
+
+Also downloaded, then moved to `_RemovedAssets/PolyHaven_unused/` (not used): `modular_airduct_rectangular_01`, `modular_industrial_pipes_01`, `rollershutter_door`.
