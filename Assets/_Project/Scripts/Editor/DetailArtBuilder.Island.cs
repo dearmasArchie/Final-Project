@@ -22,8 +22,17 @@ namespace SignalLost.EditorTools
             report.Add("buildings " + DressBuildings(root));
             report.Add("fence " + BuildFence(root));
             report.Add("access " + DressIslandAccess(root));
+            report.Add("reyes " + ReyesBuilder.Dress(root));
+            var reyesVisual = GameObject.Find("ReyesVisual");
+            if (reyesVisual != null)
+            {
+                var camp = GameObject.Find("ReyesCamp");
+                Model("medical_box", "medical_box", camp != null ? camp.transform : root, reyesVisual.transform.position + reyesVisual.transform.rotation * new Vector3(0.85f, 0f, 0.2f),
+                    reyesVisual.transform.eulerAngles.y + 20f, 1.3f, Anchor.Bottom, ModelMat("medical_box", "medical_box", 0.3f, 0.2f));
+            }
             report.Add("pier " + DressPier(root));
             report.Add("generator supplies " + DressGeneratorSupplies(root));
+            report.Add("weather " + WeatherBuilder.Dress(root));
             return string.Join("; ", report);
         }
 

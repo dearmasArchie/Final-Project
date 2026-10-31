@@ -35,5 +35,6 @@ Cartridge Fuse model – Sketchfab (author and license to be confirmed)
 ANIMATION, UI AND FONTS
 Mixamo animations – Adobe (royalty-free)
 Fantasy UI Borders – Kenney (kenney.nl), CC0
+Dr. Reyes character model ("scientist" kit) – author and license to be confirmed
 Rajdhani font – Indian Type Foundry (SIL Open Font License)
 Liberation Sans (TextMesh Pro default) – SIL Open Font License

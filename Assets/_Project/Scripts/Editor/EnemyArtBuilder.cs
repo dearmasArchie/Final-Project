@@ -325,6 +325,8 @@ namespace SignalLost.EditorTools
                     cannonT.position = bone.position + root.transform.right * height * 0.17f + Vector3.up * height * 0.1f;
                     cannonT.rotation = root.transform.rotation;
                     cannonT.SetParent(bone, true);
+                    var cannonRenderer = cannonT.GetComponent<Renderer>();
+                    if (cannonRenderer != null) cannonRenderer.enabled = false; // no block on the shoulder: it stays only as the invisible mount the shots leave from
                 }
                 if (bone != null && muzzle != null)
                 {

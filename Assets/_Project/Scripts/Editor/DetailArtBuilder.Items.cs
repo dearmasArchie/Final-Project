@@ -71,6 +71,9 @@ namespace SignalLost.EditorTools
         /// Replaces the grey first-person gun box with the Sci-fi Pistol and dresses the Arc Pistol pickup. Also called by
         /// PlayerPrefabBuilder and Phase2ContentBuilder after they rebuild their prefabs.
         /// </summary>
+        static readonly Vector3 GunViewPosition = new Vector3(0.2f, -0.27f, 0.42f);
+        const float GunViewPitch = -6f;
+
         internal static string DressPistol()
         {
             EnsureFolder();
@@ -84,8 +87,9 @@ namespace SignalLost.EditorTools
                 if (oldGun != null) Object.DestroyImmediate(oldGun.gameObject);
 
                 var gun = PistolInstance(cam, "ArcPistol_Model");
-                gun.transform.localPosition = new Vector3(0.2f, -0.19f, 0.36f);
-                gun.transform.localRotation = Quaternion.identity;
+                // Held low and tilted a little: the grip and trigger sit below the bottom edge of the screen, so only the slide and barrel show
+                gun.transform.localPosition = GunViewPosition;
+                gun.transform.localRotation = Quaternion.Euler(GunViewPitch, 0f, 0f);
                 gun.transform.localScale = Vector3.one * 0.4f;
                 gun.AddComponent<GunSway>(); // walk bob, recoil kick, look sway, reload tilt
 

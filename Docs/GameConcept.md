@@ -58,7 +58,7 @@ Outpost 14 is an isolated island facility that researches energy weapons. You ar
 
 You shelter in the coastal safe room with **Dr. Reyes**, an injured scientist who cannot walk. She explains the only way out: the radio tower needs three override fuses to transmit a distress signal. Two fuses are in the underground utility wings; the third is held at the tower compound. Once the signal is out, a rescue boat can reach the pier. Dr. Reyes stays in the safe room and guides you by radio for the rest of the game.
 
-When the signal goes out, OVERSEER deploys its final defense, **Unit 00-Titan**, to hold the pier and stop the extraction.
+When the signal goes out, OVERSEER deploys its final defense, **Unit 00-Titan**, to hold the pier and stop the extraction. A storm rolls in with it: rain, darker light, grey fog, a rougher sea, and lightning with thunder.
 
 ### Objective Chain
 

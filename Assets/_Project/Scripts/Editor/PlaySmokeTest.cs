@@ -82,6 +82,18 @@ namespace SignalLost.EditorTools
                 var reyes = GameObject.Find("Dr_Reyes");
                 var player = GameObject.FindGameObjectWithTag("Player");
                 if (reyes != null && player != null) reyes.GetComponent<DialogueSource>().Interact(player);
+                var calm = Object.FindFirstObjectByType<StormController>();
+                Write($"storm: at game start intensity={(calm != null ? calm.Intensity.ToString("0.00") : "NO CONTROLLER")}, sun={(calm != null ? calm.SunIntensity.ToString("0.00") : "?")}");
+                SaveCameraPng("Library/SignalLost/storm_clear.png", new Vector3(108f, 34f, 172f), new Vector3(130f, 31f, 192f));
+                var reyesAnimator = reyes != null ? reyes.GetComponentInChildren<Animator>() : null;
+                if (reyesAnimator != null)
+                {
+                    var hipsBone = reyesAnimator.GetBoneTransform(HumanBodyBones.Hips);
+                    var info = reyesAnimator.GetCurrentAnimatorStateInfo(0);
+                    Write($"reyes: animator playing={reyesAnimator.isActiveAndEnabled}, state SittingIdle={info.IsName("SittingIdle")}, time={info.normalizedTime:0.00}, " +
+                          $"hips {(hipsBone != null ? (hipsBone.position.y - reyes.transform.position.y + 0.7f).ToString("0.00") : "?")} m above the floor, skinned parts={reyes.GetComponentsInChildren<SkinnedMeshRenderer>().Length}");
+                }
+                else Write("reyes: NO animator found (model missing)");
                 Write($"smoketest: briefing opened={reyes != null && player != null}");
                 SessionState.SetInt(StepKey, 3);
                 SessionState.SetFloat(StartKey, now);
@@ -190,11 +202,24 @@ namespace SignalLost.EditorTools
                 foreach (var vent in boss.GetComponentsInChildren<BossVent>()) vent.TakeDamage(60f, DamageType.Overload, vent.transform.position);
                 boss.GetComponentInChildren<BossCore>().TakeDamage(60f, DamageType.Pulse, boss.transform.position);
                 Write($"boss: hp start={hpStart}, phase2={boss.InPhase2} at {hpPhase2}, after hits while tethered={boss.Health.Current} (should be {hpPhase2})");
+                // Stand the player on the hill by the radio tower, looking at it, so the rain frame shows the weather from the player's eyes
+                var hillPlayer = GameObject.FindGameObjectWithTag("Player");
+                if (hillPlayer != null)
+                {
+                    var controller = hillPlayer.GetComponent<CharacterController>();
+                    controller.enabled = false;
+                    hillPlayer.transform.position = new Vector3(112f, Terrain.activeTerrain.SampleHeight(new Vector3(112f, 0f, 178f)) + Terrain.activeTerrain.transform.position.y + 0.2f, 178f);
+                    hillPlayer.transform.rotation = Quaternion.LookRotation(new Vector3(130f - 112f, 0f, 192f - 178f));
+                    controller.enabled = true;
+                }
                 SessionState.SetInt(StepKey, 51);
                 SessionState.SetFloat(StartKey, now);
             }
             else if (step == 51 && t > 2.5f)
             {
+                var storm = Object.FindFirstObjectByType<StormController>();
+                Write($"storm: in the boss fight intensity={storm?.Intensity:0.00}, sun={storm?.SunIntensity:0.00} (clear was higher), rain particles={storm?.RainParticles}, fog start={RenderSettings.fogStartDistance:0}, fog end={RenderSettings.fogEndDistance:0}");
+                SaveCameraPng("Library/SignalLost/storm_on.png");
                 var boss = Object.FindFirstObjectByType<BossController>();
                 int rings = Object.FindObjectsByType<ShockwaveRing>(FindObjectsSortMode.None).Length;
                 var pylons = Object.FindObjectsByType<BossPylon>(FindObjectsSortMode.None);
@@ -339,6 +364,28 @@ namespace SignalLost.EditorTools
                 Application.logMessageReceived -= OnLog;
                 EditorApplication.ExitPlaymode();
             }
+        }
+
+        static void SaveCameraPng(string path, Vector3? at = null, Vector3? lookAt = null)
+        {
+            var cam = Camera.main;
+            if (cam == null) { Write("storm: no main camera to capture"); return; }
+            var savedPos = cam.transform.position; var savedRot = cam.transform.rotation;
+            if (at.HasValue) { cam.transform.position = at.Value; cam.transform.LookAt(lookAt ?? at.Value + Vector3.forward); }
+            var rt = new RenderTexture(1280, 720, 24);
+            var previous = cam.targetTexture;
+            cam.targetTexture = rt;
+            cam.Render();
+            cam.targetTexture = previous;
+            cam.transform.SetPositionAndRotation(savedPos, savedRot);
+            RenderTexture.active = rt;
+            var tex = new Texture2D(1280, 720, TextureFormat.RGB24, false);
+            tex.ReadPixels(new Rect(0, 0, 1280, 720), 0, 0);
+            tex.Apply();
+            RenderTexture.active = null;
+            File.WriteAllBytes(path, tex.EncodeToPNG());
+            Object.Destroy(tex);
+            rt.Release();
         }
 
         static GunSway gunSway;
