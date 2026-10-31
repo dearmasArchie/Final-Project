@@ -77,7 +77,7 @@ When the signal goes out, OVERSEER deploys its final defense, **Unit 00-Titan**,
 
 ### Win Condition
 
-Board the extraction boat after Unit 00-Titan is destroyed. This triggers the Victory screen.
+Cross the plank bridge from the pier to the extraction boat after Unit 00-Titan is destroyed and board it. This opens the Victory screen: "Extraction Successful" with a rank (S to C from time left and accuracy), the run stats, a winning song, and Play Again, Main Menu and Quit buttons.
 
 ### Lose Conditions
 
@@ -224,17 +224,18 @@ Enemy lasers are visible projectiles (25 m/s), not hitscan, so the player can do
 | **Enforcer Unit** (humanoid robot) | 100 | 3.5 | 10 m | Arm-mounted laser rifle: 3-round burst, 6 dmg per bolt, every 2 s. Side-steps when hit. | Visor headshots; barrels for groups |
 | **Aegis Warden** (heavy humanoid robot) | 180 | 2.5 | 12 m | Shoulder cannon: slow heavy plasma bolt, 20 dmg with small splash, every 2.5 s | Carries a large energy riot shield on its left arm that blocks Pulse from the front. Overload Beam or a barrel blast breaks it for 6 s, then it regenerates. Flanking also works. |
 
-### Final Boss: Unit 00-Titan (500 HP, Coastal Pier)
+### Final Boss: Unit 00-Titan (1000 HP, Coastal Pier)
 
-The arena is the pier, with shipping containers for cover, two power pylons, and a refilling ammo crate. A boss health bar appears at the top of the HUD.
+The arena is the pier, with shipping containers for cover, two power pylons, a refilling ammo crate, and four medkits (two at the landing, two in the middle of the arena). A boss health bar appears at the top of the HUD.
 
-**Phase 1: Riot Shield (500 → 250 HP)**
+**Phase 1: Riot Shield (1000 → 500 HP)**
 
 * The Titan advances slowly behind a front riot shield. Every 5 seconds it launches three slow plasma orbs (10 damage each) that the player can shoot down.
 * An Overload Beam knocks the shield down for 6 seconds and exposes two glowing cyan shoulder vents. In Phase 1 the Titan only takes damage through the vents.
 
-**Phase 2: Pylon Tether (250 → 0 HP)**
+**Phase 2: Pylon Tether (1000 → 0 HP)**
 
+* At half health (500 HP) the Titan's repair systems kick in and it heals back to full 1000 HP as Phase 2 begins, so the second half of the fight is a full health bar.
 * The Titan backs up to the end of the pier. Laser tethers connect it to two power pylons and make it invulnerable. Two Recon Stingers spawn.
 * Every 6 seconds it stomps, sending out an expanding shockwave ring the player must jump over (20 damage if hit).
 * Destroying both pylons (100 HP each) stuns the Titan for 5 seconds and exposes its chest core, which takes double damage. When the stun ends, the pylons reboot at half health and the cycle repeats. The numbers are tuned so Phase 2 takes about two cycles.

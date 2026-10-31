@@ -451,8 +451,9 @@ namespace SignalLost.EditorTools
                 foreach (var col in model.GetComponentsInChildren<Collider>()) Object.DestroyImmediate(col);
                 FitHeight(model, root.transform, 5.6f);
                 model.AddComponent<MechWalkBob>();
+                string rig = TitanRigBuilder.Rig(model, root.transform); // split the rigid pieces into body and legs for the walk animation
                 PrefabUtility.SaveAsPrefabAsset(root, path);
-                return "ok";
+                return $"ok ({rig})";
             }
             finally { PrefabUtility.UnloadPrefabContents(root); }
         }

@@ -32,6 +32,17 @@ namespace SignalLost
             SetUp(false);
         }
 
+        /// <summary>The owner died: the shield disappears at once and never comes back.</summary>
+        public void Dismantle()
+        {
+            IsUp = false;
+            enabled = false;
+            if (shieldCollider == null) shieldCollider = GetComponent<Collider>();
+            shieldCollider.enabled = false;
+            if (shieldRenderer != null) shieldRenderer.enabled = false;
+            foreach (var r in GetComponentsInChildren<Renderer>(true)) r.enabled = false;
+        }
+
         void SetUp(bool up)
         {
             if (IsUp && !up) Sfx.Play("shield_break", transform.position);

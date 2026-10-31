@@ -21,6 +21,7 @@ namespace SignalLost.EditorTools
             report.Add(DressGeneratorBunkerInterior(root));
             report.Add("buildings " + DressBuildings(root));
             report.Add("fence " + BuildFence(root));
+            report.Add("access " + DressIslandAccess(root));
             report.Add("pier " + DressPier(root));
             report.Add("generator supplies " + DressGeneratorSupplies(root));
             return string.Join("; ", report);
@@ -261,10 +262,8 @@ namespace SignalLost.EditorTools
             var screen = Lit("Console_Screen", new Color(0.02f, 0.06f, 0.07f), 0f, 0.9f, Cyan * 1.4f);
             var led = Lit("Console_Led", new Color(0.1f, 0.5f, 0.1f), 0f, 0.5f, new Color(0.4f, 3f, 0.5f));
 
-            // Housing (slightly inside the old box so the collider still matches), riser with screens on the north side
-            Part(group, "Housing", PrimitiveType.Cube, p + Vector3.up * -0.02f, new Vector3(1.36f, 1.12f, 0.66f), steel);
-            Part(group, "TopPlate", PrimitiveType.Cube, p + Vector3.up * 0.58f, new Vector3(1.42f, 0.05f, 0.72f), dark);
-            Part(group, "BaseHazard", PrimitiveType.Cube, p + Vector3.down * 0.52f + Vector3.back * 0.0f, new Vector3(1.44f, 0.12f, 0.74f), yellow);
+            // A real table under the fuse slots (the old box keeps its collider), with the screen riser standing on its back edge
+            BuildFuseTable(group, p);
             Part(group, "Riser", PrimitiveType.Cube, p + new Vector3(0, 0.92f, 0.28f), new Vector3(1.36f, 0.62f, 0.1f), dark);
             for (int i = 0; i < 3; i++)
             {
@@ -298,7 +297,10 @@ namespace SignalLost.EditorTools
                 ModelMat("vintage_radio_transceiver", "vintage_radio_transceiver", 0.4f, 0.4f));
             foreach (var t in Object.FindObjectsByType<Transform>(FindObjectsInactive.Exclude))
                 if (t.name == "AmmoLocker" && t.root.name != RootName) DressLocker(group, t, new Vector3(p.x, 0, p.z));
-            return "terminal, generator, field radio, lockers";
+            string extras = DressCompoundExtras(root, p);
+            string fuseTable = DressFuseCrate(root);
+            int hidden = HideSpawnMarkers();
+            return $"fuse table, generator, field radio, lockers, extras ({extras}), {fuseTable}, {hidden} spawn markers hidden";
         }
     }
 }

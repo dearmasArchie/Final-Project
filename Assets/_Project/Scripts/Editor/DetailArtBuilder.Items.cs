@@ -87,6 +87,7 @@ namespace SignalLost.EditorTools
                 gun.transform.localPosition = new Vector3(0.2f, -0.19f, 0.36f);
                 gun.transform.localRotation = Quaternion.identity;
                 gun.transform.localScale = Vector3.one * 0.4f;
+                gun.AddComponent<GunSway>(); // walk bob, recoil kick, look sway, reload tilt
 
                 var muzzle = cam.Find("Muzzle");
                 if (muzzle != null) muzzle.localPosition = new Vector3(0.2f, -0.13f, 0.62f);

@@ -23,7 +23,7 @@ namespace SignalLost
 
         void Update()
         {
-            if (servo == null) return;
+            if (servo == null || !servo.isPlaying) return; // stopped when the robot dies
             float speed01 = agent != null && agent.enabled ? Mathf.Clamp01(agent.velocity.magnitude / 5f) : 0f;
             servo.pitch = basePitch * (0.8f + 0.5f * speed01);
             servo.volume = Mathf.Lerp(0.15f, 0.5f, speed01) * gain;

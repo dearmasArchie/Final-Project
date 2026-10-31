@@ -151,7 +151,7 @@ namespace SignalLost.EditorTools
             agent.height = 5.5f;
             agent.speed = 1.2f;
             agent.angularSpeed = 60f;
-            SetHealth(root.AddComponent<Health>(), 500f);
+            SetHealth(root.AddComponent<Health>(), 1000f);
             var boss = root.AddComponent<BossController>();
             var so = new SerializedObject(boss);
             so.FindProperty("riotShield").objectReferenceValue = shield;
@@ -206,6 +206,16 @@ namespace SignalLost.EditorTools
 
         // ================================================================== menus
 
+        /// <summary>Rebuilds only the in-game menus prefab (pause, game over, victory, settings) and restyles it. Bridge command: menus.</summary>
+        public static void RebuildMenus()
+        {
+            EditorSceneManager.SaveOpenScenes();
+            interactLayer = LayerMask.NameToLayer("Interactable");
+            menus = BuildMenusPrefab();
+            UIArtBuilder.Build();
+            EditorCommandBridge.Log("menus: GameMenus prefab rebuilt (victory screen with rank and buttons)");
+        }
+
         static GameObject BuildMenusPrefab()
         {
             var root = NewCanvas("GameMenus", 100);
@@ -226,9 +236,15 @@ namespace SignalLost.EditorTools
             var mainOver = MakeButton(over, "Main Menu", 3);
 
             var victory = Panel(root.transform, "VictoryPanel", "EXTRACTION SUCCESSFUL");
-            var stats = Label(victory, "Stats", "", 28, new Vector2(0, 90), new Vector2(700, 220));
+            Label(victory, "Subtitle", "The signal is out and the boat is away. Outpost 14 is behind you.", 24, new Vector2(0, 215), new Vector2(1100, 50));
+            var rank = Label(victory, "Rank", "RANK  S", 64, new Vector2(0, 150), new Vector2(700, 90));
+            rank.fontStyle = FontStyles.Bold;
+            rank.color = new Color(1f, 0.75f, 0.2f);
+            var stats = Label(victory, "Stats", "Completion time   00:00\nTime remaining    00:00\nEnemies destroyed 0\nAccuracy          0%", 28, new Vector2(0, 30), new Vector2(700, 220)); // sample text, replaced when the screen opens
             stats.alignment = TextAlignmentOptions.Left;
-            var mainVictory = MakeButton(victory, "Main Menu", 3);
+            var playAgain = MakeButton(victory, "Play Again", 3);
+            var mainVictory = MakeButton(victory, "Main Menu", 4);
+            var quitVictory = MakeButton(victory, "Quit Game", 5);
 
             var settings = Panel(root.transform, "SettingsPanel", "SETTINGS");
             BuildSettings(settings);
@@ -241,6 +257,7 @@ namespace SignalLost.EditorTools
             so.FindProperty("settingsPanel").objectReferenceValue = settings.gameObject;
             so.FindProperty("gameOverReason").objectReferenceValue = reason;
             so.FindProperty("victoryStats").objectReferenceValue = stats;
+            so.FindProperty("victoryRank").objectReferenceValue = rank;
             SetObjects(so.FindProperty("retryButtons"), retryPause, retryOver);
             so.ApplyModifiedPropertiesWithoutUndo();
 
@@ -251,7 +268,9 @@ namespace SignalLost.EditorTools
             OnClick(retryOver, controller.RetryFromCheckpoint);
             OnClick(restart, controller.RestartGame);
             OnClick(mainOver, controller.QuitToMainMenu);
+            OnClick(playAgain, controller.RestartGame);
             OnClick(mainVictory, controller.QuitToMainMenu);
+            OnClick(quitVictory, controller.QuitGame);
             OnClick(settingsBack, controller.CloseSettings);
 
             return SavePrefab(root, MenusPath);

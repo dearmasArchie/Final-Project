@@ -26,7 +26,8 @@ namespace SignalLost
         [SerializeField] float keepDistance = 9f;
 
         [Header("Phase 2")]
-        [SerializeField] float phase2Threshold = 250f;
+        [SerializeField, Tooltip("Half of max HP: crossing it starts Phase 2")] float phase2Threshold = 500f;
+        [SerializeField, Tooltip("The Titan repairs itself to full HP when Phase 2 begins")] bool regenerateInPhase2 = true;
         [SerializeField] BossPylon[] pylons;
         [SerializeField] LightningLine[] tethers;
         [SerializeField] Transform tetherAnchor;
@@ -118,6 +119,7 @@ namespace SignalLost
         void EnterPhase2()
         {
             InPhase2 = true;
+            if (regenerateInPhase2) Health.SetHealth(Health.Max); // its repair systems kick in at half HP
             Sfx.Play("siren", transform.position);
             agent.ResetPath();
             agent.isStopped = true;
@@ -129,7 +131,7 @@ namespace SignalLost
                 var enemy = Instantiate(reinforcementPrefab, point.position, point.rotation);
                 if (enemy.TryGetComponent<EnemyAI>(out var ai)) ai.AlertOnSpawn();
             }
-            Radio.Say("It's drawing power from the pylons – it's invulnerable while tethered! Take out both pylons, then hit the glowing core!");
+            Radio.Say("It's repairing itself – back to full! It's drawing power from the pylons and invulnerable while tethered. Take out both pylons, then hit the glowing core!");
             UpdateBar();
         }
 

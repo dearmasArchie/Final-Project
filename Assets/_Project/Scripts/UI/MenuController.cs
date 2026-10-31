@@ -27,6 +27,7 @@ namespace SignalLost
         [SerializeField] GameObject settingsPanel;
         [SerializeField] TMP_Text gameOverReason;
         [SerializeField] TMP_Text victoryStats;
+        [SerializeField] TMP_Text victoryRank;
         [SerializeField] Button[] retryButtons;
 
         InputAction pauseAction;
@@ -107,8 +108,10 @@ namespace SignalLost
                 $"Time remaining    {FormatTime(gm.TimeRemaining)}\n" +
                 $"Enemies destroyed {gm.EnemiesDestroyed}\n" +
                 $"Accuracy          {Mathf.RoundToInt(gm.Accuracy * 100f)}%";
+            if (victoryRank != null) victoryRank.text = $"RANK  {Rank(gm.TimeRemaining / GameManager.PurgeDuration, gm.Accuracy)}";
             Show(victoryPanel);
             SetPaused(true);
+            MusicManager.PlayVictory();
         }
 
         public void OpenSettings()
@@ -176,8 +179,25 @@ namespace SignalLost
             FirstPersonController.SetCursorLocked(!paused);
         }
 
+        /// <summary>S, A, B or C from how much of the purge timer was left and how accurate the shooting was.</summary>
+        public static string Rank(float timeLeft01, float accuracy)
+        {
+            float score = Mathf.Clamp01(timeLeft01) * 50f + Mathf.Clamp01(accuracy) * 50f;
+            return score >= 70f ? "S" : score >= 55f ? "A" : score >= 40f ? "B" : "C";
+        }
+
+        public void QuitGame()
+        {
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif
+        }
+
         void LeaveMenus()
         {
+            MusicManager.StopVictory();
             HideAll();
             Time.timeScale = 1f;
             AudioListener.pause = false;

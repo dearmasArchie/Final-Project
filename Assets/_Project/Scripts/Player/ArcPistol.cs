@@ -22,6 +22,11 @@ namespace SignalLost
         /// <summary>Other loud events (explosions) alert enemies the same way gunshots do.</summary>
         public static void RaiseNoise(Vector3 position) => Fired?.Invoke(position);
 
+        /// <summary>Raised on this pistol's own shots (true for the Overload Beam). The first-person gun animation reacts to it.</summary>
+        public event Action<bool> ShotFired;
+
+        public void RaiseShotForTest(bool overload) => ShotFired?.Invoke(overload);
+
         [SerializeField] Transform cameraPivot;
         [SerializeField] Transform muzzle;
         [SerializeField] GameObject model;
@@ -101,6 +106,7 @@ namespace SignalLost
             bolt.Launch(pulseDamage, DamageType.Pulse, hitMask, countForAccuracy: true);
             Sfx.Play2D("pulse_fire");
             Fired?.Invoke(muzzle.position);
+            ShotFired?.Invoke(false);
 
             if (Magazine == 0) TryReload();
         }
@@ -156,6 +162,7 @@ namespace SignalLost
             }
 
             Fired?.Invoke(muzzle.position);
+            ShotFired?.Invoke(true);
             if (CameraShake.Instance != null) CameraShake.Instance.Shake(0.06f, 0.25f);
             if (beamLine != null) StartCoroutine(ShowBeam(end));
             if (Magazine == 0) TryReload();

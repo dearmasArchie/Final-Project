@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.IO;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -213,6 +214,115 @@ namespace SignalLost.EditorTools
                 foreach (var pylon in pylons) if (!pylon.IsDown) up++;
                 Write($"boss: after stun → stunned={boss.Stunned}, pylons back up={up}/{pylons.Length} at {pylons[0].GetComponent<Health>().Current} HP, " +
                       $"post-processing volume={Object.FindFirstObjectByType<UnityEngine.Rendering.Volume>() != null}");
+                SessionState.SetInt(StepKey, 53);
+                SessionState.SetFloat(StartKey, now);
+            }
+            else if (step == 53 && t > 0.3f)
+            {
+                // Titan gait: let it walk toward the player and read its hip and knee angles over time
+                var boss = Object.FindFirstObjectByType<BossController>();
+                var agent = boss.GetComponent<UnityEngine.AI.NavMeshAgent>();
+                var player = GameObject.FindGameObjectWithTag("Player");
+                agent.isStopped = false;
+                agent.speed = 1.2f;
+                agent.SetDestination(player.transform.position);
+                SessionState.SetInt(StepKey, 54);
+                SessionState.SetFloat(StartKey, now);
+            }
+            else if (step >= 54 && step <= 56 && t > 0.6f)
+            {
+                var boss = Object.FindFirstObjectByType<BossController>();
+                var agent = boss.GetComponent<UnityEngine.AI.NavMeshAgent>();
+                Transform Find(string n) { foreach (var tr in boss.GetComponentsInChildren<Transform>(true)) if (tr.name == n) return tr; return null; }
+                float Pitch(Transform tr) { float a = tr.localEulerAngles.x; return a > 180f ? a - 360f : a; }
+                Write($"titan gait {step - 53}: speed={agent.velocity.magnitude:0.00}, hips L={Pitch(Find("LegL_Hip")):0.0} R={Pitch(Find("LegR_Hip")):0.0}, " +
+                      $"knees L={Pitch(Find("LegL_Knee")):0.0} R={Pitch(Find("LegR_Knee")):0.0}, ankles L={Pitch(Find("LegL_Ankle")):0.0} R={Pitch(Find("LegR_Ankle")):0.0}");
+                SessionState.SetInt(StepKey, step == 56 ? 70 : step + 1);
+                SessionState.SetFloat(StartKey, now);
+            }
+            else if (step == 70 && t > 0.3f)
+            {
+                var sway = Object.FindFirstObjectByType<GunSway>(FindObjectsInactive.Include);
+                gunSway = sway;
+                gunMin = Vector3.one * 99f; gunMax = Vector3.one * -99f; gunPeakBack = 0f;
+                Write($"gun: component found={sway != null}, model active={(sway != null && sway.gameObject.activeInHierarchy)}");
+                SessionState.SetInt(StepKey, sway == null ? 57 : 71);
+                SessionState.SetFloat(StartKey, now);
+            }
+            else if (step == 71)
+            {
+                // Walk the player forward for 1.5 s and record how far the gun moves
+                var player = GameObject.FindGameObjectWithTag("Player");
+                player.GetComponent<CharacterController>().Move(player.transform.forward * 4.5f * Time.deltaTime + Vector3.down * 0.05f);
+                if (t > 0.3f) { gunMin = Vector3.Min(gunMin, gunSway.CurrentOffset); gunMax = Vector3.Max(gunMax, gunSway.CurrentOffset); }
+                if (t > 1.5f)
+                {
+                    Write($"gun: walking bob range x {(gunMax.x - gunMin.x) * 100:0.0} cm, y {(gunMax.y - gunMin.y) * 100:0.0} cm, z {(gunMax.z - gunMin.z) * 100:0.0} cm (should be a few cm, not zero)");
+                    gunSway.GetComponentInParent<ArcPistol>().RaiseShotForTest(false);
+                    SessionState.SetInt(StepKey, 72);
+                    SessionState.SetFloat(StartKey, now);
+                }
+            }
+            else if (step == 72)
+            {
+                gunPeakBack = Mathf.Min(gunPeakBack, gunSway.CurrentOffset.z);
+                if (t > 1.6f)
+                {
+                    Write($"gun: recoil peak back {-gunPeakBack * 100:0.0} cm after a shot, offset 1.6 s later {gunSway.CurrentOffset.magnitude * 100:0.0} cm (idle breathing only)");
+                    SessionState.SetInt(StepKey, 57);
+                    SessionState.SetFloat(StartKey, now);
+                }
+            }
+            else if (step == 57 && t > 0.5f)
+            {
+                // Kill one of each enemy type in the scene and watch what their animators do afterwards
+                deathTargets.Clear();
+                var seen = new HashSet<string>();
+                foreach (var ai in Object.FindObjectsByType<EnemyAI>(FindObjectsSortMode.None))
+                {
+                    string key = ai.name.Replace("(Clone)", "").Trim();
+                    if (!seen.Add(key) || !ai.TryGetComponent<Health>(out var hp)) continue;
+                    deathTargets.Add((key, ai.GetComponentInChildren<Animator>(), ai.transform));
+                    hp.TakeDamage(99999f, DamageType.Hazard, ai.transform.position);
+                }
+                Write($"death: killed {deathTargets.Count} enemy types ({string.Join(", ", deathTargets.Select(d => d.name))})");
+                SessionState.SetInt(StepKey, 58);
+                SessionState.SetFloat(StartKey, now);
+            }
+            else if (step == 58 && t > 1.3f)
+            {
+                SampleDeaths("1.3 s after death");
+                SessionState.SetInt(StepKey, 59);
+            }
+            else if (step == 59 && t > 2.6f)
+            {
+                SampleDeaths("2.6 s after death");
+                SessionState.SetInt(StepKey, 80);
+                SessionState.SetFloat(StartKey, now);
+            }
+            else if (step == 80 && t > 0.3f)
+            {
+                // Win: the victory screen opens with its rank and stats, and the winning song plays through the pause
+                MenuController.Instance.ShowVictory();
+                SessionState.SetInt(StepKey, 81);
+                SessionState.SetFloat(StartKey, now);
+            }
+            else if (step == 81 && t > 0.8f)
+            {
+                var victoryPanel = MenuController.Instance.transform.Find("VictoryPanel");
+                var rankText = victoryPanel != null ? victoryPanel.Find("Rank")?.GetComponent<TMPro.TMP_Text>() : null;
+                var statsText = victoryPanel != null ? victoryPanel.Find("Stats")?.GetComponent<TMPro.TMP_Text>() : null;
+                Write($"victory: panel shown={victoryPanel != null && victoryPanel.gameObject.activeSelf}, rank=\"{rankText?.text}\", stats first line=\"{statsText?.text.Split('\n')[0]}\", " +
+                      $"song playing={MusicManager.VictoryPlaying}, game paused={Time.timeScale == 0f}");
+                MusicManager.StopVictory(); // what leaving the screen does (the real buttons also load a scene)
+                Time.timeScale = 1f;
+                AudioListener.pause = false;
+                SessionState.SetInt(StepKey, 82);
+                SessionState.SetFloat(StartKey, now);
+            }
+            else if (step == 82 && t > 0.5f)
+            {
+                Write($"victory: after leaving, song playing={MusicManager.VictoryPlaying} (should be False)");
                 SessionState.SetInt(StepKey, 99);
             }
             else if (step == 99)
@@ -228,6 +338,27 @@ namespace SignalLost.EditorTools
                 EditorApplication.update -= Tick;
                 Application.logMessageReceived -= OnLog;
                 EditorApplication.ExitPlaymode();
+            }
+        }
+
+        static GunSway gunSway;
+        static Vector3 gunMin, gunMax;
+        static float gunPeakBack;
+        static readonly List<(string name, Animator animator, Transform body)> deathTargets = new List<(string, Animator, Transform)>();
+
+        static void SampleDeaths(string when)
+        {
+            int die = Animator.StringToHash("Die");
+            foreach (var (name, animator, body) in deathTargets)
+            {
+                if (body == null) { Write($"death: {name} {when}: already removed"); continue; }
+                if (animator == null) { Write($"death: {name} {when}: no animator, y={body.position.y:0.00}"); continue; }
+                var info = animator.GetCurrentAnimatorStateInfo(0);
+                int shieldsVisible = 0;
+                foreach (var shield in body.GetComponentsInChildren<EnergyShield>(true))
+                    foreach (var r in shield.GetComponentsInChildren<Renderer>(true)) if (r.enabled) shieldsVisible++;
+                Write($"death: {name} {when}: animator on={animator.enabled}, speed={animator.speed}, in Die state={info.shortNameHash == die}, " +
+                      $"normalized time={info.normalizedTime:0.00}, y={body.position.y:0.00}" + (name.Contains("Aegis") ? $", shield renderers still visible={shieldsVisible} (should be 0)" : ""));
             }
         }
 

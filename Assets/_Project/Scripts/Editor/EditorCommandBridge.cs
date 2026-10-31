@@ -45,6 +45,9 @@ namespace SignalLost.EditorTools
         static void Run(string command)
         {
             Log($"start {command}");
+            // The commands rebuild and reload scenes. An Inspector still showing a destroyed object (a post-processing Volume, say)
+            // throws MissingReferenceException on every repaint, so clear the selection first.
+            Selection.activeObject = null;
             try
             {
                 switch (command)
@@ -76,6 +79,7 @@ namespace SignalLost.EditorTools
                     case "credits": CreditsScreenBuilder.Build(); break;
                     case "build": BuildTools.BuildWindows(); break;
                     case "unused": UnusedAssetTool.Report(); break;
+                    case "menus": Phase3ContentBuilder.RebuildMenus(); break;
                     case "water": WaterArtBuilder.Build(); break;
                     case "lasers": DetailArtBuilder.RebuildLasers(); break;
                     case "refresh": AssetDatabase.Refresh(); break; // picks up new scripts without focusing Unity

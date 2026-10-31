@@ -270,14 +270,56 @@ namespace SignalLost
             EnterState(State.Dead);
             Sfx.Play("enemy_die", transform.position + Vector3.up);
             agent.enabled = false;
+            foreach (var shield in GetComponentsInChildren<EnergyShield>(true)) shield.Dismantle(); // no bubble left floating over the corpse
             foreach (var c in GetComponentsInChildren<Collider>()) c.enabled = false;
-            if (animator != null) animator.SetTrigger(DieParam);
-            else transform.rotation *= Quaternion.Euler(80f, 0f, 0f); // greybox "falls over"
+            if (animator == null) transform.rotation *= Quaternion.Euler(80f, 0f, 0f); // greybox "falls over"
+            else StartCoroutine(PlayDeath());
+            foreach (var audio in GetComponentsInChildren<AudioSource>()) audio.Stop(); // servo hum
 
             SetSensor(Color.black);
             GameManager.Instance.RegisterEnemyDestroyed();
             if (!string.IsNullOrEmpty(persistentId)) GameManager.Instance.MarkCleared(persistentId);
-            Destroy(gameObject, corpseLifetime);
+            Destroy(gameObject, Mathf.Max(corpseLifetime, 6f)); // long enough for the Die clip (about 4.6 s) to finish
+        }
+
+        /// <summary>
+        /// Robots play their Die clip once and hold the last pose; the drone has no Die clip, so its animation stops and it drops.
+        /// (Going through the Die trigger alone let a pending Hit trigger win, and the corpse went back to idle or walking.)
+        /// </summary>
+        System.Collections.IEnumerator PlayDeath()
+        {
+            animator.ResetTrigger(HitParam);
+            animator.SetBool(ShootParam, false);
+            animator.SetFloat(SpeedParam, 0f);
+            int dieState = Animator.StringToHash("Die");
+            if (animator.HasState(0, dieState))
+            {
+                animator.CrossFadeInFixedTime(dieState, 0.1f);
+                float timeout = 6f;
+                while (timeout > 0f)
+                {
+                    timeout -= Time.deltaTime;
+                    var info = animator.GetCurrentAnimatorStateInfo(0);
+                    if (!animator.IsInTransition(0) && info.shortNameHash == dieState && info.normalizedTime >= 0.98f) break;
+                    yield return null;
+                }
+                animator.speed = 0f; // hold the final pose
+                yield break;
+            }
+
+            animator.enabled = false; // drone: stop the rotor and hover animation, then fall
+            float fall = 0f;
+            float spin = Random.Range(-90f, 90f);
+            var hits = new RaycastHit[1];
+            for (float t = 0f; t < 3f; t += Time.deltaTime)
+            {
+                fall += 12f * Time.deltaTime;
+                float step = fall * Time.deltaTime;
+                if (Physics.RaycastNonAlloc(transform.position + Vector3.up * 0.2f, Vector3.down, hits, 0.2f + step + 0.15f, ~0, QueryTriggerInteraction.Ignore) > 0) break;
+                transform.position += Vector3.down * step;
+                transform.Rotate(0f, spin * Time.deltaTime, 120f * Time.deltaTime, Space.Self);
+                yield return null;
+            }
         }
 
         // ------------------------------------------------------------------ helpers

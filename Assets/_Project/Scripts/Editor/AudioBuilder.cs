@@ -29,6 +29,7 @@ namespace SignalLost.EditorTools
         const string ExplorationTrack = SciFi + "loop_ambient_01.ogg";
         const string CombatTrack = SciFi + "loop_machine_02.ogg";
         const string BossTrack = AudioDir + "/Music/boss_battle_loop.mp3";
+        const string VictoryTrack = AudioDir + "/Music/music_victory_settling_up.wav";
 
         static readonly List<SoundEntry> entries = new List<SoundEntry>();
 
@@ -49,6 +50,7 @@ namespace SignalLost.EditorTools
             if (library.exploration == null) library.exploration = Load(ExplorationTrack);
             if (library.combat == null) library.combat = Load(CombatTrack);
             if (library.boss == null) library.boss = Load(BossTrack);
+            if (library.victory == null) library.victory = Load(VictoryTrack);
 
             entries.Clear();
             DefineSounds();

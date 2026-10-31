@@ -69,7 +69,7 @@ namespace SignalLost.EditorTools
                     Vector3 axis = s.x < s.z ? Vector3.right : Vector3.forward;
                     float side = Mathf.Sign(Vector3.Dot(pad.position - door.transform.position, axis));
                     HideRenderer(pad.gameObject);
-                    BuildKeypadVisual(group, $"{name}_Keypad", pad.position, axis * side, Mathf.Min(s.x, s.z));
+                    BuildKeypadVisual(group, $"{name}_Keypad", pad.position, axis * side, Mathf.Min(s.x, s.z), door.GetComponent<Door>());
                     keypads++;
                 }
             }
@@ -82,14 +82,16 @@ namespace SignalLost.EditorTools
                 Vector3 axis = s.x < s.z ? Vector3.right : Vector3.forward;
                 float side = Mathf.Sign(Vector3.Dot(new Vector3(breaker.transform.position.x, 0, 20f) - new Vector3(0, 0, breaker.transform.position.z), axis));
                 if (axis == Vector3.forward) side = Mathf.Sign(20f - breaker.transform.position.z);
-                BuildKeypadVisual(group, "BreakerRoomKeypad_Visual", breaker.transform.position, axis * side, Mathf.Min(s.x, s.z));
+                var breakerDoor = GameObject.Find("Door_BreakerRoom");
+                BuildKeypadVisual(group, "BreakerRoomKeypad_Visual", breaker.transform.position, axis * side, Mathf.Min(s.x, s.z),
+                    breakerDoor != null ? breakerDoor.GetComponent<Door>() : null);
                 keypads++;
             }
             return count;
         }
 
         /// <summary>Wall keypad: steel housing, dark face plate, amber display, 3x4 button caps with digits and a status lamp.</summary>
-        static void BuildKeypadVisual(Transform parent, string name, Vector3 center, Vector3 facing, float thickness)
+        static void BuildKeypadVisual(Transform parent, string name, Vector3 center, Vector3 facing, float thickness, Door door = null)
         {
             var housing = Steel("Keypad_Housing", new Color(0.3f, 0.32f, 0.35f));
             var face = Lit("Keypad_Face", new Color(0.05f, 0.055f, 0.06f), 0.6f, 0.55f);
@@ -102,7 +104,18 @@ namespace SignalLost.EditorTools
             Part(mount, "Housing", PrimitiveType.Cube, new Vector3(0, 0, 0.035f), new Vector3(0.25f, 0.37f, 0.07f), housing);
             Part(mount, "FacePlate", PrimitiveType.Cube, new Vector3(0, 0, 0.073f), new Vector3(0.22f, 0.33f, 0.012f), face);
             Part(mount, "Display", PrimitiveType.Cube, new Vector3(0, 0.115f, 0.08f), new Vector3(0.16f, 0.055f, 0.006f), screen);
-            Part(mount, "Lamp", PrimitiveType.Sphere, new Vector3(0.09f, 0.152f, 0.082f), Vector3.one * 0.016f, lamp, shadows: false);
+            var lampPart = Part(mount, "Lamp", PrimitiveType.Sphere, new Vector3(0.09f, 0.152f, 0.082f), Vector3.one * 0.016f, lamp, shadows: false);
+            if (door != null)
+            {
+                // Live lock state: the display says LOCKED / UNLOCKED and the lamp follows (red / green)
+                var status = Label(mount, "Status", "LOCKED", mount.TransformPoint(new Vector3(0, 0.115f, 0.0865f)), facing, 0.3f, new Color(1f, 0.12f, 0.08f), 0.15f);
+                var status_lamp = lampPart.AddComponent<LockStatusLamp>();
+                var so = new SerializedObject(status_lamp);
+                so.FindProperty("door").objectReferenceValue = door;
+                so.FindProperty("lamp").objectReferenceValue = lampPart.GetComponent<Renderer>();
+                so.FindProperty("label").objectReferenceValue = status;
+                so.ApplyModifiedPropertiesWithoutUndo();
+            }
             string digits = "123456789*0#";
             for (int i = 0; i < 12; i++)
             {

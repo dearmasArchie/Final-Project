@@ -110,6 +110,69 @@ namespace SignalLost.EditorTools
         /// posts, painted shipping containers, a harbour shed, crates, drums and rope, and the ammo locker and medkits.
         /// Existing pier shapes keep their colliders (deck, containers); the boss pylons are untouched.
         /// </summary>
+        /// <summary>
+        /// A small plank bridge from the pier's east edge to the extraction boat: sloped planks on two steel stringers over
+        /// the water gap, rope rails on posts, a hazard-striped threshold and a sign. The deck and rails have colliders.
+        /// </summary>
+        static void DressBoatBridge(Transform parent, float x1, float top, Material wood, Material darkWood, Material steel, Material rope, Material yellow)
+        {
+            var boat = GameObject.Find("ExtractionBoat");
+            if (boat == null) return;
+            var bc = boat.GetComponent<Collider>();
+            float boatTop = bc != null ? bc.bounds.max.y : top - 0.5f;
+            float boatEdge = bc != null ? bc.bounds.min.x : x1 + 2f;
+            float z = bc != null ? bc.bounds.center.z : 20f;
+            var g = Group(parent, "BoatBridge");
+            Vector3 a = new Vector3(x1 - 0.5f, top, z);               // lands on the pier deck
+            Vector3 b = new Vector3(boatEdge + 0.7f, boatTop, z);     // lands on the boat deck
+            Vector3 d = b - a;
+            float length = d.magnitude;
+            float angle = Mathf.Atan2(d.y, d.x) * Mathf.Rad2Deg;
+            Vector3 along = d.normalized;
+            const float width = 1.7f;
+            var tilt = Quaternion.Euler(0f, 0f, angle);
+
+            // Walkable deck (collider) and the planks on top of it
+            var deck = Part(g, "BridgeDeck", PrimitiveType.Cube, (a + b) * 0.5f + Vector3.down * 0.05f, new Vector3(length, 0.1f, width), darkWood, tilt, collider: true);
+            deck.GetComponent<Renderer>().enabled = false;
+            int planks = Mathf.RoundToInt(length / 0.24f);
+            for (int i = 0; i < planks; i++)
+            {
+                Vector3 p = a + along * ((i + 0.5f) * length / planks) + Vector3.up * 0.015f;
+                Part(g, "Plank", PrimitiveType.Cube, p, new Vector3(length / planks - 0.025f, 0.05f, width), i % 3 == 1 ? darkWood : wood, tilt);
+            }
+            foreach (float side in new[] { -1f, 1f })
+            {
+                Vector3 off = new Vector3(0, 0, side * (width / 2f - 0.05f));
+                Bar(g, "Stringer", a + off + Vector3.down * 0.1f, b + off + Vector3.down * 0.1f, 0.12f, steel);
+                // Rope rail on three posts
+                Vector3 prev = Vector3.zero;
+                for (int i = 0; i < 3; i++)
+                {
+                    Vector3 foot = a + along * (length * i / 2f) + new Vector3(0, 0, side * (width / 2f + 0.03f));
+                    Part(g, "BridgePost", PrimitiveType.Cube, foot + Vector3.up * 0.5f, new Vector3(0.07f, 1.0f, 0.07f), steel);
+                    Part(g, "PostCap", PrimitiveType.Sphere, foot + Vector3.up * 1.02f, Vector3.one * 0.09f, steel);
+                    Vector3 hand = foot + Vector3.up * 0.95f, mid = foot + Vector3.up * 0.5f;
+                    if (i > 0)
+                    {
+                        Bar(g, "RopeTop", prev + Vector3.up * 0.95f, hand, 0.035f, rope);
+                        Bar(g, "RopeMid", prev + Vector3.up * 0.5f, mid, 0.03f, rope);
+                    }
+                    prev = foot;
+                }
+                // Invisible side guard so the player can't slip off the deck
+                var guard = new GameObject("BridgeGuard").AddComponent<BoxCollider>();
+                guard.transform.SetParent(g, false);
+                guard.transform.SetPositionAndRotation((a + b) * 0.5f + new Vector3(0, 0.6f, side * (width / 2f + 0.03f)), tilt);
+                guard.size = new Vector3(length, 1.2f, 0.06f);
+            }
+            // Hazard-striped threshold where the bridge meets the pier, and a sign over the entrance
+            Part(g, "PierThreshold", PrimitiveType.Cube, new Vector3(x1 - 0.5f, top + 0.012f, z), new Vector3(0.3f, 0.025f, width), yellow, shadows: false);
+            Part(g, "SignPost", PrimitiveType.Cylinder, new Vector3(x1 - 1.4f, top + 0.8f, z + width / 2f + 0.5f), new Vector3(0.07f, 0.8f, 0.07f), steel);
+            DecSign(g, "EXTRACTION BOAT\n>>>", new Vector3(x1 - 1.4f, top + 1.7f, z + width / 2f + 0.5f) + Vector3.left * 0.05f, Vector3.left, 0.55f, 1.5f,
+                Color.black, new Color(0.85f, 0.62f, 0.05f), new Vector2(1.3f, 0.45f));
+        }
+
         static string DressPier(Transform root)
         {
             var deck = Find("PierDeck");
@@ -172,17 +235,19 @@ namespace SignalLost.EditorTools
             Rail(new Vector3(x1 - 0.12f, top, 24.5f), new Vector3(x1 - 0.12f, top, z1 - 6f), true);
 
             // Mooring bollards, rope coils and a life ring station by the boat
-            for (float z = 16.5f; z <= 24f; z += 3.7f)
+            foreach (float z in new[] { 16.4f, 23.6f })
             {
                 Tube(g, "Bollard", new Vector3(x1 - 0.5f, top, z), new Vector3(x1 - 0.5f, top + 0.42f, z), 0.12f, dark);
                 Tube(g, "BollardHead", new Vector3(x1 - 0.5f, top + 0.4f, z), new Vector3(x1 - 0.5f, top + 0.5f, z), 0.17f, dark);
             }
             for (int k = 0; k < 4; k++)
-                Part(g, "RopeCoil", PrimitiveType.Cylinder, new Vector3(x1 - 1.4f, top + 0.04f + k * 0.07f, 19.6f), new Vector3(0.65f - k * 0.04f, 0.035f, 0.65f - k * 0.04f), rope);
+                Part(g, "RopeCoil", PrimitiveType.Cylinder, new Vector3(x1 - 1.6f, top + 0.04f + k * 0.07f, 17.4f), new Vector3(0.65f - k * 0.04f, 0.035f, 0.65f - k * 0.04f), rope);
             var ring = Lit("Pier_LifeRing", new Color(0.9f, 0.4f, 0.1f), 0f, 0.4f);
             Part(g, "LifeRingPost", PrimitiveType.Cube, new Vector3(x1 - 0.5f, top + 0.9f, 28.5f), new Vector3(0.08f, 1.8f, 0.08f), steel);
             Part(g, "LifeRing", PrimitiveType.Cylinder, new Vector3(x1 - 0.5f, top + 1.45f, 28.5f - 0.12f), new Vector3(0.6f, 0.06f, 0.6f), ring, Quaternion.Euler(90, 0, 0));
             Part(g, "LifeRingHole", PrimitiveType.Cylinder, new Vector3(x1 - 0.5f, top + 1.45f, 28.5f - 0.15f), new Vector3(0.3f, 0.07f, 0.3f), dark, Quaternion.Euler(90, 0, 0));
+
+            DressBoatBridge(g, x1, top, wood, darkWood, steel, rope, yellow);
 
             // Lamp posts with caged lamps and warm light
             foreach (var (x, z) in new[] { (x0 + 1.2f, 33f), (x1 - 1.2f, 33f), (x0 + 1.2f, 12f) })
@@ -224,8 +289,11 @@ namespace SignalLost.EditorTools
             PlaceAmmoLocker(supplies, new Vector3(x1 - 0.9f, top, 35.2f), new Vector3(x0, top, 30f), "Pier");
             PlaceMedkit(supplies, new Vector3(x1 - 1.2f, top, 31.8f), "Pier_Medkit1");
             PlaceMedkit(supplies, new Vector3(x0 + 1.0f, top, 31.2f), "Pier_Medkit2");
+            // Two more in the middle of the arena, so a fight at the pylons never means a long run back for health
+            PlaceMedkit(supplies, new Vector3(x0 + 3.0f, top, 17.0f), "Pier_Medkit3");
+            PlaceMedkit(supplies, new Vector3(x1 - 3.0f, top, 22.0f), "Pier_Medkit4");
 
-            return $"deck planks, {piles} piles, {railPosts} rail posts, 3 containers, shed, {props} props, ammo locker + 2 medkits";
+            return $"deck planks, {piles} piles, {railPosts} rail posts, 3 containers, shed, {props} props, ammo locker + 4 medkits (2 at the landing, 2 mid-arena)";
         }
 
         /// <summary>Corrugated shipping container look over a greybox box: painted body, ribs, door end with lock rods.</summary>

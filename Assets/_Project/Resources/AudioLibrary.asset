@@ -18,6 +18,11 @@ MonoBehaviour:
   exploration: {fileID: 8300000, guid: 31e50e79c366c5e44aba1519ddfbe7db, type: 3}
   combat: {fileID: 8300000, guid: 202a8e9bca7f7ba4aa661bc1e21c2a2a, type: 3}
   boss: {fileID: 8300000, guid: d7ec71714df8ac244a0fcc9560864812, type: 3}
+  victory: {fileID: 8300000, guid: cce762598879c4f4a8fb1a524527fffe, type: 3}
+  explorationGain: 1
+  combatGain: 0.35
+  bossGain: 0.8
+  victoryGain: 0.9
   sounds:
   - id: pulse_fire
     clips:

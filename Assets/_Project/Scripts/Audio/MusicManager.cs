@@ -15,6 +15,51 @@ namespace SignalLost
 
         static MusicManager instance;
 
+        AudioSource victorySource;
+        bool victoryPlaying;
+
+        /// <summary>The winning song: everything else fades out and the victory track plays, even while the game is paused.</summary>
+        public static void PlayVictory()
+        {
+            if (instance == null) return;
+            instance.StartVictory();
+        }
+
+        /// <summary>Back to normal music (called when leaving the victory screen).</summary>
+        public static void StopVictory()
+        {
+            if (instance != null) instance.EndVictory();
+        }
+
+        void StartVictory()
+        {
+            var library = Sfx.Library;
+            if (library == null || library.victory == null) return;
+            victoryPlaying = true;
+            foreach (var s in sources) { s.Stop(); s.volume = 0f; }
+            if (victorySource == null)
+            {
+                victorySource = gameObject.AddComponent<AudioSource>();
+                victorySource.outputAudioMixerGroup = library.musicGroup;
+                victorySource.loop = true;
+                victorySource.playOnAwake = false;
+                victorySource.spatialBlend = 0f;
+                victorySource.ignoreListenerPause = true; // the victory screen pauses the game
+            }
+            victorySource.clip = library.victory;
+            victorySource.volume = library.victoryGain;
+            victorySource.Play();
+        }
+
+        void EndVictory()
+        {
+            victoryPlaying = false;
+            if (victorySource != null) victorySource.Stop();
+            target = null; // lets the normal music pick a track again
+        }
+
+        public static bool VictoryPlaying => instance != null && instance.victoryPlaying && instance.victorySource != null && instance.victorySource.isPlaying;
+
         AudioSource[] sources;
         int active;
         AudioClip target;
@@ -54,6 +99,7 @@ namespace SignalLost
 
         void Update()
         {
+            if (victoryPlaying) return;
             var library = Sfx.Library;
             Mood mood = CurrentMood();
             AudioClip wanted = mood == Mood.Boss ? library.boss : mood == Mood.Combat ? library.combat : library.exploration;
