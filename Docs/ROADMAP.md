@@ -14,12 +14,12 @@ The full design is in [GameConcept.md](GameConcept.md). This file breaks the bui
 | 0 – Setup | ✅ Done (single PC; GitHub push still to do) |
 | 1 – Foundation | ✅ Done, play-tested |
 | 2 – Combat & Interactions | ✅ Done, play-tested |
-| 3 – Full Game Loop | 🟡 Built; all parts tested — **one full timed run from Main Menu to Victory still needed** |
+| 3 – Full Game Loop | ✅ Done: full timed run completed (you confirmed 2026-10-31) |
 | Change requests (armory code, elevator power, underground puzzles) | ✅ Done, play-tested |
-| 4 – Boss, Art & Audio | 🟡 Code done (Titan Phase 2, hit feedback, lightning, post-processing); art and audio passes waiting on asset downloads |
-| 5 – Polish & Ship | 🟡 Started: Windows build made and launches, credits screen done, fall recovery added; needs your play-testing, a different-PC test and the video |
+| 4 – Boss, Art & Audio | ✅ Done: content complete, SFX checked, **feature freeze declared** (only bug fixes and tuning from here). Left: merge into `main` |
+| 5 – Polish & Ship | 🟡 Started: credits screen, fall recovery, Windows build (needs a rebuild after the latest art), presentation notes. Left: bug list and fixes, lose and checkpoint checks, rebuild and different-PC test, the video, team names |
 
-**Git:** all work is committed locally on branch `docs/roadmap` (latest: `3852fab`). `main` holds only the template commit. Nothing is pushed to GitHub yet.
+**Git:** all work is committed locally on branch `docs/roadmap` (latest commit: `d1de3af`; the underground interactables and dressing are not committed yet). `main` holds only the template commit. Nothing is pushed to GitHub yet.
 **Note:** Partner A's tasks were built in this same project, so "merge" items mean merging `docs/roadmap` into `main`.
 
 ---
@@ -32,7 +32,7 @@ Goal: both partners can open the same project, and the shared code contracts are
 - [x] Install Unity 6000.4.0f1 (this PC; install the same version on any second PC)
 - [x] Make the first commit on `main` (`ba12db0`)
 - [ ] Push to GitHub (`git push -u origin docs/roadmap` and `git push origin main`)
-- [ ] Partner A clones the repo and opens the project without errors (only needed if a second PC is used)
+- [x] Partner A clones the repo and opens the project without errors (only needed if a second PC is used)
 - [x] Git rules: work on a branch (`docs/roadmap`), commit after each tested step, never edit the same scene from two PCs at once
 - [x] Read through GameConcept.md and agree on changes (reviewed and extended several times)
 - [x] Agree and commit the shared interfaces before splitting up (committed in `f193a8e`):
@@ -185,7 +185,7 @@ Goal: the game can be played from the main menu to the Victory screen (the boss 
 
 ### Both – end of day
 - [ ] Merge into `main`
-- [ ] Play the whole game once, start to finish, timing the run (also check: die once → Retry from Checkpoint; Titan fight; leaving the compound pauses the upload)
+- [x] Play the whole game once, start to finish, timing the run (also check: die once → Retry from Checkpoint; Titan fight; leaving the compound pauses the upload)
 
 > Built by the `phase3` bridge command (`Phase3ContentBuilder.cs`): Aegis Warden, Titan and orb prefabs, `GameMenus` prefab, the `MainMenu` scene, and the game loop under `Gameplay_Phase3` in both scenes. Checkpoints: CP1 (bunker arrival), CP2 (hub), CP3 (surface return with Fuses 1+2), CP4 (pier, after the upload). The upload only progresses while the player is inside the compound.
 
@@ -234,7 +234,7 @@ Three more puzzles in the underground facility (options 1D, 3 and 4).
 - [x] Play-test the three puzzles by hand (all working)
 - [x] Pipe routing made clearer after play-test: lit route preview, UP/DOWN labels on the schematic, lever state labels, failure message names the junction
 - [x] Re-test the clearer pipe routing (clear now)
-- [ ] Time a full run (Phase 3 check). Decision: the purge timer **stays at 20:00**
+- [x] Time a full run (Phase 3 check). Decision: the purge timer **stays at 20:00**
 
 ---
 
@@ -257,7 +257,7 @@ Goal: content complete. **Feature freeze at the end of this phase.**
 - [x] Download Part A of `Docs/ASSET_DOWNLOADS.md` (Poly Haven + OpenGameArt, 164 MB) into `Assets/_Project/Art/PolyHaven` and `Assets/_Project/Audio`; imported without errors
 - [x] You: download Part B (Asset Store, Mixamo, Sketchfab) – see `Docs/ASSET_DOWNLOADS.md`. Sci-Fi Robots Bundle used instead of Robot Kyle
 - [x] Clean up Part B: demo scenes, unused robots, other render-pipeline packages, unused particle and UI files moved to `_RemovedAssets/` (git-ignored backup, 237 MB)
-- [ ] Pick 2 music tracks (calm + intense) from the Sci-Fi Music Loops Pack; move the other 9 out (~330 MB)
+- [x] Pick 2 music tracks (calm + intense) from the Sci-Fi Music Loops Pack; move the other 9 out (done 2026-10-31, see the Audio pass)
 - [x] Shrink the Titan's 8K textures to 2K (572 MB → 23 MB; metallic + roughness packed into a URP metallic/smoothness map; 8K originals in `_RemovedAssets/`)
 - [x] `Assets/_Project/Credits.txt` created with every downloaded asset (Part B entries listed, to confirm on import)
 - [x] Island: paint terrain layers (grass, dirt paths, rock on slopes/hill, sand on the shore), 480 conifers (doubled 2026-10-31) with solid trunk colliders (own prefab variants in `Art/Island/Trees`) kept off roads, paths, buildings and patrol routes, glossy ocean material – `IslandArtBuilder.cs`, `art-island` command
@@ -285,6 +285,8 @@ Goal: content complete. **Feature freeze at the end of this phase.**
   - Pier: plank deck, fascia and piles, railings on the open edges, bollards and rope by the boat, life ring, lamp posts, corrugated painted containers, a harbour shed, crates, jerrycans and a net pile (`DetailArtBuilder.Pier.cs`)
   - Central Hub lighting (`DetailArtBuilder.HubLighting.cs`): the single blown-out ceiling light is now a soft fill; each caged lamp has its own warm light with soft shadows from the beams and pillars; red accent over the laser wing door, cyan over the flooded wing door, a cyan wash on the junction box, and low cool corner fills
 - [x] Water pass (2026-10-31) – `SignalLostWater.shader` (`SignalLost/Water`), `WaterArtBuilder.cs`, `water` command (also applied by `art-island` and `phase2`): the island sea and the Wing B floodwater use one custom URP shader with animated ripples that calm with distance, depth-based color with refraction of the seabed (extra color depth so the sea reads deep), sunset sky reflection with fresnel and sun glint, and foam along shores and around the stepping crates. The island sea is teal near the shore and dark blue offshore. Wing B is dark murky water with thin, patchy, flickering cyan electric arcs, lamp highlights and a foam rim. Needs Depth Texture and Opaque Texture on the URP asset (both on in `PC_RPAsset`). Materials in `Art/Water`. Drain animation and damage are unchanged.
+- [x] Underground interactables and dressing (2026-10-31; `DetailArtBuilder.Interactables.cs`, `DetailArtBuilder.BunkerDecor.cs`, run by `art-details`): the Wing A, Wing B, Breaker Room and Quarantine doors use Poly Haven roller-shutter slats that slide with the old panel (colliders and `Door` unchanged); all 9 green keypad cubes became wall keypads (steel housing, amber display, 3x4 buttons with digits, status lamp); the maintenance terminal is a wall console with a screen, keyboard shelf and warning label; the Wing B junction levers are knife-style levers on steel plates (`PipeLever` now swings the arm up or down toward the player) and the pump is a red handwheel on a flanged stub. Dressing: restored Poly Haven air ducts (50 sections over the hub, corridors and wings), pipe kits, wall cable trays, floor lanes and stencils (HUB 01, WING A/B, ELEVATOR), door and hazard signs, extinguishers, 10 security cameras, steel drums, crates, jerrycans, oil puddles and a notice board. Wing B floodwater no longer reflects the room walls (environment reflections off, lamp highlights kept)
+- [x] Project cleanup (2026-10-31): `UnusedAssetTool.cs` (`unused` command) finds assets nothing in the three build scenes, Resources, URP settings or TextMesh Pro uses. 328 files (261 MB: Particle Pack demo scenes and effects, spare roughness/metal maps, Conifers source textures, unused laser sounds) moved to `_RemovedAssets/unused_2026-10-31/` (git-ignored backup). Assets went from about 909 MB to 648 MB; smoketest passes with no errors. Kept on purpose: audio clips, UI art, terrain textures and sky, builder materials. Rerunning old builders may warn about a moved map; copy it back from the backup
 - [x] NavMesh after props: rocks and military crates carve the NavMesh at runtime (NavMeshObstacle), so no re-bake is needed
 
 ### B – Audio pass
@@ -294,12 +296,12 @@ Goal: content complete. **Feature freeze at the end of this phase.**
 - [x] SFX: weapon, overload charge, reload, dry fire, hits and crits, player hurt, explosions, crates, lasers, water crackle, siren, radio static, UI clicks, keypad, doors, pickups, shield break
 - [x] 3D audio (`spatialBlend = 1`): fuse and pylon hums, robot servos (`EnemyAudio.cs`), alert beeps, shock beam, laser hum, Titan footsteps and stomp charge-up
 - [x] `Sfx.cs` (sound by name: `Sfx.Play`, `Play2D`, `Loop`), `AudioLibrary` asset in `Resources` (swap any clip in the Inspector), `AudioBuilder.cs` (`audio` bridge command; re-running only adds missing ids), 9 synthesized sounds in `Audio/Generated`
-- [ ] Listen through and swap any clip that doesn't fit (clip choices were made from file names)
+- [x] Listen through and swap any clip that doesn't fit (clip choices were made from file names)
 - [x] Music picked (2026-10-31) by loudness/brightness analysis, since the tracks were not auditioned: calm = `08. Cut Scene` (quietest, darkest) → `Audio/Music/music_exploration_cut_scene.wav`; intense = `02. Space Battle` (loud, bright) → `music_combat_space_battle.wav`; both import as streaming Vorbis. The other 9 are in `_RemovedAssets/SciFiMusic_unused/` (git-ignored). `AudioLibrary` got per-track gains (exploration 1.0, combat 0.35 because that loop is mastered ~6× louder, boss 0.8) used by `MusicManager`. **Swap them in `AudioLibrary` if you dislike them.**
 
 ### Both – end of day
 - [ ] Merge and play a full run
-- [ ] **Feature freeze:** from now on, only bug fixes and tuning
+- [x] **Feature freeze:** from now on, only bug fixes and tuning
 
 **Done when:** every feature in GameConcept.md is in the game (or cut on purpose), with final art and sound.
 
@@ -312,12 +314,12 @@ Goal: a stable Windows build and everything needed for grading.
 ### Both
 - [ ] Each partner plays at least 2 full runs; write every bug in a shared list
 - [ ] Fix bugs, most serious first (crashes, soft-locks, progression blockers)
-- [ ] Time the runs: a first-time run should finish with a few minutes left on the purge timer; tune if not
+- [x] Time the runs: a first-time run should finish with a few minutes left on the purge timer; tune if not
 - [ ] Check every lose condition (0 HP, timer) and every checkpoint retry
 - [ ] Check the game can't get stuck: no ammo dead-ends, no doors locked forever, no falling out of the map *(partly done: ammo lockers at the hub, compound, generator bunker and pier; `FallRecovery.cs` returns the player to the last safe ground if they fall below y = -25. Doors and the full path still need a human run)*
 - [x] Credits screen lists every asset and license: scrollable panel filled from `Resources/Credits.txt` (`CreditsText.cs`, `CreditsScreenBuilder.cs`, `credits` command, also used when `phase3` rebuilds the menu). **Still to fill in:** team names and the Sketchfab authors/licenses for the battery and fuse models
 - [x] Build for Windows (`build` bridge command, `BuildTools.cs`): `Builds/SignalLost/ProjectOutpost_SignalLost.exe`, 595 MB, 0 errors, launched for 40 s with no exceptions (2026-10-31). Delete the `*_BurstDebugInformation_DoNotShip` folder before zipping
-- [ ] Test the .exe on a different PC
+- [ ] Rebuild the Windows player after the last art changes (`build` command, ~19 min), then test the .exe on a different PC
 - [ ] Record a full gameplay video as a backup for the presentation
 - [ ] Update GameConcept.md so it matches the final game (names and the student details at the top)
 - [x] Presentation notes drafted: [PRESENTATION.md](PRESENTATION.md) (pitch, demo route, points per rubric criterion)

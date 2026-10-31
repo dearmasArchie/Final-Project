@@ -75,6 +75,7 @@ namespace SignalLost.EditorTools
                     case "art-details": DetailArtBuilder.Build(); break;
                     case "credits": CreditsScreenBuilder.Build(); break;
                     case "build": BuildTools.BuildWindows(); break;
+                    case "unused": UnusedAssetTool.Report(); break;
                     case "water": WaterArtBuilder.Build(); break;
                     case "lasers": DetailArtBuilder.RebuildLasers(); break;
                     case "refresh": AssetDatabase.Refresh(); break; // picks up new scripts without focusing Unity

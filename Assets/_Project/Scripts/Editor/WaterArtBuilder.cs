@@ -81,7 +81,8 @@ namespace SignalLost.EditorTools
             mat.SetFloat("_DepthBias", 0.3f);
             mat.SetFloat("_SunScatter", 0f);
             mat.SetFloat("_Smoothness", 0.93f);
-            mat.SetFloat("_ReflectionStrength", 0.6f);
+            mat.SetFloat("_ReflectionStrength", 1f);
+            mat.EnableKeyword("_ENVIRONMENTREFLECTIONS_OFF"); // no sky underground: only lamp highlights, never the room walls mirrored
             mat.SetFloat("_WaveScale", 0.7f);
             mat.SetFloat("_WaveSpeed", 0.5f);
             mat.SetFloat("_NormalStrength", 1.2f);

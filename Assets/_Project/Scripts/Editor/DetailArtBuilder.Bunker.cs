@@ -17,6 +17,8 @@ namespace SignalLost.EditorTools
             report.Add("structure " + BunkerStructure(root));
             report.Add("equipment " + BunkerEquipment(root));
             report.Add(DressHubLighting(root));
+            report.Add("interactables " + DressBunkerInteractables(root));
+            report.Add("decor " + DressBunkerDecor(root));
             return string.Join("; ", report);
         }
 

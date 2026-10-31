@@ -27,7 +27,7 @@ namespace SignalLost
         public void SetDown(bool down)
         {
             IsDown = down;
-            if (handle != null) handle.localRotation = Quaternion.Euler(down ? 50f : -50f, 0f, 0f);
+            if (handle != null) handle.localRotation = Quaternion.Euler(down ? -50f : 50f, 0f, 0f); // arm points at the player: +50 lifts it, -50 lowers it
             if (stateLabel != null) stateLabel.text = $"{label}: {(down ? "DOWN" : "UP")}";
         }
     }

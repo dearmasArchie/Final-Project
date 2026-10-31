@@ -8,7 +8,7 @@ Built with Unity 6 (Universal Render Pipeline).
 TEXTURES, SKY AND MODELS – Poly Haven (polyhaven.com), CC0 public domain
 Textures: Aerial Grass Rock, Brown Mud Leaves 01, Rocky Terrain 02, Coast Sand Rocks 02, Concrete Floor Worn 001, Concrete Wall 008, Metal Plate
 Sky: Belfast Sunset (Pure Sky)
-Models: Boulder 01, Rock Moss Set 01, Barrel 01, Wooden Crate 01, Wooden Military Crate, Medical Box, Metal Jerrycan, Power Box 01, Utility Box 01, Caged Hanging Light, Industrial Caged Sconce, Steel Frame Shelves 01, Portable Generator, Vintage Radio Transceiver, Modular Chainlink Fence
+Models: Boulder 01, Rock Moss Set 01, Barrel 01, Wooden Crate 01, Wooden Military Crate, Medical Box, Metal Jerrycan, Power Box 01, Utility Box 01, Caged Hanging Light, Industrial Caged Sconce, Steel Frame Shelves 01, Portable Generator, Vintage Radio Transceiver, Modular Chainlink Fence, Rollershutter Door, Modular Industrial Pipes 01, Modular Airduct Rectangular 01
 
 AUDIO – OpenGameArt (opengameart.org), CC0 public domain
 "Boss Battle (loop)" by pro-sensory – boss music

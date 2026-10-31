@@ -80,4 +80,4 @@ Poly Haven models, CC0, 2K, downloaded by Claude into `Assets/_Project/Art/PolyH
 
 Sketchfab (downloaded by you, in `Assets/_Project/Art/SketchFab/`): `battery` (battery cell) and `cartridge fuse` (fuse). Confirm the authors and licenses on their pages for the credits.
 
-Also downloaded, then moved to `_RemovedAssets/PolyHaven_unused/` (not used): `modular_airduct_rectangular_01`, `modular_industrial_pipes_01`, `rollershutter_door`.
+Also downloaded: `rollershutter_door` (underground doors), `modular_industrial_pipes_01` (wall pipe kits) and `modular_airduct_rectangular_01` (ceiling air ducts). They were first set aside as unused, then restored to `Art/PolyHaven/Models/` on 2026-10-31 for the underground pass.
