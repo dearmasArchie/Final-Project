@@ -46,9 +46,10 @@ namespace SignalLost.EditorTools
                 TextAlignmentOptions.Top, Anchor.TopCenter, "20:00");
 
             // Top-right: objective and fuses
-            var objectiveText = Text(root.transform, "ObjectiveText", new Vector2(-40, -40), new Vector2(600, 40), 26,
+            // Fuse count on top, objective under it: a long objective wraps to two lines and grows downward without covering the fuses
+            var objectiveText = Text(root.transform, "ObjectiveText", new Vector2(-40, -76), new Vector2(600, 40), 26,
                 TextAlignmentOptions.TopRight, Anchor.TopRight, "Reach the freight elevator");
-            var fuseText = Text(root.transform, "FuseText", new Vector2(-40, -80), new Vector2(600, 36), 22,
+            var fuseText = Text(root.transform, "FuseText", new Vector2(-40, -40), new Vector2(600, 36), 22,
                 TextAlignmentOptions.TopRight, Anchor.TopRight, "Override Fuses: 0 / 3");
 
             // Bottom-right: ammo

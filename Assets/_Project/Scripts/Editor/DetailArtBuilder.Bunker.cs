@@ -19,6 +19,7 @@ namespace SignalLost.EditorTools
             report.Add(DressHubLighting(root));
             report.Add("interactables " + DressBunkerInteractables(root));
             report.Add("decor " + DressBunkerDecor(root));
+            report.Add($"manual-edit duplicates removed: {RemoveManualDuplicates(root)}");
             return string.Join("; ", report);
         }
 
@@ -130,14 +131,18 @@ namespace SignalLost.EditorTools
                 for (int side = -1; side <= 1; side += 2)
                 {
                     Vector3 a, b;
-                    if (alongX) { a = new Vector3(r.center.x - hx + 0.5f, 0, r.center.z + side * (hz - 0.22f)); b = new Vector3(r.center.x + hx - 0.5f, 0, a.z); }
-                    else { a = new Vector3(r.center.x + side * (hx - 0.22f), 0, r.center.z - hz + 0.5f); b = new Vector3(a.x, 0, r.center.z + hz - 0.5f); }
+                    // Runs go all the way into the end walls (with a collar where they pass through) instead of stopping short
+                    if (alongX) { a = new Vector3(r.center.x - hx, 0, r.center.z + side * (hz - 0.22f)); b = new Vector3(r.center.x + hx, 0, a.z); }
+                    else { a = new Vector3(r.center.x + side * (hx - 0.22f), 0, r.center.z - hz); b = new Vector3(a.x, 0, r.center.z + hz); }
                     for (int k = 0; k < 2; k++)
                     {
                         float y = top - 0.55f - k * 0.26f;
                         Vector3 pa = new Vector3(a.x, y, a.z), pb = new Vector3(b.x, y, b.z);
                         Tube(group, "Pipe", pa, pb, 0.08f, k == 0 ? (side < 0 ? blue : grey) : red);
                         pipes++;
+                        Vector3 dir = (pb - pa).normalized;
+                        Tube(group, "WallCollar", pa, pa + dir * 0.12f, 0.12f, steel);
+                        Tube(group, "WallCollar", pb - dir * 0.12f, pb, 0.12f, steel);
                         int clamps = Mathf.Max(2, Mathf.RoundToInt(Vector3.Distance(pa, pb) / 2.5f));
                         for (int c = 0; c <= clamps; c++)
                         {

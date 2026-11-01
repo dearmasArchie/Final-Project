@@ -67,7 +67,7 @@ namespace SignalLost.EditorTools
             {
                 var menu = Object.FindFirstObjectByType<MainMenuController>();
                 Write($"smoketest: scene={SceneManager.GetActiveScene().name}, main menu found={menu != null}");
-                if (menu != null) menu.Play();
+                if (menu != null) menu.PlayImmediate();
                 SessionState.SetInt(StepKey, 1);
             }
             else if (step == 1 && (SceneManager.GetActiveScene().name != "MainMenu" || t > 30f))

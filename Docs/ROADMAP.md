@@ -17,7 +17,7 @@ The full design is in [GameConcept.md](GameConcept.md). This file breaks the bui
 | 3 – Full Game Loop | ✅ Done: full timed run completed (you confirmed 2026-10-31) |
 | Change requests (armory code, elevator power, underground puzzles) | ✅ Done, play-tested |
 | 4 – Boss, Art & Audio | ✅ Done: content complete, SFX checked, **feature freeze declared** (only bug fixes and tuning from here). Left: merge into `main` |
-| 5 – Polish & Ship | 🟡 Started: credits screen, fall recovery, Windows build (needs a rebuild after the latest art), presentation notes. Left: bug list and fixes, lose and checkpoint checks, rebuild and different-PC test, the video, team names |
+| 5 – Polish & Ship | 🟡 Started: credits screen, fall recovery, Windows build (needs a rebuild after the latest art), presentation notes. Left: bug list and fixes, lose and checkpoint checks, rebuild and different-PC test, the video |
 
 **Git:** all work is committed locally on branch `docs/roadmap` (latest commit: `d1de3af`; the underground interactables and dressing are not committed yet). `main` holds only the template commit. Nothing is pushed to GitHub yet.
 **Note:** Partner A's tasks were built in this same project, so "merge" items mean merging `docs/roadmap` into `main`.
@@ -324,7 +324,10 @@ Goal: a stable Windows build and everything needed for grading.
 - [x] Time the runs: a first-time run should finish with a few minutes left on the purge timer; tune if not
 - [ ] Check every lose condition (0 HP, timer) and every checkpoint retry
 - [ ] Check the game can't get stuck: no ammo dead-ends, no doors locked forever, no falling out of the map *(partly done: ammo lockers at the hub, compound, generator bunker and pier; `FallRecovery.cs` returns the player to the last safe ground if they fall below y = -25. Doors and the full path still need a human run)*
-- [x] Credits screen lists every asset and license: scrollable panel filled from `Resources/Credits.txt` (`CreditsText.cs`, `CreditsScreenBuilder.cs`, `credits` command, also used when `phase3` rebuilds the menu). **Still to fill in:** team names and the Sketchfab authors/licenses for the battery and fuse models
+- [x] Credits screen lists every asset and license: scrollable panel filled from `Resources/Credits.txt` (`CreditsText.cs`, `CreditsScreenBuilder.cs`, `credits` command, also used when `phase3` rebuilds the menu). Team names are in (WeFinds, 2026-11-01). **Still to fill in:** the Sketchfab authors/licenses for the battery and fuse models and the Dr. Reyes model
+- [x] Story introduction between Play and the game start: five black pages that type in (Outpost 14, the lightning strike and OVERSEER, hostile robots and the lost signal, the 20-minute Purge Protocol, and the goal). Any key or click moves on, Esc skips (`IntroSequence.cs`, called from `MainMenuController.Play`). Retry and Play Again skip it, and the purge timer only starts when the island loads, so the intro costs no run time
+- [x] Main menu background: slideshow of four rendered island views (tower, pier, camp, coast) with a slow zoom, cross-fade and a dark veil behind the panels (`MenuBackground.cs`, `MenuBackgroundBuilder.cs`, `menu-bg` command, re-applied when `phase3` rebuilds the menu). It is a rendered picture slideshow, not the live scene, so no gameplay scripts or timer run in the menu. Re-run `menu-bg` after big changes to the island
+- [x] Manual edits are protected: objects the user keeps under `ManualEdits` in IslandExterior are never touched, and `art-details` removes any regenerated copy of them (`RemoveManualDuplicates`). Underground pipes are being edited by hand, so **do not re-run `art-details` without backing up UndergroundFacility.unity first**
 - [x] Build for Windows (`build` bridge command, `BuildTools.cs`): `Builds/SignalLost/ProjectOutpost_SignalLost.exe`, 595 MB, 0 errors, launched for 40 s with no exceptions (2026-10-31). Delete the `*_BurstDebugInformation_DoNotShip` folder before zipping
 - [ ] Rebuild the Windows player after the last art changes (`build` command, ~19 min), then test the .exe on a different PC
 - [ ] Record a full gameplay video as a backup for the presentation

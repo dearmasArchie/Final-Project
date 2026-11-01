@@ -326,6 +326,7 @@ namespace SignalLost.EditorTools
             OnClick(settingsBack, controller.Back);
             OnClick(creditsBack, controller.Back);
 
+            MenuBackgroundBuilder.Apply(); // island slideshow behind the panels (no-op until menu-bg has rendered the pictures)
             EditorSceneManager.SaveScene(scene, MainMenu);
         }
 
