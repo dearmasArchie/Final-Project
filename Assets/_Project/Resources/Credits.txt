@@ -1,6 +1,16 @@
 PROJECT OUTPOST: SIGNAL LOST
 IT 402W Final Project – Bulacan State University
-Team: [Insert team names]
+
+Company: WeFinds
+
+Leader:
+Gregorio, Jhon Patrick V.
+
+Members:
+De Armas, Archie S.
+Aquino, Denzel Keane S.
+Javier, Jam Malec M.
+Mallari, Mark Rafael M.
 
 Built with Unity 6 (Universal Render Pipeline).
 

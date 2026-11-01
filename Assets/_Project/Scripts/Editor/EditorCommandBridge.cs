@@ -77,6 +77,7 @@ namespace SignalLost.EditorTools
                     case "art-ui": UIArtBuilder.Build(); break;
                     case "art-details": DetailArtBuilder.Build(); break;
                     case "credits": CreditsScreenBuilder.Build(); break;
+                    case "menu-bg": MenuBackgroundBuilder.Build(); break;
                     case "build": BuildTools.BuildWindows(); break;
                     case "unused": UnusedAssetTool.Report(); break;
                     case "menus": Phase3ContentBuilder.RebuildMenus(); break;

@@ -18,7 +18,20 @@ namespace SignalLost
             Back();
         }
 
+        bool introPlaying;
+
+        /// <summary>Plays the story introduction, then starts the game. Retries and Play Again go straight to the island and skip it.</summary>
         public void Play()
+        {
+            if (introPlaying) return;
+            introPlaying = true;
+            var font = GetComponentInChildren<TMPro.TMP_Text>(true)?.font;
+            IntroSequence.Show(font, StartGame);
+        }
+
+        public void PlayImmediate() => StartGame();
+
+        void StartGame()
         {
             GameManager.Instance.ResetRun();
             SceneLoader.Instance.Load("IslandExterior", savePlayer: false);

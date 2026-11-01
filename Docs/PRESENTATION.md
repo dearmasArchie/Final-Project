@@ -25,6 +25,6 @@ If time is short, start from a checkpoint (die once on purpose to show Retry fro
 - **Technical:** `IDamageable`, ScriptableObject enemy stats, persistent cross-scene `GameManager`, editor tools that rebuild scenes from code.
 
 ## Before presenting
-- Fill in the team names (Credits.txt and the GameConcept header).
+- Team names are filled in (Credits.txt and the GameConcept header); still add the course, year and section and the date in the GameConcept header.
 - Record the backup gameplay video.
 - Test the build on the presentation PC.

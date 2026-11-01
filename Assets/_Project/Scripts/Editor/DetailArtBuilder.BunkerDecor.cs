@@ -349,7 +349,21 @@ namespace SignalLost.EditorTools
             DecPuddle(group, new Vector3(41f, 0, 23.2f), new Vector2(1.5f, 1.0f));
             DecPuddle(group, new Vector3(47f, 0, 16.4f), new Vector2(1.0f, 0.7f));
 
-            return $"duct sections={ducts}, props={props}, signs={signs}, cameras={cams}";
+            // Wall pipe kits stand on the floor: carry each one up into the ceiling so it reads as part of the plumbing
+            var riserMat = pipeA; // same metal as the kit so the riser reads as one pipe
+            int risers = 0;
+            foreach (Transform kit in group)
+            {
+                if (!kit.name.Contains("modular_industrial_pipes_01")) continue;
+                var kb = WorldBounds(kit.gameObject);
+                var from = new Vector3(kb.center.x, kb.max.y - 0.12f, kb.center.z);
+                var to = new Vector3(from.x, 4f, from.z);
+                Tube(group, "Riser", from, to, 0.09f, riserMat);
+                Tube(group, "RiserCoupling", from - Vector3.up * 0.05f, from + Vector3.up * 0.08f, 0.13f, riserMat);
+                Tube(group, "RiserCollar", to - Vector3.up * 0.1f, to, 0.17f, riserMat);
+                risers++;
+            }
+            return $"duct sections={ducts}, props={props}, risers={risers}, signs={signs}, cameras={cams}";
         }
     }
 }

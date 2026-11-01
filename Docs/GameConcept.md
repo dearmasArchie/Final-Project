@@ -2,7 +2,9 @@
 
 **Course:** IT 402W – Final Project  
 **Institution:** Bulacan State University – College of Information and Communications Technology  
-**Student Name(s):** \[Insert Name(s)\] & \[Partner's Name\]  
+**Company:** WeFinds  
+**Leader:** Gregorio, Jhon Patrick V.  
+**Members:** De Armas, Archie S.; Aquino, Denzel Keane S.; Javier, Jam Malec M.; Mallari, Mark Rafael M.  
 **Course, Year & Section:** \[Insert Course, Year & Section\]  
 **Date:** \[Insert Date\]
 

@@ -33,7 +33,47 @@ namespace SignalLost.EditorTools
             report.Add("pier " + DressPier(root));
             report.Add("generator supplies " + DressGeneratorSupplies(root));
             report.Add("weather " + WeatherBuilder.Dress(root));
+            report.Add($"manual-edit duplicates removed: {RemoveManualDuplicates(root)}");
             return string.Join("; ", report);
+        }
+
+        /// <summary>
+        /// Objects the user moved into the "ManualEdits" root are theirs: the generator must never touch that root, and a freshly generated
+        /// copy of one of them (same name, same place) is removed so the scene doesn't end up with two.
+        /// </summary>
+        static int RemoveManualDuplicates(Transform root)
+        {
+            var manual = GameObject.Find("ManualEdits");
+            if (manual == null) return 0;
+            var mine = new System.Collections.Generic.List<(string name, Vector3 center)>();
+            foreach (Transform t in manual.transform)
+            {
+                var rs = t.GetComponentsInChildren<Renderer>();
+                if (rs.Length == 0) continue;
+                var b = rs[0].bounds;
+                foreach (var r in rs) b.Encapsulate(r.bounds);
+                mine.Add((t.name, b.center));
+            }
+            int removed = 0;
+            foreach (var t in root.GetComponentsInChildren<Transform>(true))
+            {
+                if (t == null || t == root || t.IsChildOf(manual.transform)) continue;
+                foreach (var m in mine)
+                {
+                    if (t.name != m.name) continue;
+                    var rs = t.GetComponentsInChildren<Renderer>();
+                    if (rs.Length == 0) continue;
+                    var b = rs[0].bounds;
+                    foreach (var r in rs) b.Encapsulate(r.bounds);
+                    if ((b.center - m.center).sqrMagnitude < 0.75f * 0.75f)
+                    {
+                        Object.DestroyImmediate(t.gameObject);
+                        removed++;
+                        break;
+                    }
+                }
+            }
+            return removed;
         }
 
         // ------------------------------------------------------------------ main power switch
